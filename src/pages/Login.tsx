@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Shield, Gem, TrendingUp } from 'lucide-react';
+import { Eye, EyeOff, Shield, Gem, TrendingUp, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -83,6 +83,17 @@ export default function Login() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-md px-6">
+        {/* Back to Home Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="mb-6 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+
         <Card className="shadow-luxury border-0 bg-card/95 backdrop-blur-md animate-scale-in">
           <CardHeader className="text-center pb-8">
             <div className="flex justify-center mb-4">
