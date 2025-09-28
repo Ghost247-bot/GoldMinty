@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
-    userId: '',
+    userId: undefined as string | undefined,
     accountType: 'standard',
     balance: '0.00',
     goldHoldings: '0.0000',
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
     notes: ''
   });
   const [bannerFormData, setBannerFormData] = useState({
-    userId: '',
+    userId: undefined as string | undefined,
     title: '',
     message: '',
     bannerType: 'info',
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
     if (!error) {
       setIsDialogOpen(false);
       setFormData({
-        userId: '',
+        userId: undefined,
         accountType: 'standard',
         balance: '0.00',
         goldHoldings: '0.0000',
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
     if (!error) {
       setIsBannerDialogOpen(false);
       setBannerFormData({
-        userId: '',
+        userId: undefined,
         title: '',
         message: '',
         bannerType: 'info',
