@@ -32,30 +32,30 @@ const Footer = () => {
   ];
 
   const companyLinks = [
-    { label: "About Us", href: "#" },
-    { label: "Our Story", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Press", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Investors", href: "#" },
+    { label: "About Us", href: "/about" },
+    { label: "Our Story", href: "/about" },
+    { label: "Careers", href: "/contact" },
+    { label: "Press", href: "/contact" },
+    { label: "Blog", href: "/resources" },
+    { label: "Investors", href: "/contact" },
   ];
 
   const supportLinks = [
-    { label: "Help Center", href: "#" },
-    { label: "Contact Us", href: "#" },
-    { label: "Shipping Info", href: "#" },
-    { label: "Returns", href: "#" },
-    { label: "Track Order", href: "#" },
-    { label: "FAQ", href: "#" },
+    { label: "Help Center", href: "/contact" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "Shipping Info", href: "/resources" },
+    { label: "Returns", href: "/resources" },
+    { label: "Track Order", href: "/contact" },
+    { label: "FAQ", href: "/resources" },
   ];
 
   const legalLinks = [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Cookie Policy", href: "#" },
-    { label: "Compliance", href: "#" },
-    { label: "Security", href: "#" },
-    { label: "Legal Notice", href: "#" },
+    { label: "Privacy Policy", href: "/resources" },
+    { label: "Terms of Service", href: "/resources" },
+    { label: "Cookie Policy", href: "/resources" },
+    { label: "Compliance", href: "/about" },
+    { label: "Security", href: "/about" },
+    { label: "Legal Notice", href: "/resources" },
   ];
 
   const socialLinks = [
@@ -147,12 +147,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
+                  <button
+                    onClick={() => navigate(link.href)}
                     className="text-gray-300 hover:text-gold transition-colors duration-200"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -164,12 +164,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {supportLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
+                  <button
+                    onClick={() => navigate(link.href)}
                     className="text-gray-300 hover:text-gold transition-colors duration-200"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -201,13 +201,13 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex flex-wrap justify-center md:justify-start gap-6">
               {legalLinks.map((link) => (
-                <a
+                <button
                   key={link.label}
-                  href={link.href}
+                  onClick={() => navigate(link.href)}
                   className="text-sm text-gray-400 hover:text-gold transition-colors duration-200"
                 >
                   {link.label}
-                </a>
+                </button>
               ))}
             </div>
             
