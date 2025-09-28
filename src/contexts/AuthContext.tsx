@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: string | null;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, additionalData?: any) => Promise<{ error: any; data?: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   loading: boolean;
@@ -59,21 +59,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, additionalData?: any) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
         data: {
           full_name: fullName,
+          first_name: additionalData?.firstName,
+          last_name: additionalData?.lastName,
+          phone: additionalData?.phone,
+          date_of_birth: additionalData?.dateOfBirth,
+          address_line1: additionalData?.addressLine1,
+          address_line2: additionalData?.addressLine2,
+          city: additionalData?.city,
+          state: additionalData?.state,
+          zip_code: additionalData?.zipCode,
+          country: additionalData?.country,
         },
       },
     });
     
-    return { error };
+    return { error, data };
   };
 
   const signIn = async (email: string, password: string) => {

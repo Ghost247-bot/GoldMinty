@@ -16,25 +16,73 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          country: string | null
           created_at: string
+          date_of_birth: string | null
+          first_name: string | null
           full_name: string | null
           id: string
+          last_name: string | null
+          phone: string | null
+          state: string | null
           updated_at: string
           user_id: string
+          zip_code: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          first_name?: string | null
+          full_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip_code?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          first_name?: string | null
+          full_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      security_questions: {
+        Row: {
+          created_at: string
+          id: string
+          question: string
         }
         Insert: {
           created_at?: string
-          full_name?: string | null
           id?: string
-          updated_at?: string
-          user_id: string
+          question: string
         }
         Update: {
           created_at?: string
-          full_name?: string | null
           id?: string
-          updated_at?: string
-          user_id?: string
+          question?: string
         }
         Relationships: []
       }
@@ -58,6 +106,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_security_answers: {
+        Row: {
+          answer_hash: string
+          created_at: string
+          id: string
+          question_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answer_hash: string
+          created_at?: string
+          id?: string
+          question_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answer_hash?: string
+          created_at?: string
+          id?: string
+          question_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_security_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "security_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

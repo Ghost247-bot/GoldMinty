@@ -5,19 +5,50 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Shield, Gem, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Shield, Gem, TrendingUp, ArrowLeft, HelpCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // Enhanced registration fields
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [addressLine1, setAddressLine1] = useState('');
+  const [addressLine2, setAddressLine2] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [country, setCountry] = useState('United States');
+  
+  // Security questions
+  const [securityQuestions, setSecurityQuestions] = useState([]);
+  const [selectedQuestion1, setSelectedQuestion1] = useState('');
+  const [selectedQuestion2, setSelectedQuestion2] = useState('');
+  const [answer1, setAnswer1] = useState('');
+  const [answer2, setAnswer2] = useState('');
+  
+  // Login security verification
+  const [showSecurityVerification, setShowSecurityVerification] = useState(false);
+  const [loginSecurityQuestion, setLoginSecurityQuestion] = useState('');
+  const [loginSecurityAnswer, setLoginSecurityAnswer] = useState('');
+  const [tempUserId, setTempUserId] = useState('');
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Load security questions on component mount
+  useEffect(() => {
+    loadSecurityQuestions();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -25,45 +56,199 @@ export default function Login() {
     }
   }, [user, navigate]);
 
+  const loadSecurityQuestions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('security_questions')
+        .select('*')
+        .order('question');
+      
+      if (error) throw error;
+      setSecurityQuestions(data || []);
+    } catch (error) {
+      console.error('Error loading security questions:', error);
+    }
+  };
+
+  const hashAnswer = (answer: string) => {
+    // Simple hash function - in production, use a proper crypto library
+    return btoa(answer.toLowerCase().trim());
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signIn(email, password);
-    
-    if (error) {
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        // Get a random security question for this user
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData.user) {
+          const { data: userAnswers } = await supabase
+            .from('user_security_answers')
+            .select(`
+              question_id,
+              security_questions!inner(question)
+            `)
+            .eq('user_id', userData.user.id)
+            .limit(1);
+
+          if (userAnswers && userAnswers.length > 0) {
+            setLoginSecurityQuestion(userAnswers[0].security_questions.question);
+            setTempUserId(userData.user.id);
+            setShowSecurityVerification(true);
+          } else {
+            // No security questions set, proceed with login
+            toast({
+              title: 'Success',
+              description: 'Logged in successfully',
+            });
+            navigate('/');
+          }
+        }
+      }
+    } catch (error) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'An unexpected error occurred',
         variant: 'destructive',
       });
-    } else {
-      toast({
-        title: 'Success',
-        description: 'Logged in successfully',
-      });
-      navigate('/');
     }
     
     setLoading(false);
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSecurityVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    const { error } = await signUp(email, password, fullName);
-    
-    if (error) {
+
+    try {
+      const { data: userAnswer } = await supabase
+        .from('user_security_answers')
+        .select('answer_hash')
+        .eq('user_id', tempUserId)
+        .eq('question_id', 
+          securityQuestions.find(q => q.question === loginSecurityQuestion)?.id
+        )
+        .single();
+
+      if (userAnswer && userAnswer.answer_hash === hashAnswer(loginSecurityAnswer)) {
+        toast({
+          title: 'Success',
+          description: 'Security verification passed. Logged in successfully.',
+        });
+        setShowSecurityVerification(false);
+        navigate('/');
+      } else {
+        toast({
+          title: 'Security Verification Failed',
+          description: 'Incorrect security answer. Please try again.',
+          variant: 'destructive',
+        });
+        // Sign out the user
+        await supabase.auth.signOut();
+      }
+    } catch (error) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Security verification failed',
         variant: 'destructive',
       });
-    } else {
+      await supabase.auth.signOut();
+    }
+
+    setLoading(false);
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!selectedQuestion1 || !selectedQuestion2) {
       toast({
-        title: 'Success',
-        description: 'Account created successfully! Please check your email for verification.',
+        title: 'Error',
+        description: 'Please select two security questions.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (selectedQuestion1 === selectedQuestion2) {
+      toast({
+        title: 'Error',
+        description: 'Please select two different security questions.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!answer1.trim() || !answer2.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please provide answers to both security questions.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const fullName = `${firstName} ${lastName}`.trim();
+      const { error, data } = await signUp(email, password, fullName, {
+        firstName,
+        lastName,
+        phone,
+        dateOfBirth,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zipCode,
+        country
+      });
+      
+      if (error) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        // Store security questions and answers
+        if (data?.user) {
+          await Promise.all([
+            supabase.from('user_security_answers').insert({
+              user_id: data.user.id,
+              question_id: selectedQuestion1,
+              answer_hash: hashAnswer(answer1)
+            }),
+            supabase.from('user_security_answers').insert({
+              user_id: data.user.id,
+              question_id: selectedQuestion2,
+              answer_hash: hashAnswer(answer2)
+            })
+          ]);
+        }
+        
+        toast({
+          title: 'Success',
+          description: 'Account created successfully! Please check your email for verification.',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred during registration.',
+        variant: 'destructive',
       });
     }
     
@@ -170,20 +355,37 @@ export default function Login() {
               </TabsContent>
               
               <TabsContent value="signup" className="animate-fade-in">
-                <form onSubmit={handleSignUp} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name" className="text-sm font-medium text-foreground">
-                      Full Name
-                    </Label>
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      placeholder="Enter your full name"
-                      required
-                    />
+                <form onSubmit={handleSignUp} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-firstname" className="text-sm font-medium text-foreground">
+                        First Name
+                      </Label>
+                      <Input
+                        id="signup-firstname"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                        placeholder="First name"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-lastname" className="text-sm font-medium text-foreground">
+                        Last Name
+                      </Label>
+                      <Input
+                        id="signup-lastname"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                        placeholder="Last name"
+                        required
+                      />
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
@@ -198,6 +400,33 @@ export default function Login() {
                       className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
                       placeholder="Enter your email"
                       required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-phone" className="text-sm font-medium text-foreground">
+                      Phone Number
+                    </Label>
+                    <Input
+                      id="signup-phone"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-dob" className="text-sm font-medium text-foreground">
+                      Date of Birth
+                    </Label>
+                    <Input
+                      id="signup-dob"
+                      type="date"
+                      value={dateOfBirth}
+                      onChange={(e) => setDateOfBirth(e.target.value)}
+                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
                     />
                   </div>
                   
@@ -224,6 +453,126 @@ export default function Login() {
                       </button>
                     </div>
                   </div>
+
+                  {/* Address Section */}
+                  <div className="space-y-4 pt-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Shield className="w-4 h-4" />
+                      Address Information (Optional)
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Address Line 1"
+                        value={addressLine1}
+                        onChange={(e) => setAddressLine1(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Address Line 2 (Optional)"
+                        value={addressLine2}
+                        onChange={(e) => setAddressLine2(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        placeholder="City"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      />
+                      <Input
+                        placeholder="State"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        placeholder="ZIP Code"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      />
+                      <Input
+                        placeholder="Country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Security Questions Section */}
+                  <div className="space-y-4 pt-4 border-t border-border/20">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <HelpCircle className="w-4 h-4" />
+                      Security Questions (Required)
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">
+                          Security Question 1
+                        </Label>
+                        <Select value={selectedQuestion1} onValueChange={setSelectedQuestion1}>
+                          <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:border-gold">
+                            <SelectValue placeholder="Select your first security question" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {securityQuestions.map((question) => (
+                              <SelectItem key={question.id} value={question.id}>
+                                {question.question}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          type="text"
+                          value={answer1}
+                          onChange={(e) => setAnswer1(e.target.value)}
+                          className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                          placeholder="Your answer"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">
+                          Security Question 2
+                        </Label>
+                        <Select value={selectedQuestion2} onValueChange={setSelectedQuestion2}>
+                          <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:border-gold">
+                            <SelectValue placeholder="Select your second security question" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {securityQuestions
+                              .filter(q => q.id !== selectedQuestion1)
+                              .map((question) => (
+                                <SelectItem key={question.id} value={question.id}>
+                                  {question.question}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          type="text"
+                          value={answer2}
+                          onChange={(e) => setAnswer2(e.target.value)}
+                          className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                          placeholder="Your answer"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
                   
                   <Button 
                     type="submit" 
@@ -235,6 +584,64 @@ export default function Login() {
                 </form>
               </TabsContent>
             </Tabs>
+
+            {/* Security Question Verification Modal */}
+            {showSecurityVerification && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <Card className="w-full max-w-md mx-4 shadow-luxury border-0 bg-card animate-scale-in">
+                  <CardHeader className="text-center">
+                    <div className="flex justify-center mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold rounded-xl flex items-center justify-center">
+                        <Shield className="w-6 h-6 text-navy-deep" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl">Security Verification</CardTitle>
+                    <CardDescription>
+                      Please answer your security question to complete login
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <form onSubmit={handleSecurityVerification} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">
+                          {loginSecurityQuestion}
+                        </Label>
+                        <Input
+                          type="text"
+                          value={loginSecurityAnswer}
+                          onChange={(e) => setLoginSecurityAnswer(e.target.value)}
+                          className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
+                          placeholder="Your answer"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="flex gap-3">
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => {
+                            setShowSecurityVerification(false);
+                            supabase.auth.signOut();
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit"
+                          className="flex-1 bg-gradient-to-r from-gold-dark to-gold hover:from-gold hover:to-gold-dark text-navy-deep font-semibold"
+                          disabled={loading}
+                        >
+                          {loading ? 'Verifying...' : 'Verify'}
+                        </Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Trust indicators */}
             <div className="mt-8 pt-6 border-t border-border/20">
