@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,73 +6,23 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag, Shield, Truck } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-  metal: string;
-  weight: string;
-  inStock: boolean;
-}
+import { useCart, CartItem } from "@/contexts/CartContext";
 
 const Cart = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { state, updateQuantity, removeItem } = useCart();
   const [promoCode, setPromoCode] = useState("");
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "1 oz American Gold Eagle",
-      price: 2089.50,
-      image: "/api/placeholder/100/100",
-      quantity: 2,
-      metal: "gold",
-      weight: "1 oz",
-      inStock: true
-    },
-    {
-      id: "2",
-      name: "1 oz Silver American Eagle",
-      price: 48.75,
-      image: "/api/placeholder/100/100",
-      quantity: 10,
-      metal: "silver",
-      weight: "1 oz",
-      inStock: true
-    },
-    {
-      id: "3",
-      name: "1/10 oz Gold Canadian Maple Leaf",
-      price: 215.30,
-      image: "/api/placeholder/100/100",
-      quantity: 1,
-      metal: "gold",
-      weight: "1/10 oz",
-      inStock: true
-    }
-  ]);
 
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeItem(id);
-      return;
-    }
-    
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const handleUpdateQuantity = (id: string, newQuantity: number) => {
+    updateQuantity(id, newQuantity);
   };
 
-  const removeItem = (id: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const handleRemoveItem = (id: string) => {
+    removeItem(id);
     toast({
       title: "Item removed",
       description: "Item has been removed from your cart.",
@@ -94,7 +44,7 @@ const Cart = () => {
     }
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shipping = subtotal > 500 ? 0 : 25;
   const insurance = subtotal * 0.005; // 0.5%
   const tax = subtotal * 0.0875; // 8.75%
@@ -111,7 +61,7 @@ const Cart = () => {
     }, 2000);
   };
 
-  if (cartItems.length === 0) {
+  if (state.items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -163,7 +113,7 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
+            {state.items.map((item) => (
               <Card key={item.id}>
                 <CardContent className="p-6">
                   <div className="flex gap-4">
@@ -185,7 +135,7 @@ const Cart = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => handleRemoveItem(item.id)}
                           className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -197,7 +147,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                           >
                             <Minus className="w-3 h-3" />
                           </Button>
@@ -205,7 +155,7 @@ const Cart = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                           >
                             <Plus className="w-3 h-3" />
                           </Button>

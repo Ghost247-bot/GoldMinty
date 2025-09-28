@@ -17,16 +17,18 @@ import {
   Plus,
   Minus
 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { parseGoldProductsCSV } from "@/utils/csvParser";
+import { useCart } from "@/contexts/CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState(null);
@@ -162,7 +164,24 @@ const ProductDetail = () => {
     ]
   };
 
-  const addToCart = () => {
+  const handleAddToCart = () => {
+    if (!displayProduct) return;
+    
+    for (let i = 0; i < quantity; i++) {
+      addItem({
+        id: displayProduct.id,
+        name: displayProduct.name,
+        price: displayProduct.price,
+        image: displayProduct.images?.[0] || displayProduct.image || "/api/placeholder/300/300",
+        metal: displayProduct.metal,
+        weight: displayProduct.weight,
+        mint: displayProduct.mint || "Unknown Mint",
+        purity: displayProduct.purity || "Unknown Purity",
+        inStock: displayProduct.inStock,
+        description: displayProduct.description
+      });
+    }
+    
     toast({
       title: "Added to cart",
       description: `${quantity} x ${displayProduct.name} added to your cart.`,
@@ -300,7 +319,7 @@ const ProductDetail = () => {
                   size="lg" 
                   variant="gold" 
                   className="flex-1"
-                  onClick={addToCart}
+                  onClick={handleAddToCart}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Add to Cart - ${(displayProduct.price * quantity).toFixed(2)}

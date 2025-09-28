@@ -6,10 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { ShoppingCart, Heart, Star, Search, Filter } from "lucide-react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { parseGoldProductsCSV } from "@/utils/csvParser";
+import { useCart } from "@/contexts/CartContext";
 
 interface Product {
   id: string;
@@ -31,10 +32,10 @@ const Products = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addItem } = useCart();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("featured");
-  const [cartItems, setCartItems] = useState<string[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [csvProducts, setCsvProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -180,11 +181,23 @@ const Products = () => {
     }
   });
 
-  const addToCart = (productId: string) => {
-    setCartItems(prev => [...prev, productId]);
+  const handleAddToCart = (product: Product) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      metal: product.metal,
+      weight: product.weight,
+      mint: product.mint,
+      purity: product.purity,
+      inStock: product.inStock,
+      description: product.description
+    });
+    
     toast({
       title: "Added to cart",
-      description: "Product has been added to your cart.",
+      description: `${product.name} has been added to your cart.`,
     });
   };
 
@@ -336,7 +349,7 @@ const Products = () => {
                     className="flex-1"
                     variant="gold"
                     disabled={!product.inStock}
-                    onClick={() => addToCart(product.id)}
+                    onClick={() => handleAddToCart(product)}
                   >
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Add to Cart

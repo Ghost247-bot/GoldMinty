@@ -5,11 +5,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
+import { useCart } from "@/contexts/CartContext";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { state } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
-  const [cartCount, setCartCount] = useState(3);
   const [selectedLanguage, setSelectedLanguage] = useState("EN");
 
   const languages = [
@@ -172,18 +173,19 @@ const Header = () => {
           {/* Cart and User */}
           <div className="flex items-center gap-4">
             <div className="relative">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate("/cart")}
-              >
-                <ShoppingCart className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gold text-navy-deep text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="relative"
+              onClick={() => navigate("/cart")}
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {state.totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gold text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {state.totalItems}
+                </span>
+              )}
+            </Button>
             </div>
             <Button 
               variant="ghost" 
