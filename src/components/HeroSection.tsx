@@ -12,27 +12,27 @@ const HeroSection = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
-            <div className="space-y-8">
+            <div className="space-y-8 animate-fade-in">
               <div className="space-y-6">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight animate-fade-in [animation-delay:200ms]">
                   Premium <span className="text-gold">Precious Metals</span> for Smart Investors
                 </h1>
                 
-                <p className="text-xl text-muted-foreground leading-relaxed">
+                <p className="text-xl text-muted-foreground leading-relaxed animate-fade-in [animation-delay:400ms]">
                   Discover our carefully curated selection of gold, silver, platinum, and palladium from the world's most trusted mints. Build your wealth with confidence.
                 </p>
                 
                 {/* Key Features */}
-                <div className="flex flex-wrap gap-4 text-sm">
-                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border">
+                <div className="flex flex-wrap gap-4 text-sm animate-fade-in [animation-delay:600ms]">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border hover-scale transition-all duration-300">
                     <Shield className="w-4 h-4 text-gold" />
                     <span>Swiss-Grade Security</span>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border hover-scale transition-all duration-300">
                     <Award className="w-4 h-4 text-gold" />
                     <span>Certified Authentic</span>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border hover-scale transition-all duration-300">
                     <Globe className="w-4 h-4 text-gold" />
                     <span>Worldwide Delivery</span>
                   </div>
@@ -40,7 +40,7 @@ const HeroSection = () => {
               </div>
               
               {/* Call to Action */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 animate-fade-in [animation-delay:800ms]">
                 <Button 
                   size="lg" 
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
@@ -73,7 +73,7 @@ const HeroSection = () => {
             </div>
             
             {/* Hero Image */}
-            <div className="relative">
+            <div className="relative animate-fade-in [animation-delay:300ms]">
               <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gold/10 to-gold/5 border">
                 <img 
                   src={heroGoldBars}
@@ -83,12 +83,12 @@ const HeroSection = () => {
               </div>
               
               {/* Floating Stats */}
-              <div className="absolute -bottom-6 -left-6 bg-card border rounded-xl p-4 shadow-lg">
+              <div className="absolute -bottom-6 -left-6 bg-card border rounded-xl p-4 shadow-lg animate-scale-in [animation-delay:1000ms] hover-scale">
                 <div className="text-2xl font-bold text-gold">$550M+</div>
                 <div className="text-sm text-muted-foreground">Total Sales</div>
               </div>
               
-              <div className="absolute -top-6 -right-6 bg-card border rounded-xl p-4 shadow-lg">
+              <div className="absolute -top-6 -right-6 bg-card border rounded-xl p-4 shadow-lg animate-scale-in [animation-delay:1200ms] hover-scale">
                 <div className="text-2xl font-bold text-gold">20+</div>
                 <div className="text-sm text-muted-foreground">Years Experience</div>
               </div>

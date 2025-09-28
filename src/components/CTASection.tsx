@@ -10,7 +10,7 @@ const CTASection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           {/* Main Content */}
-          <div className="mb-12">
+          <div className="mb-12 animate-fade-in">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
               Ready to Start Investing in Precious Metals?
             </h2>
@@ -21,10 +21,10 @@ const CTASection = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in [animation-delay:300ms]">
             <Button 
               size="lg" 
-              className="bg-gold text-primary hover:bg-gold/90 text-lg px-8 py-3"
+              className="bg-gold text-primary hover:bg-gold/90 text-lg px-8 py-3 hover-scale transition-all duration-300"
               onClick={() => navigate("/products")}
             >
               Browse Products
@@ -33,7 +33,7 @@ const CTASection = () => {
             <Button 
               variant="outline" 
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-3"
+              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-3 hover-scale transition-all duration-300"
               onClick={() => navigate("/auth")}
             >
               Create Account
@@ -41,20 +41,20 @@ const CTASection = () => {
           </div>
 
           {/* Trust Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in [animation-delay:600ms]">
+            <div className="flex flex-col items-center text-center space-y-3 hover-scale transition-all duration-300">
               <Shield className="w-6 h-6 text-gold" />
               <h3 className="font-semibold text-white">Secure & Insured</h3>
               <p className="text-sm text-white/80">All shipments fully insured</p>
             </div>
             
-            <div className="flex flex-col items-center text-center space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3 hover-scale transition-all duration-300">
               <Truck className="w-6 h-6 text-gold" />
               <h3 className="font-semibold text-white">Fast Delivery</h3>
               <p className="text-sm text-white/80">Quick worldwide shipping</p>
             </div>
             
-            <div className="flex flex-col items-center text-center space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3 hover-scale transition-all duration-300">
               <Phone className="w-6 h-6 text-gold" />
               <h3 className="font-semibold text-white">Expert Support</h3>
               <p className="text-sm text-white/80">Dedicated specialists</p>

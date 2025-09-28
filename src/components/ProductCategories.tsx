@@ -40,7 +40,7 @@ const ProductCategories = () => {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center space-y-4 mb-12">
+        <div className="text-center space-y-4 mb-12 animate-fade-in">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary">
             Discover our products
           </h2>
@@ -51,13 +51,14 @@ const ProductCategories = () => {
 
         {/* Categories Grid */}
         <div className="mb-16">
-          <h3 className="text-2xl font-bold text-primary mb-8 text-center">Our Product Categories</h3>
+          <h3 className="text-2xl font-bold text-primary mb-8 text-center animate-fade-in [animation-delay:200ms]">Our Product Categories</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categories.map((category, index) => (
               <Card 
                 key={index} 
-                className="group overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                className="group overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 animate-fade-in hover-scale"
                 onClick={() => navigate(category.href)}
+                style={{animationDelay: `${400 + index * 200}ms`}}
               >
                 <CardContent className="p-0">
                   <div className="relative aspect-[4/3] overflow-hidden">
@@ -91,7 +92,7 @@ const ProductCategories = () => {
         </div>
 
         {/* Popular Products Preview */}
-        <div className="text-center space-y-8">
+        <div className="text-center space-y-8 animate-fade-in [animation-delay:1000ms]">
           <div className="space-y-2">
             <h3 className="text-2xl font-bold text-primary">Popular Products</h3>
             <p className="text-muted-foreground">
@@ -100,19 +101,19 @@ const ProductCategories = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
               <div className="font-semibold text-primary">1 oz Gold Eagle</div>
               <div className="text-gold font-bold">$2,089.50</div>
             </div>
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
               <div className="font-semibold text-primary">1 oz Silver Eagle</div>
               <div className="text-gold font-bold">$48.75</div>
             </div>
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
               <div className="font-semibold text-primary">1 oz Platinum Eagle</div>
               <div className="text-gold font-bold">$1,650.00</div>
             </div>
-            <div className="p-4 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
               <div className="font-semibold text-primary">1/10 oz Gold Maple</div>
               <div className="text-gold font-bold">$215.30</div>
             </div>
@@ -120,7 +121,7 @@ const ProductCategories = () => {
           
           <Button 
             size="lg" 
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 hover-scale transition-all duration-300"
             onClick={() => navigate("/products")}
           >
             View All Products

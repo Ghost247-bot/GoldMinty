@@ -38,7 +38,7 @@ const TestimonialsSection = () => {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
             Customer Testimonials
           </h2>
@@ -50,7 +50,7 @@ const TestimonialsSection = () => {
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="h-full">
+            <Card key={index} className="h-full animate-fade-in hover-scale transition-all duration-300" style={{animationDelay: `${300 + index * 200}ms`}}>
               <CardContent className="p-6">
                 {/* Rating */}
                 <div className="flex items-center gap-1 mb-4">
@@ -82,8 +82,8 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Trust indicators */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-6 px-6 py-3 bg-muted rounded-lg">
+        <div className="text-center animate-fade-in [animation-delay:900ms]">
+          <div className="inline-flex items-center gap-6 px-6 py-3 bg-muted rounded-lg hover-scale transition-all duration-300">
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 fill-gold text-gold" />
               <span className="font-semibold text-primary">4.9/5</span>

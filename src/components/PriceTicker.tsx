@@ -23,9 +23,13 @@ const PriceTicker = () => {
             <TrendingUp className="w-4 h-4 text-success" />
             <span className="font-medium">Live Market Prices</span>
           </div>
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-8 animate-fade-in">
             {priceData.map((data) => (
-              <div key={data.metal} className="flex items-center gap-2">
+              <div key={data.metal} className="flex items-center gap-2 hover-scale transition-all duration-300"
+                style={{
+                  animationDelay: `${priceData.indexOf(data) * 100}ms`
+                }}
+              >
                 <span className="font-medium">{data.metal}</span>
                 <span className="font-bold text-gold">{data.price}</span>
                 <span className={`text-xs ${data.isPositive ? 'text-success' : 'text-destructive'}`}>
