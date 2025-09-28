@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [users, setUsers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]); // All users for dropdowns
+  const [usersLoading, setUsersLoading] = useState(false);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -69,18 +70,26 @@ export default function AdminDashboard() {
   };
 
   const fetchAllUsers = async () => {
+    setUsersLoading(true);
     // Fetch all users with their auth data for dropdowns
     const { data, error } = await supabase
       .from('profiles')
-      .select(`
-        *,
-        user_roles(role)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
+    
+    console.log('Fetched users:', data, 'Error:', error);
     
     if (data) {
       setAllUsers(data);
+    } else if (error) {
+      console.error('Error fetching users:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch users from database",
+        variant: "destructive"
+      });
     }
+    setUsersLoading(false);
   };
 
   const fetchInvestmentAccounts = async () => {
@@ -383,7 +392,12 @@ export default function AdminDashboard() {
                     <Wallet className="h-5 w-5" />
                     Investment Accounts Management
                   </CardTitle>
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                    setIsDialogOpen(open);
+                    if (open) {
+                      fetchAllUsers(); // Refresh users when dialog opens
+                    }
+                  }}>
                     <DialogTrigger asChild>
                       <Button>
                         <Plus className="h-4 w-4 mr-2" />
@@ -399,18 +413,32 @@ export default function AdminDashboard() {
                           <Label htmlFor="user-select">Select User</Label>
                           <Select value={formData.userId} onValueChange={(value) => setFormData({...formData, userId: value})}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a user" />
+                              <SelectValue placeholder={
+                                usersLoading ? "Loading users..." : 
+                                allUsers.length === 0 ? "No users found" : 
+                                "Select a user"
+                              } />
                             </SelectTrigger>
                             <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
-                              {allUsers.map((user) => (
-                                <SelectItem 
-                                  key={user.user_id} 
-                                  value={user.user_id}
-                                  className="hover:bg-muted focus:bg-muted cursor-pointer"
-                                >
-                                  {user.full_name || 'Unknown User'} ({user.email || 'No email'})
+                              {usersLoading ? (
+                                <SelectItem value="" disabled>
+                                  Loading users...
                                 </SelectItem>
-                              ))}
+                              ) : allUsers.length === 0 ? (
+                                <SelectItem value="" disabled>
+                                  No users found
+                                </SelectItem>
+                              ) : (
+                                allUsers.map((user) => (
+                                  <SelectItem 
+                                    key={user.user_id} 
+                                    value={user.user_id}
+                                    className="hover:bg-muted focus:bg-muted cursor-pointer"
+                                  >
+                                    {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                                  </SelectItem>
+                                ))
+                              )}
                             </SelectContent>
                           </Select>
                         </div>
@@ -556,7 +584,12 @@ export default function AdminDashboard() {
                     <MessageSquare className="h-5 w-5" />
                     User Banner Management
                   </CardTitle>
-                  <Dialog open={isBannerDialogOpen} onOpenChange={setIsBannerDialogOpen}>
+                  <Dialog open={isBannerDialogOpen} onOpenChange={(open) => {
+                    setIsBannerDialogOpen(open);
+                    if (open) {
+                      fetchAllUsers(); // Refresh users when dialog opens
+                    }
+                  }}>
                     <DialogTrigger asChild>
                       <Button>
                         <Plus className="h-4 w-4 mr-2" />
@@ -572,18 +605,32 @@ export default function AdminDashboard() {
                           <Label htmlFor="banner-user-select">Select User</Label>
                           <Select value={bannerFormData.userId} onValueChange={(value) => setBannerFormData({...bannerFormData, userId: value})}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a user" />
+                              <SelectValue placeholder={
+                                usersLoading ? "Loading users..." : 
+                                allUsers.length === 0 ? "No users found" : 
+                                "Select a user"
+                              } />
                             </SelectTrigger>
                             <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
-                              {allUsers.map((user) => (
-                                <SelectItem 
-                                  key={user.user_id} 
-                                  value={user.user_id}
-                                  className="hover:bg-muted focus:bg-muted cursor-pointer"
-                                >
-                                  {user.full_name || 'Unknown User'} ({user.email || 'No email'})
+                              {usersLoading ? (
+                                <SelectItem value="" disabled>
+                                  Loading users...
                                 </SelectItem>
-                              ))}
+                              ) : allUsers.length === 0 ? (
+                                <SelectItem value="" disabled>
+                                  No users found
+                                </SelectItem>
+                              ) : (
+                                allUsers.map((user) => (
+                                  <SelectItem 
+                                    key={user.user_id} 
+                                    value={user.user_id}
+                                    className="hover:bg-muted focus:bg-muted cursor-pointer"
+                                  >
+                                    {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                                  </SelectItem>
+                                ))
+                              )}
                             </SelectContent>
                           </Select>
                         </div>
