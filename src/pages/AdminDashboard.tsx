@@ -24,6 +24,10 @@ export default function AdminDashboard() {
   const [userBanners, setUserBanners] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditBannerDialogOpen, setIsEditBannerDialogOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<any>(null);
+  const [editingBanner, setEditingBanner] = useState<any>(null);
   const [formData, setFormData] = useState({
     userId: undefined as string | undefined,
     accountType: 'standard',
@@ -249,6 +253,105 @@ export default function AdminDashboard() {
       toast({
         title: "Success",
         description: "Banner deleted successfully"
+      });
+    }
+  };
+
+  const handleEditAccount = (account: any) => {
+    setEditingAccount(account);
+    setFormData({
+      userId: account.user_id,
+      accountType: account.account_type,
+      balance: account.balance.toString(),
+      goldHoldings: account.gold_holdings.toString(),
+      silverHoldings: account.silver_holdings.toString(),
+      platinumHoldings: account.platinum_holdings.toString(),
+      notes: account.notes || ''
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateAccount = async () => {
+    if (!editingAccount || !user?.id) return;
+
+    const { error } = await supabase
+      .from('investment_accounts')
+      .update({
+        user_id: formData.userId,
+        account_type: formData.accountType,
+        balance: parseFloat(formData.balance),
+        gold_holdings: parseFloat(formData.goldHoldings),
+        silver_holdings: parseFloat(formData.silverHoldings),
+        platinum_holdings: parseFloat(formData.platinumHoldings),
+        notes: formData.notes,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingAccount.id);
+
+    if (!error) {
+      setIsEditDialogOpen(false);
+      setEditingAccount(null);
+      setFormData({
+        userId: undefined,
+        accountType: 'standard',
+        balance: '0.00',
+        goldHoldings: '0.0000',
+        silverHoldings: '0.0000',
+        platinumHoldings: '0.0000',
+        notes: ''
+      });
+      fetchInvestmentAccounts();
+      toast({
+        title: "Success",
+        description: "Investment account updated successfully"
+      });
+    }
+  };
+
+  const handleEditBanner = (banner: any) => {
+    setEditingBanner(banner);
+    setBannerFormData({
+      userId: banner.user_id,
+      title: banner.title,
+      message: banner.message,
+      bannerType: banner.banner_type,
+      priority: banner.priority.toString(),
+      expiresAt: banner.expires_at ? new Date(banner.expires_at).toISOString().slice(0, 16) : ''
+    });
+    setIsEditBannerDialogOpen(true);
+  };
+
+  const handleUpdateBanner = async () => {
+    if (!editingBanner || !user?.id) return;
+
+    const { error } = await supabase
+      .from('user_banners')
+      .update({
+        user_id: bannerFormData.userId,
+        title: bannerFormData.title,
+        message: bannerFormData.message,
+        banner_type: bannerFormData.bannerType,
+        priority: parseInt(bannerFormData.priority),
+        expires_at: bannerFormData.expiresAt ? new Date(bannerFormData.expiresAt).toISOString() : null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingBanner.id);
+
+    if (!error) {
+      setIsEditBannerDialogOpen(false);
+      setEditingBanner(null);
+      setBannerFormData({
+        userId: undefined,
+        title: '',
+        message: '',
+        bannerType: 'info',
+        priority: '1',
+        expiresAt: ''
+      });
+      fetchUserBanners();
+      toast({
+        title: "Success",
+        description: "Banner updated successfully"
       });
     }
   };
@@ -538,6 +641,7 @@ export default function AdminDashboard() {
                       <TableHead>Holdings</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -567,6 +671,15 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>
                           {new Date(account.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditAccount(account)}
+                          >
+                            Edit
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -752,6 +865,13 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell className="space-x-2">
                           <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleEditBanner(banner)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleToggleBanner(banner.id, banner.is_active)}
@@ -774,6 +894,255 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Edit Investment Account Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (open) {
+            fetchAllUsers();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Edit Investment Account</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-user-select">Select User</Label>
+                <Select value={formData.userId} onValueChange={(value) => setFormData({...formData, userId: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={
+                      usersLoading ? "Loading users..." : 
+                      allUsers.length === 0 ? "No users found" : 
+                      "Select a user"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
+                    {usersLoading ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        Loading users...
+                      </div>
+                    ) : allUsers.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        No users found
+                      </div>
+                    ) : (
+                      allUsers.map((user) => (
+                        <SelectItem 
+                          key={user.user_id} 
+                          value={user.user_id}
+                          className="hover:bg-muted focus:bg-muted cursor-pointer"
+                        >
+                          {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="edit-account-type">Account Type</Label>
+                <Select value={formData.accountType} onValueChange={(value) => setFormData({...formData, accountType: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Standard</SelectItem>
+                    <SelectItem value="premium">Premium</SelectItem>
+                    <SelectItem value="gold">Gold</SelectItem>
+                    <SelectItem value="platinum">Platinum</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-balance">Balance ($)</Label>
+                  <Input
+                    id="edit-balance"
+                    type="number"
+                    step="0.01"
+                    value={formData.balance}
+                    onChange={(e) => setFormData({...formData, balance: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-gold">Gold Holdings (oz)</Label>
+                  <Input
+                    id="edit-gold"
+                    type="number"
+                    step="0.0001"
+                    value={formData.goldHoldings}
+                    onChange={(e) => setFormData({...formData, goldHoldings: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-silver">Silver Holdings (oz)</Label>
+                  <Input
+                    id="edit-silver"
+                    type="number"
+                    step="0.0001"
+                    value={formData.silverHoldings}
+                    onChange={(e) => setFormData({...formData, silverHoldings: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-platinum">Platinum Holdings (oz)</Label>
+                  <Input
+                    id="edit-platinum"
+                    type="number"
+                    step="0.0001"
+                    value={formData.platinumHoldings}
+                    onChange={(e) => setFormData({...formData, platinumHoldings: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-notes">Notes (Optional)</Label>
+                <Textarea
+                  id="edit-notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  placeholder="Any additional notes about this account..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateAccount} disabled={!formData.userId}>
+                  Update Account
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Banner Dialog */}
+        <Dialog open={isEditBannerDialogOpen} onOpenChange={(open) => {
+          setIsEditBannerDialogOpen(open);
+          if (open) {
+            fetchAllUsers();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Edit User Banner</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-banner-user-select">Select User</Label>
+                <Select value={bannerFormData.userId} onValueChange={(value) => setBannerFormData({...bannerFormData, userId: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={
+                      usersLoading ? "Loading users..." : 
+                      allUsers.length === 0 ? "No users found" : 
+                      "Select a user"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
+                    {usersLoading ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        Loading users...
+                      </div>
+                    ) : allUsers.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        No users found
+                      </div>
+                    ) : (
+                      allUsers.map((user) => (
+                        <SelectItem 
+                          key={user.user_id} 
+                          value={user.user_id}
+                          className="hover:bg-muted focus:bg-muted cursor-pointer"
+                        >
+                          {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-banner-title">Banner Title</Label>
+                <Input
+                  id="edit-banner-title"
+                  value={bannerFormData.title}
+                  onChange={(e) => setBannerFormData({...bannerFormData, title: e.target.value})}
+                  placeholder="Enter banner title..."
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="edit-banner-message">Banner Message</Label>
+                <Textarea
+                  id="edit-banner-message"
+                  value={bannerFormData.message}
+                  onChange={(e) => setBannerFormData({...bannerFormData, message: e.target.value})}
+                  placeholder="Enter banner message..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-banner-type">Banner Type</Label>
+                  <Select value={bannerFormData.bannerType} onValueChange={(value) => setBannerFormData({...bannerFormData, bannerType: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="info">Info</SelectItem>
+                      <SelectItem value="success">Success</SelectItem>
+                      <SelectItem value="warning">Warning</SelectItem>
+                      <SelectItem value="error">Error</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-banner-priority">Priority</Label>
+                  <Input
+                    id="edit-banner-priority"
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={bannerFormData.priority}
+                    onChange={(e) => setBannerFormData({...bannerFormData, priority: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-banner-expires">Expires At (Optional)</Label>
+                <Input
+                  id="edit-banner-expires"
+                  type="datetime-local"
+                  value={bannerFormData.expiresAt}
+                  onChange={(e) => setBannerFormData({...bannerFormData, expiresAt: e.target.value})}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditBannerDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleUpdateBanner} 
+                  disabled={!bannerFormData.userId || !bannerFormData.title || !bannerFormData.message}
+                >
+                  Update Banner
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
