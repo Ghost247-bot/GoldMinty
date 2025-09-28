@@ -13,10 +13,12 @@ import {
   Play,
   Calendar
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Resources = () => {
+  const navigate = useNavigate();
   const educationalResources = [
     {
       title: "Precious Metals Investment Guide",
@@ -154,7 +156,7 @@ const Resources = () => {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">{resource.readTime}</span>
-                    <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => navigate("/blog")}>
                       <BookOpen className="w-4 h-4 mr-2" />
                       Read Guide
                     </Button>
@@ -186,7 +188,7 @@ const Resources = () => {
                         <Video className="w-4 h-4" />
                         {video.duration}
                       </span>
-                      <Button size="sm">
+                      <Button size="sm" onClick={() => navigate("/blog")}>
                         <Play className="w-4 h-4 mr-2" />
                         Watch
                       </Button>
@@ -210,7 +212,10 @@ const Resources = () => {
                   <CardDescription>{tool.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="gold" className="w-full">
+                  <Button variant="gold" className="w-full" onClick={() => {
+                    navigate("/contact");
+                    // In a real app, this would open a calculator tool
+                  }}>
                     {tool.action}
                   </Button>
                 </CardContent>
@@ -223,7 +228,7 @@ const Resources = () => {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold">Market Reports</h2>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => navigate("/blog")}>
               <Calendar className="w-4 h-4 mr-2" />
               View All Reports
             </Button>
@@ -248,7 +253,10 @@ const Resources = () => {
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => {
+                      // In a real app, this would trigger a download
+                      window.open('/api/reports/' + report.title.toLowerCase().replace(/\s+/g, '-') + '.pdf', '_blank');
+                    }}>
                       <Download className="w-4 h-4 mr-2" />
                       Download
                     </Button>
@@ -271,9 +279,9 @@ const Resources = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => navigate("/blog")}>
                   <ExternalLink className="w-4 h-4 mr-2" />
-                  Visit News Center
+                  Visit Blog
                 </Button>
               </CardContent>
             </Card>
@@ -286,7 +294,7 @@ const Resources = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => navigate("/help-center")}>
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Join Community
                 </Button>

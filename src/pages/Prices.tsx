@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Download, Search, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Prices = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -210,7 +212,28 @@ const Prices = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => navigate(`/product/${item.id}`, { 
+                            state: { 
+                              product: {
+                                id: item.id,
+                                name: item.name,
+                                price: item.buyPrice,
+                                weight: item.weight,
+                                mint: item.mint,
+                                metal: item.category,
+                                image: "/api/placeholder/300/300",
+                                inStock: true,
+                                rating: 4.8,
+                                reviews: 245,
+                                description: `High-quality ${item.category} from ${item.mint}`,
+                                purity: "Investment grade"
+                              }
+                            }
+                          })}
+                        >
                           Buy Now
                         </Button>
                       </TableCell>

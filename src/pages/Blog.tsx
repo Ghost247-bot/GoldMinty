@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Search, Calendar, User, Clock, TrendingUp, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Blog = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -184,7 +186,10 @@ const Blog = () => {
                     </div>
                   </div>
                 </div>
-                <Button variant="gold">
+                <Button variant="gold" onClick={() => {
+                  // In a real app, this would navigate to the full article
+                  navigate(`/blog/2025-precious-metals-outlook`);
+                }}>
                   Read Full Article
                 </Button>
               </div>
@@ -204,7 +209,14 @@ const Blog = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card 
+                key={index} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => {
+                  // In a real app, this would navigate to the full article
+                  navigate(`/blog/${post.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`);
+                }}
+              >
                 <div className="aspect-video bg-muted flex items-center justify-center">
                   <BookOpen className="w-8 h-8 text-muted-foreground" />
                 </div>
@@ -264,15 +276,24 @@ const Blog = () => {
             <p className="text-lg mb-6 opacity-90">
               Subscribe to our newsletter for weekly market insights and investment analysis
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-              <Input 
-                placeholder="Enter your email" 
-                className="bg-white text-navy-deep"
-              />
-              <Button variant="gold" className="whitespace-nowrap">
-                Subscribe Now
-              </Button>
-            </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <Input 
+                  placeholder="Enter your email" 
+                  className="bg-white text-navy-deep"
+                />
+                <Button 
+                  variant="gold" 
+                  className="whitespace-nowrap"
+                  onClick={() => {
+                    toast({
+                      title: "Subscribed!",
+                      description: "You've been subscribed to our newsletter.",
+                    });
+                  }}
+                >
+                  Subscribe Now
+                </Button>
+              </div>
           </CardContent>
         </Card>
       </div>

@@ -101,19 +101,31 @@ const ProductCategories = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
+            <div 
+              className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300 cursor-pointer"
+              onClick={() => navigate("/product/1")}
+            >
               <div className="font-semibold text-primary">1 oz Gold Eagle</div>
               <div className="text-gold font-bold">$2,089.50</div>
             </div>
-            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
+            <div 
+              className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300 cursor-pointer"
+              onClick={() => navigate("/product/2")}
+            >
               <div className="font-semibold text-primary">1 oz Silver Eagle</div>
               <div className="text-gold font-bold">$48.75</div>
             </div>
-            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
+            <div 
+              className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300 cursor-pointer"
+              onClick={() => navigate("/product/4")}
+            >
               <div className="font-semibold text-primary">1 oz Platinum Eagle</div>
               <div className="text-gold font-bold">$1,650.00</div>
             </div>
-            <div className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300">
+            <div 
+              className="p-4 bg-muted rounded-lg hover-scale transition-all duration-300 cursor-pointer"
+              onClick={() => navigate("/product/3")}
+            >
               <div className="font-semibold text-primary">1/10 oz Gold Maple</div>
               <div className="text-gold font-bold">$215.30</div>
             </div>

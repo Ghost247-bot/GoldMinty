@@ -167,7 +167,18 @@ const HelpCenter = () => {
                     <Clock className="w-4 h-4" />
                     {option.availability}
                   </div>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={() => {
+                    if (option.title === "Live Chat") {
+                      // In a real app, this would open a chat widget
+                      window.open("https://tawk.to/chat", "_blank");
+                    } else if (option.title === "Phone Support") {
+                      window.open("tel:+41225189211", "_self");
+                    } else if (option.title === "Email Support") {
+                      window.open("mailto:support@goldavenue.com", "_self");
+                    } else {
+                      navigate("/contact");
+                    }
+                  }}>
                     {option.action}
                   </Button>
                 </div>
@@ -180,8 +191,15 @@ const HelpCenter = () => {
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-center mb-8">Browse by Category</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {faqCategories.map((category) => (
-              <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+          {faqCategories.map((category) => (
+              <Card 
+                key={category.id} 
+                className="hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => {
+                  // In a real app, this would filter FAQs by category
+                  setSearchQuery(category.title.toLowerCase());
+                }}
+              >
                 <CardHeader className="text-center">
                   <category.icon className="w-10 h-10 text-primary mx-auto mb-3" />
                   <CardTitle className="text-lg">{category.title}</CardTitle>

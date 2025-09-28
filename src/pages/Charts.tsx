@@ -4,10 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, BarChart3, LineChart, Activity } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Charts = () => {
+  const navigate = useNavigate();
   const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
 
   const metalData = [
@@ -70,7 +72,14 @@ const Charts = () => {
         {/* Market Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {metalData.map((metal) => (
-            <Card key={metal.symbol} className="hover:shadow-lg transition-shadow">
+            <Card 
+              key={metal.symbol} 
+              className="hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => {
+                // In a real app, this would show detailed chart for this metal
+                navigate(`/charts?metal=${metal.symbol.toLowerCase()}`);
+              }}
+            >
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{metal.metal}</CardTitle>
@@ -143,7 +152,12 @@ const Charts = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-96 bg-muted rounded-lg flex items-center justify-center">
+                  <div className="h-96 bg-muted rounded-lg flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
+                    onClick={() => {
+                      // In a real app, this would open a full-screen chart
+                      navigate(`/charts?metal=${metal.metal.toLowerCase()}&timeframe=${selectedTimeframe}`);
+                    }}
+                  >
                     <div className="text-center">
                       <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                       <p className="text-lg font-medium text-muted-foreground">

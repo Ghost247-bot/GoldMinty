@@ -34,35 +34,35 @@ const Footer = () => {
   const companyLinks = [
     { label: "About Us", href: "/about" },
     { label: "Our Story", href: "/about" },
-    { label: "Careers", href: "/contact" },
-    { label: "Press", href: "/contact" },
-    { label: "Blog", href: "/resources" },
+    { label: "Careers", href: "/careers" },
+    { label: "Press", href: "/press" },
+    { label: "Blog", href: "/blog" },
     { label: "Investors", href: "/contact" },
   ];
 
   const supportLinks = [
-    { label: "Help Center", href: "/contact" },
+    { label: "Help Center", href: "/help-center" },
     { label: "Contact Us", href: "/contact" },
-    { label: "Shipping Info", href: "/resources" },
-    { label: "Returns", href: "/resources" },
+    { label: "Shipping Info", href: "/shipping" },
+    { label: "Returns", href: "/returns" },
     { label: "Track Order", href: "/contact" },
-    { label: "FAQ", href: "/resources" },
+    { label: "FAQ", href: "/help-center" },
   ];
 
   const legalLinks = [
-    { label: "Privacy Policy", href: "/resources" },
-    { label: "Terms of Service", href: "/resources" },
-    { label: "Cookie Policy", href: "/resources" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms-of-service" },
+    { label: "Cookie Policy", href: "/cookie-policy" },
     { label: "Compliance", href: "/about" },
     { label: "Security", href: "/about" },
-    { label: "Legal Notice", href: "/resources" },
+    { label: "Legal Notice", href: "/legal-notice" },
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Facebook, href: "https://facebook.com/goldavenue", label: "Facebook" },
+    { icon: Twitter, href: "https://twitter.com/goldavenue", label: "Twitter" },
+    { icon: Instagram, href: "https://instagram.com/goldavenue", label: "Instagram" },
+    { icon: Linkedin, href: "https://linkedin.com/company/goldavenue", label: "LinkedIn" },
   ];
 
   return (
