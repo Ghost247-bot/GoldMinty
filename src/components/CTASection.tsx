@@ -64,7 +64,12 @@ const CTASection = () => {
           {/* Contact Info */}
           <div className="mt-12 pt-8 border-t border-white/20">
             <p className="text-white/80 mb-2">Questions? Contact our experts</p>
-            <p className="text-gold font-semibold text-lg">+41 22 518 92 11</p>
+            <p 
+              className="text-gold font-semibold text-lg cursor-pointer hover:text-gold/80 transition-colors"
+              onClick={() => window.open("tel:+41225189211", "_self")}
+            >
+              +41 22 518 92 11
+            </p>
           </div>
         </div>
       </div>

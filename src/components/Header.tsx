@@ -1,6 +1,7 @@
-import { Search, Phone, Globe, ShoppingCart, User } from "lucide-react";
+import { Search, Phone, Globe, ShoppingCart, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
@@ -9,6 +10,14 @@ const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [cartCount, setCartCount] = useState(3);
+  const [selectedLanguage, setSelectedLanguage] = useState("EN");
+
+  const languages = [
+    { code: "EN", name: "English" },
+    { code: "FR", name: "Français" },
+    { code: "DE", name: "Deutsch" },
+    { code: "IT", name: "Italiano" }
+  ];
 
   const navigationItems = [
     { label: "🔥 Deals", href: "/products?category=deals" },
@@ -37,24 +46,59 @@ const Header = () => {
     navigate("/");
   };
 
+  const handlePhoneClick = () => {
+    window.open("tel:+41225189211", "_self");
+  };
+
+  const handleHelpClick = () => {
+    navigate("/help-center");
+  };
+
+  const handleLanguageChange = (langCode: string) => {
+    setSelectedLanguage(langCode);
+    // Here you would typically update the app's language context
+  };
+
   return (
     <header className="bg-background border-b border-border">
       <div className="container mx-auto px-4">
         {/* Top bar */}
         <div className="flex items-center justify-between py-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            <div 
+              className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors"
+              onClick={handlePhoneClick}
+            >
               <Phone className="w-4 h-4" />
               <span>+41 22 518 92 11</span>
             </div>
             <span>|</span>
-            <span>Need help?</span>
+            <span 
+              className="cursor-pointer hover:text-gold transition-colors"
+              onClick={handleHelpClick}
+            >
+              Need help?
+            </span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4" />
-              <span>EN</span>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+                <Globe className="w-4 h-4" />
+                <span>{selectedLanguage}</span>
+                <ChevronDown className="w-3 h-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {languages.map((lang) => (
+                  <DropdownMenuItem 
+                    key={lang.code}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className="cursor-pointer"
+                  >
+                    {lang.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <span>$ USD</span>
             <Button 
               variant="outline" 
