@@ -18,6 +18,7 @@ export default function AdminDashboard() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const [users, setUsers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]); // All users for dropdowns
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -47,6 +48,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchUsers();
+    fetchAllUsers();
     fetchStats();
     fetchInvestmentAccounts();
     fetchUserBanners();
@@ -63,6 +65,21 @@ export default function AdminDashboard() {
     
     if (data) {
       setUsers(data);
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    // Fetch all users with their auth data for dropdowns
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(`
+        *,
+        user_roles(role)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setAllUsers(data);
     }
   };
 
@@ -385,9 +402,9 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="Select a user" />
                             </SelectTrigger>
                             <SelectContent>
-                              {users.map((user) => (
+                              {allUsers.map((user) => (
                                 <SelectItem key={user.user_id} value={user.user_id}>
-                                  {user.full_name || 'Unknown'} ({user.user_id})
+                                  {user.full_name || 'Unknown User'} - {user.user_id.slice(0, 8)}...
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -554,9 +571,9 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="Select a user" />
                             </SelectTrigger>
                             <SelectContent>
-                              {users.map((user) => (
+                              {allUsers.map((user) => (
                                 <SelectItem key={user.user_id} value={user.user_id}>
-                                  {user.full_name || 'Unknown'} ({user.user_id})
+                                  {user.full_name || 'Unknown User'} - {user.user_id.slice(0, 8)}...
                                 </SelectItem>
                               ))}
                             </SelectContent>
