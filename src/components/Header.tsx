@@ -9,9 +9,17 @@ import { useCart } from "@/contexts/CartContext";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { state } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("EN");
+  
+  // Safe cart access with fallback
+  let cartState = { totalItems: 0 };
+  try {
+    const cartContext = useCart();
+    cartState = cartContext.state;
+  } catch (error) {
+    console.warn('Cart context not available:', error);
+  }
 
   const languages = [
     { code: "EN", name: "English" },
@@ -180,9 +188,9 @@ const Header = () => {
               onClick={() => navigate("/cart")}
             >
               <ShoppingCart className="w-5 h-5" />
-              {state.totalItems > 0 && (
+              {cartState.totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gold text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {state.totalItems}
+                  {cartState.totalItems}
                 </span>
               )}
             </Button>

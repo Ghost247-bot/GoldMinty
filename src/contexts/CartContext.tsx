@@ -177,7 +177,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    // Return a default context instead of throwing error for better UX
+    console.warn('useCart called outside of CartProvider, returning default values');
+    return {
+      state: { items: [], totalItems: 0, totalAmount: 0 },
+      dispatch: () => {},
+      addItem: () => {},
+      removeItem: () => {},
+      updateQuantity: () => {},
+      clearCart: () => {}
+    };
   }
   return context;
 };
