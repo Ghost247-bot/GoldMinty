@@ -101,12 +101,16 @@ export default function AdminDashboard() {
       .from('investment_accounts')
       .select(`
         *,
-        profiles!inner(full_name, user_id)
+        profiles(full_name, user_id)
       `)
       .order('created_at', { ascending: false });
     
+    console.log('Investment accounts fetch result:', data, 'Error:', error);
+    
     if (data) {
       setInvestmentAccounts(data);
+    } else if (error) {
+      console.error('Error fetching investment accounts:', error);
     }
   };
 
@@ -651,7 +655,7 @@ export default function AdminDashboard() {
                           {account.account_number}
                         </TableCell>
                         <TableCell>
-                          {account.profiles.full_name || 'Unknown'}
+                          {account.profiles?.full_name || 'Unknown User'}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
