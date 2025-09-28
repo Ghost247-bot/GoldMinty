@@ -120,9 +120,9 @@ const Contact = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-primary mb-4">Contact Us</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Contact Us</h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Get in touch with our precious metals experts. We're here to help you make informed investment decisions.
           </p>
         </div>
@@ -142,7 +142,7 @@ const Contact = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
                     <Input

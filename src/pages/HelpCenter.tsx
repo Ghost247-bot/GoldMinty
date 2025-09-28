@@ -129,10 +129,10 @@ const HelpCenter = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="text-center mb-12">
-          <HelpCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-primary mb-4">Help Center</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <div className="text-center mb-8 md:mb-12">
+          <HelpCircle className="w-12 md:w-16 h-12 md:h-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Help Center</h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Find answers to common questions, get support, and learn more about precious metals investing
           </p>
         </div>

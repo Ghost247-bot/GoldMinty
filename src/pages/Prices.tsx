@@ -63,21 +63,22 @@ const Prices = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-primary mb-2">Price List</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Price List</h1>
             <p className="text-muted-foreground">
               Current buy and sell prices for all precious metals products
             </p>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={refreshPrices}>
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+            <Button variant="outline" onClick={refreshPrices} size="sm" className="w-full sm:w-auto">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button variant="gold" onClick={downloadPriceList}>
+            <Button variant="gold" onClick={downloadPriceList} size="sm" className="w-full sm:w-auto">
               <Download className="w-4 h-4 mr-2" />
-              Download PDF
+              <span className="hidden sm:inline">Download PDF</span>
+              <span className="sm:hidden">Download</span>
             </Button>
           </div>
         </div>

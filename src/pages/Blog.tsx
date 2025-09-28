@@ -112,10 +112,10 @@ const Blog = () => {
         </Button>
 
         {/* Page Header */}
-        <div className="text-center mb-12">
-          <BookOpen className="w-16 h-16 text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-primary mb-4">Gold Avenue Blog</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <div className="text-center mb-8 md:mb-12">
+          <BookOpen className="w-12 md:w-16 h-12 md:h-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Gold Avenue Blog</h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Insights, analysis, and expert commentary on precious metals markets, investment strategies, 
             and industry trends from our team of specialists.
           </p>
@@ -135,16 +135,18 @@ const Blog = () => {
             </div>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3 px-4">
             {categories.map((category) => (
               <Button
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}
                 onClick={() => setSelectedCategory(category.id)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 md:gap-2 text-sm md:text-base"
+                size="sm"
               >
-                {category.name}
-                <Badge variant="secondary" className="ml-1">
+                <span className="hidden sm:inline">{category.name}</span>
+                <span className="sm:hidden">{category.name.split(' ')[0]}</span>
+                <Badge variant="secondary" className="ml-1 text-xs">
                   {category.count}
                 </Badge>
               </Button>

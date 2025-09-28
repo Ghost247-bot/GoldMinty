@@ -116,15 +116,15 @@ const Cart = () => {
             {state.items.map((item) => (
               <Card key={item.id}>
                 <CardContent className="p-6">
-                  <div className="flex gap-4">
+                 <div className="flex flex-col sm:flex-row gap-4">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-20 h-20 object-cover rounded-lg"
+                      className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded-lg"
                     />
                     
-                    <div className="flex-1 space-y-2">
-                      <div className="flex justify-between items-start">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                         <div>
                           <h3 className="font-semibold text-lg">{item.name}</h3>
                           <div className="flex gap-2 mt-1">
@@ -136,14 +136,14 @@ const Cart = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleRemoveItem(item.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 self-start"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                       
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        <div className="flex items-center gap-3 justify-center sm:justify-start">
                           <Button
                             variant="outline"
                             size="sm"
@@ -161,7 +161,7 @@ const Cart = () => {
                           </Button>
                         </div>
                         
-                        <div className="text-right">
+                        <div className="text-center sm:text-right">
                           <p className="text-lg font-bold text-gold">
                             ${(item.price * item.quantity).toFixed(2)}
                           </p>

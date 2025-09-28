@@ -66,13 +66,13 @@ const About = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <section className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-primary mb-6">About Gold Avenue</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+        <section className="text-center mb-12 md:mb-16">
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4 md:mb-6">About Gold Avenue</h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 md:mb-8 px-4">
             For over 25 years, Gold Avenue has been a trusted partner for precious metals investment, 
             offering secure storage, transparent pricing, and expert guidance to investors worldwide.
           </p>
-          <Button variant="gold" size="lg">
+          <Button variant="gold" size="lg" className="w-full sm:w-auto">
             Start Your Investment Journey
           </Button>
         </section>
@@ -140,20 +140,20 @@ const About = () => {
         </section>
 
         {/* Timeline */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Journey</h2>
+        <section className="mb-12 md:mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">Our Journey</h2>
           <div className="max-w-4xl mx-auto">
-            <div className="space-y-8">
+            <div className="space-y-6 md:space-y-8">
               {milestones.map((milestone, index) => (
-                <div key={index} className="flex items-center gap-8">
+                <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
                   <div className="flex-shrink-0">
-                    <Badge variant="outline" className="text-lg px-4 py-2">
+                    <Badge variant="outline" className="text-base md:text-lg px-3 md:px-4 py-1 md:py-2">
                       {milestone.year}
                     </Badge>
                   </div>
                   <Card className="flex-1">
                     <CardContent className="p-4">
-                      <p className="text-muted-foreground">{milestone.event}</p>
+                      <p className="text-muted-foreground text-sm md:text-base">{milestone.event}</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -188,16 +188,16 @@ const About = () => {
         {/* CTA Section */}
         <section className="text-center">
           <Card className="bg-gradient-to-r from-navy-deep to-navy-light text-white">
-            <CardContent className="p-12">
-              <h2 className="text-3xl font-bold mb-4">Ready to Start Investing?</h2>
-              <p className="text-xl mb-8 opacity-90">
+            <CardContent className="p-6 md:p-12">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Start Investing?</h2>
+              <p className="text-lg md:text-xl mb-6 md:mb-8 opacity-90">
                 Join thousands of investors who trust Gold Avenue with their precious metals portfolio
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="gold" size="lg">
+                <Button variant="gold" size="lg" className="w-full sm:w-auto">
                   Open Account
                 </Button>
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-navy-deep">
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-navy-deep w-full sm:w-auto">
                   Contact Us
                 </Button>
               </div>

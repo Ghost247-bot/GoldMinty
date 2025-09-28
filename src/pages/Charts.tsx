@@ -60,8 +60,8 @@ const Charts = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">Live Market Charts</h1>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Live Market Charts</h1>
           <p className="text-muted-foreground">
             Real-time precious metals pricing and market analysis
           </p>
@@ -127,13 +127,14 @@ const Charts = () => {
                         Interactive price chart with technical indicators
                       </CardDescription>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-1 md:gap-2">
                       {timeframes.map((timeframe) => (
                         <Button
                           key={timeframe}
                           variant={selectedTimeframe === timeframe ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedTimeframe(timeframe)}
+                          className="text-xs md:text-sm"
                         >
                           {timeframe}
                         </Button>
