@@ -9,14 +9,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Shield, Database, Activity, Wallet, Plus } from 'lucide-react';
+import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [users, setUsers] = useState<any[]>([]);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
+  const [userBanners, setUserBanners] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     userId: '',
     accountType: 'standard',
@@ -25,6 +30,14 @@ export default function AdminDashboard() {
     silverHoldings: '0.0000',
     platinumHoldings: '0.0000',
     notes: ''
+  });
+  const [bannerFormData, setBannerFormData] = useState({
+    userId: '',
+    title: '',
+    message: '',
+    bannerType: 'info',
+    priority: '1',
+    expiresAt: ''
   });
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -36,6 +49,7 @@ export default function AdminDashboard() {
     fetchUsers();
     fetchStats();
     fetchInvestmentAccounts();
+    fetchUserBanners();
   }, []);
 
   const fetchUsers = async () => {
@@ -129,6 +143,87 @@ export default function AdminDashboard() {
         notes: ''
       });
       fetchInvestmentAccounts();
+      toast({
+        title: "Success",
+        description: "Investment account created successfully"
+      });
+    }
+  };
+
+  const fetchUserBanners = async () => {
+    const { data, error } = await supabase
+      .from('user_banners')
+      .select(`
+        *,
+        profiles!inner(full_name, user_id)
+      `)
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setUserBanners(data);
+    }
+  };
+
+  const handleCreateBanner = async () => {
+    if (!bannerFormData.userId || !bannerFormData.title || !bannerFormData.message || !user?.id) return;
+
+    const { error } = await supabase
+      .from('user_banners')
+      .insert({
+        user_id: bannerFormData.userId,
+        title: bannerFormData.title,
+        message: bannerFormData.message,
+        banner_type: bannerFormData.bannerType,
+        priority: parseInt(bannerFormData.priority),
+        expires_at: bannerFormData.expiresAt ? new Date(bannerFormData.expiresAt).toISOString() : null,
+        created_by: user.id
+      });
+
+    if (!error) {
+      setIsBannerDialogOpen(false);
+      setBannerFormData({
+        userId: '',
+        title: '',
+        message: '',
+        bannerType: 'info',
+        priority: '1',
+        expiresAt: ''
+      });
+      fetchUserBanners();
+      toast({
+        title: "Success",
+        description: "Banner created successfully"
+      });
+    }
+  };
+
+  const handleToggleBanner = async (bannerId: string, isActive: boolean) => {
+    const { error } = await supabase
+      .from('user_banners')
+      .update({ is_active: !isActive })
+      .eq('id', bannerId);
+
+    if (!error) {
+      fetchUserBanners();
+      toast({
+        title: "Success",
+        description: `Banner ${isActive ? 'deactivated' : 'activated'} successfully`
+      });
+    }
+  };
+
+  const handleDeleteBanner = async (bannerId: string) => {
+    const { error } = await supabase
+      .from('user_banners')
+      .delete()
+      .eq('id', bannerId);
+
+    if (!error) {
+      fetchUserBanners();
+      toast({
+        title: "Success",
+        description: "Banner deleted successfully"
+      });
     }
   };
 
@@ -208,221 +303,405 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>User Management</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">
-                      {user.full_name || 'Unknown'}
-                    </TableCell>
-                    <TableCell>{user.user_id}</TableCell>
-                    <TableCell>
-                      <Badge variant={user.user_roles.role === 'admin' ? 'destructive' : 'secondary'}>
-                        {user.user_roles.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => toggleUserRole(user.user_id, user.user_roles.role)}
-                      >
-                        {user.user_roles.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        {/* Investment Accounts Management */}
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Wallet className="h-5 w-5" />
-                  Investment Accounts Management
-                </CardTitle>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Investment Account
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                      <DialogTitle>Create Investment Account</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="user-select">Select User</Label>
-                        <Select value={formData.userId} onValueChange={(value) => setFormData({...formData, userId: value})}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a user" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {users.map((user) => (
-                              <SelectItem key={user.user_id} value={user.user_id}>
-                                {user.full_name || 'Unknown'} ({user.user_id})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="account-type">Account Type</Label>
-                        <Select value={formData.accountType} onValueChange={(value) => setFormData({...formData, accountType: value})}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="standard">Standard</SelectItem>
-                            <SelectItem value="premium">Premium</SelectItem>
-                            <SelectItem value="gold">Gold</SelectItem>
-                            <SelectItem value="platinum">Platinum</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="balance">Initial Balance ($)</Label>
-                          <Input
-                            id="balance"
-                            type="number"
-                            step="0.01"
-                            value={formData.balance}
-                            onChange={(e) => setFormData({...formData, balance: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="gold">Gold Holdings (oz)</Label>
-                          <Input
-                            id="gold"
-                            type="number"
-                            step="0.0001"
-                            value={formData.goldHoldings}
-                            onChange={(e) => setFormData({...formData, goldHoldings: e.target.value})}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="silver">Silver Holdings (oz)</Label>
-                          <Input
-                            id="silver"
-                            type="number"
-                            step="0.0001"
-                            value={formData.silverHoldings}
-                            onChange={(e) => setFormData({...formData, silverHoldings: e.target.value})}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="platinum">Platinum Holdings (oz)</Label>
-                          <Input
-                            id="platinum"
-                            type="number"
-                            step="0.0001"
-                            value={formData.platinumHoldings}
-                            onChange={(e) => setFormData({...formData, platinumHoldings: e.target.value})}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label htmlFor="notes">Notes (Optional)</Label>
-                        <Textarea
-                          id="notes"
-                          value={formData.notes}
-                          onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                          placeholder="Any additional notes about this account..."
-                        />
-                      </div>
-
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                          Cancel
-                        </Button>
-                        <Button onClick={handleCreateInvestmentAccount} disabled={!formData.userId}>
-                          Create Account
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Account Number</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Holdings</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {investmentAccounts.map((account) => (
-                    <TableRow key={account.id}>
-                      <TableCell className="font-mono text-sm">
-                        {account.account_number}
-                      </TableCell>
-                      <TableCell>
-                        {account.profiles.full_name || 'Unknown'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {account.account_type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>${Number(account.balance).toFixed(2)}</TableCell>
-                      <TableCell className="text-xs">
-                        <div>G: {Number(account.gold_holdings).toFixed(4)}oz</div>
-                        <div>S: {Number(account.silver_holdings).toFixed(4)}oz</div>
-                        <div>P: {Number(account.platinum_holdings).toFixed(4)}oz</div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={account.status === 'active' ? 'default' : 'secondary'}>
-                          {account.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(account.created_at).toLocaleDateString()}
-                      </TableCell>
+        <Tabs defaultValue="users" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="accounts">Investment Accounts</TabsTrigger>
+            <TabsTrigger value="banners">User Banners</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="users">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Joined</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium">
+                          {user.full_name || 'Unknown'}
+                        </TableCell>
+                        <TableCell>{user.user_id}</TableCell>
+                        <TableCell>
+                          <Badge variant={user.user_roles.role === 'admin' ? 'destructive' : 'secondary'}>
+                            {user.user_roles.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(user.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleUserRole(user.user_id, user.user_roles.role)}
+                          >
+                            {user.user_roles.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="accounts">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Wallet className="h-5 w-5" />
+                    Investment Accounts Management
+                  </CardTitle>
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Investment Account
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create Investment Account</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="user-select">Select User</Label>
+                          <Select value={formData.userId} onValueChange={(value) => setFormData({...formData, userId: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a user" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {users.map((user) => (
+                                <SelectItem key={user.user_id} value={user.user_id}>
+                                  {user.full_name || 'Unknown'} ({user.user_id})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="account-type">Account Type</Label>
+                          <Select value={formData.accountType} onValueChange={(value) => setFormData({...formData, accountType: value})}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="standard">Standard</SelectItem>
+                              <SelectItem value="premium">Premium</SelectItem>
+                              <SelectItem value="gold">Gold</SelectItem>
+                              <SelectItem value="platinum">Platinum</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="balance">Initial Balance ($)</Label>
+                            <Input
+                              id="balance"
+                              type="number"
+                              step="0.01"
+                              value={formData.balance}
+                              onChange={(e) => setFormData({...formData, balance: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="gold">Gold Holdings (oz)</Label>
+                            <Input
+                              id="gold"
+                              type="number"
+                              step="0.0001"
+                              value={formData.goldHoldings}
+                              onChange={(e) => setFormData({...formData, goldHoldings: e.target.value})}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="silver">Silver Holdings (oz)</Label>
+                            <Input
+                              id="silver"
+                              type="number"
+                              step="0.0001"
+                              value={formData.silverHoldings}
+                              onChange={(e) => setFormData({...formData, silverHoldings: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="platinum">Platinum Holdings (oz)</Label>
+                            <Input
+                              id="platinum"
+                              type="number"
+                              step="0.0001"
+                              value={formData.platinumHoldings}
+                              onChange={(e) => setFormData({...formData, platinumHoldings: e.target.value})}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="notes">Notes (Optional)</Label>
+                          <Textarea
+                            id="notes"
+                            value={formData.notes}
+                            onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                            placeholder="Any additional notes about this account..."
+                          />
+                        </div>
+
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button onClick={handleCreateInvestmentAccount} disabled={!formData.userId}>
+                            Create Account
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Account Number</TableHead>
+                      <TableHead>User</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Balance</TableHead>
+                      <TableHead>Holdings</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {investmentAccounts.map((account) => (
+                      <TableRow key={account.id}>
+                        <TableCell className="font-mono text-sm">
+                          {account.account_number}
+                        </TableCell>
+                        <TableCell>
+                          {account.profiles.full_name || 'Unknown'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {account.account_type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>${Number(account.balance).toFixed(2)}</TableCell>
+                        <TableCell className="text-xs">
+                          <div>G: {Number(account.gold_holdings).toFixed(4)}oz</div>
+                          <div>S: {Number(account.silver_holdings).toFixed(4)}oz</div>
+                          <div>P: {Number(account.platinum_holdings).toFixed(4)}oz</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={account.status === 'active' ? 'default' : 'secondary'}>
+                            {account.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(account.created_at).toLocaleDateString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="banners">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5" />
+                    User Banner Management
+                  </CardTitle>
+                  <Dialog open={isBannerDialogOpen} onOpenChange={setIsBannerDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Banner
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create User Banner</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="banner-user-select">Select User</Label>
+                          <Select value={bannerFormData.userId} onValueChange={(value) => setBannerFormData({...bannerFormData, userId: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a user" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {users.map((user) => (
+                                <SelectItem key={user.user_id} value={user.user_id}>
+                                  {user.full_name || 'Unknown'} ({user.user_id})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="banner-title">Banner Title</Label>
+                          <Input
+                            id="banner-title"
+                            value={bannerFormData.title}
+                            onChange={(e) => setBannerFormData({...bannerFormData, title: e.target.value})}
+                            placeholder="Enter banner title..."
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="banner-message">Banner Message</Label>
+                          <Textarea
+                            id="banner-message"
+                            value={bannerFormData.message}
+                            onChange={(e) => setBannerFormData({...bannerFormData, message: e.target.value})}
+                            placeholder="Enter banner message..."
+                            rows={3}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="banner-type">Banner Type</Label>
+                            <Select value={bannerFormData.bannerType} onValueChange={(value) => setBannerFormData({...bannerFormData, bannerType: value})}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="info">Info</SelectItem>
+                                <SelectItem value="success">Success</SelectItem>
+                                <SelectItem value="warning">Warning</SelectItem>
+                                <SelectItem value="error">Error</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="banner-priority">Priority</Label>
+                            <Input
+                              id="banner-priority"
+                              type="number"
+                              min="1"
+                              max="10"
+                              value={bannerFormData.priority}
+                              onChange={(e) => setBannerFormData({...bannerFormData, priority: e.target.value})}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="banner-expires">Expires At (Optional)</Label>
+                          <Input
+                            id="banner-expires"
+                            type="datetime-local"
+                            value={bannerFormData.expiresAt}
+                            onChange={(e) => setBannerFormData({...bannerFormData, expiresAt: e.target.value})}
+                          />
+                        </div>
+
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setIsBannerDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={handleCreateBanner} 
+                            disabled={!bannerFormData.userId || !bannerFormData.title || !bannerFormData.message}
+                          >
+                            Create Banner
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Priority</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Expires</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {userBanners.map((banner) => (
+                      <TableRow key={banner.id}>
+                        <TableCell>
+                          {banner.profiles.full_name || 'Unknown'}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {banner.title}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            banner.banner_type === 'error' ? 'destructive' :
+                            banner.banner_type === 'warning' ? 'secondary' :
+                            banner.banner_type === 'success' ? 'default' : 'outline'
+                          }>
+                            {banner.banner_type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{banner.priority}</TableCell>
+                        <TableCell>
+                          <Badge variant={banner.is_active ? 'default' : 'secondary'}>
+                            {banner.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {banner.expires_at ? new Date(banner.expires_at).toLocaleDateString() : 'Never'}
+                        </TableCell>
+                        <TableCell className="space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleBanner(banner.id, banner.is_active)}
+                          >
+                            {banner.is_active ? 'Deactivate' : 'Activate'}
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteBanner(banner.id)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

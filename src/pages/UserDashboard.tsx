@@ -10,11 +10,13 @@ export default function UserDashboard() {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
+  const [userBanners, setUserBanners] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) {
       fetchProfile();
       fetchInvestmentAccounts();
+      fetchUserBanners();
     }
   }, [user]);
 
@@ -45,6 +47,21 @@ export default function UserDashboard() {
     }
   };
 
+  const fetchUserBanners = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('user_banners')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('priority', { ascending: false });
+    
+    if (data) {
+      setUserBanners(data);
+    }
+  };
+
   const totalBalance = investmentAccounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
   const totalGoldHoldings = investmentAccounts.reduce((sum, acc) => sum + Number(acc.gold_holdings), 0);
   const totalSilverHoldings = investmentAccounts.reduce((sum, acc) => sum + Number(acc.silver_holdings), 0);
@@ -72,6 +89,42 @@ export default function UserDashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* User Banners */}
+        {userBanners.length > 0 && (
+          <div className="space-y-4 mb-8">
+            {userBanners.map((banner) => (
+              <div
+                key={banner.id}
+                className={`p-4 rounded-lg border-l-4 ${
+                  banner.banner_type === 'error'
+                    ? 'bg-red-50 border-red-500 text-red-800'
+                    : banner.banner_type === 'warning'
+                    ? 'bg-yellow-50 border-yellow-500 text-yellow-800'
+                    : banner.banner_type === 'success'
+                    ? 'bg-green-50 border-green-500 text-green-800'
+                    : 'bg-blue-50 border-blue-500 text-blue-800'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-semibold text-lg">{banner.title}</h3>
+                    <p className="mt-1">{banner.message}</p>
+                    {banner.expires_at && (
+                      <p className="mt-2 text-sm opacity-75">
+                        Expires: {new Date(banner.expires_at).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      Priority {banner.priority}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
