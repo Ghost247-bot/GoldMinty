@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { ShoppingCart, Heart, Star, Search, Filter } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface Product {
   id: string;
@@ -161,6 +163,7 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -310,6 +313,7 @@ const Products = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

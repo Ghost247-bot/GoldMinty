@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Play, Download, ShoppingCart, Heart, Star, ArrowRight } from "lucide-react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const ButtonShowcase = () => {
   const variants = [
@@ -22,7 +24,9 @@ const ButtonShowcase = () => {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="p-8">
       <div className="max-w-6xl mx-auto space-y-12">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-foreground mb-4">Button Showcase</h1>
@@ -179,6 +183,8 @@ const ButtonShowcase = () => {
           </div>
         </section>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

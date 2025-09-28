@@ -18,6 +18,8 @@ import {
   Minus
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -88,6 +90,7 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button 
@@ -290,6 +293,7 @@ const ProductDetail = () => {
           </Tabs>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

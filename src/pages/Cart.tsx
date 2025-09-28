@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag, Shield, Truck } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface CartItem {
   id: string;
@@ -112,6 +114,7 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
+        <Header />
         <div className="container mx-auto px-4 py-8">
           <Button 
             variant="ghost" 
@@ -137,12 +140,14 @@ const Cart = () => {
             </Button>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
@@ -306,6 +311,7 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
