@@ -12,10 +12,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen } from 'lucide-react';
+import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
+import { BulkTransactionUpload } from '@/components/BulkTransactionUpload';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
   const [isPerformanceDialogOpen, setIsPerformanceDialogOpen] = useState(false);
   const [isRiskDialogOpen, setIsRiskDialogOpen] = useState(false);
   const [isInsightDialogOpen, setIsInsightDialogOpen] = useState(false);
+  const [isBulkUploadDialogOpen, setIsBulkUploadDialogOpen] = useState(false);
   
   // Editing states
   const [editingAccount, setEditingAccount] = useState<any>(null);
@@ -1526,10 +1528,16 @@ export default function AdminDashboard() {
                       <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                           <span>Transaction Management for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</span>
-                          <Button onClick={() => setIsTransactionDialogOpen(true)}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Transaction
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button onClick={() => setIsBulkUploadDialogOpen(true)} variant="secondary">
+                              <Upload className="h-4 w-4 mr-2" />
+                              Bulk Upload
+                            </Button>
+                            <Button onClick={() => setIsTransactionDialogOpen(true)}>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Transaction
+                            </Button>
+                          </div>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -2539,6 +2547,15 @@ export default function AdminDashboard() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Bulk Transaction Upload Dialog */}
+        <BulkTransactionUpload
+          isOpen={isBulkUploadDialogOpen}
+          onClose={() => setIsBulkUploadDialogOpen(false)}
+          selectedUserId={selectedUserId}
+          onSuccess={fetchUserTransactions}
+          currentUser={user}
+        />
 
         {/* Transaction Dialog */}
         <TransactionDialog
