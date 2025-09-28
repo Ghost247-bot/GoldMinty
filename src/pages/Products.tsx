@@ -343,7 +343,9 @@ const Products = () => {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => navigate(`/product/${product.id}`)}
+                    onClick={() => navigate(`/product/${product.id}`, { 
+                      state: { product } 
+                    })}
                   >
                     View
                   </Button>

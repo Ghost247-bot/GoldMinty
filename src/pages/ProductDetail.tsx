@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,16 +20,54 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { parseGoldProductsCSV } from "@/utils/csvParser";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock product data - in real app, this would come from API
-  const product = {
+  useEffect(() => {
+    // First try to get product from navigation state
+    if (location.state?.product) {
+      setProduct(location.state.product);
+      setLoading(false);
+      return;
+    }
+
+    // If no state, try to load from CSV if it's a CSV product
+    if (id?.startsWith('csv-gold-')) {
+      setLoading(true);
+      parseGoldProductsCSV('/data/gold-products.csv')
+        .then((products) => {
+          const foundProduct = products.find(p => p.id === id);
+          if (foundProduct) {
+            setProduct(foundProduct);
+          } else {
+            // Fallback to mock data
+            setProduct(mockProduct);
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error loading product:', error);
+          setProduct(mockProduct);
+          setLoading(false);
+        });
+    } else {
+      // Use mock data for non-CSV products
+      setProduct(mockProduct);
+      setLoading(false);
+    }
+  }, [id, location.state]);
+
+  // Mock product data - fallback for non-CSV products
+  const mockProduct = {
     id: id,
     name: "1 oz American Gold Eagle",
     price: 2089.50,
@@ -68,10 +106,66 @@ const ProductDetail = () => {
     ]
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">Loading product...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">Product not found</p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => navigate('/products')}
+            >
+              Back to Products
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Ensure product has required properties with fallbacks
+  const displayProduct = {
+    ...product,
+    images: product.images || [product.image || "/api/placeholder/500/500"],
+    stockQuantity: product.stockQuantity || 10,
+    year: product.year || "2024",
+    specifications: product.specifications || {
+      "Metal Content": `${product.weight} ${product.metal}`,
+      "Purity": product.purity,
+      "Mint": product.mint,
+      "Weight": product.weight,
+      "Metal": product.metal.charAt(0).toUpperCase() + product.metal.slice(1)
+    },
+    features: product.features || [
+      "Certified precious metal",
+      "Investment grade quality", 
+      "Secure packaging and delivery",
+      "Buyback guarantee available"
+    ]
+  };
+
   const addToCart = () => {
     toast({
       title: "Added to cart",
-      description: `${quantity} x ${product.name} added to your cart.`,
+      description: `${quantity} x ${displayProduct.name} added to your cart.`,
     });
   };
 
@@ -83,7 +177,7 @@ const ProductDetail = () => {
   };
 
   const updateQuantity = (newQuantity: number) => {
-    if (newQuantity >= 1 && newQuantity <= product.stockQuantity) {
+    if (newQuantity >= 1 && newQuantity <= displayProduct.stockQuantity) {
       setQuantity(newQuantity);
     }
   };
@@ -107,13 +201,13 @@ const ProductDetail = () => {
           <div className="space-y-4">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
               <img
-                src={product.images[selectedImage]}
-                alt={product.name}
+                src={displayProduct.images[selectedImage]}
+                alt={displayProduct.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="grid grid-cols-4 gap-4">
-              {product.images.map((image, index) => (
+              {displayProduct.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -123,7 +217,7 @@ const ProductDetail = () => {
                 >
                   <img
                     src={image}
-                    alt={`${product.name} view ${index + 1}`}
+                    alt={`${displayProduct.name} view ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </button>
@@ -135,11 +229,11 @@ const ProductDetail = () => {
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline">{product.metal.toUpperCase()}</Badge>
-                <Badge variant="outline">{product.year}</Badge>
-                {product.originalPrice && <Badge className="bg-red-500">Sale</Badge>}
+                <Badge variant="outline">{displayProduct.metal.toUpperCase()}</Badge>
+                <Badge variant="outline">{displayProduct.year}</Badge>
+                {displayProduct.originalPrice && <Badge className="bg-red-500">Sale</Badge>}
               </div>
-              <h1 className="text-3xl font-bold text-primary mb-4">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-primary mb-4">{displayProduct.name}</h1>
               
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center">
@@ -147,7 +241,7 @@ const ProductDetail = () => {
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
-                        i < Math.floor(product.rating) 
+                        i < Math.floor(displayProduct.rating) 
                           ? 'text-yellow-400 fill-current' 
                           : 'text-gray-300'
                       }`}
@@ -155,22 +249,22 @@ const ProductDetail = () => {
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {product.rating} ({product.reviews} reviews)
+                  {displayProduct.rating} ({displayProduct.reviews} reviews)
                 </span>
               </div>
 
               <div className="flex items-center gap-4 mb-6">
                 <span className="text-4xl font-bold text-gold">
-                  ${product.price.toFixed(2)}
+                  ${displayProduct.price.toFixed(2)}
                 </span>
-                {product.originalPrice && (
+                {displayProduct.originalPrice && (
                   <span className="text-xl text-muted-foreground line-through">
-                    ${product.originalPrice.toFixed(2)}
+                    ${displayProduct.originalPrice.toFixed(2)}
                   </span>
                 )}
               </div>
 
-              <p className="text-muted-foreground mb-6">{product.description}</p>
+              <p className="text-muted-foreground mb-6">{displayProduct.description}</p>
             </div>
 
             {/* Quantity and Add to Cart */}
@@ -191,13 +285,13 @@ const ProductDetail = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => updateQuantity(quantity + 1)}
-                    disabled={quantity >= product.stockQuantity}
+                    disabled={quantity >= displayProduct.stockQuantity}
                   >
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  ({product.stockQuantity} available)
+                  ({displayProduct.stockQuantity} available)
                 </span>
               </div>
 
@@ -209,7 +303,7 @@ const ProductDetail = () => {
                   onClick={addToCart}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add to Cart - ${(product.price * quantity).toFixed(2)}
+                  Add to Cart - ${(displayProduct.price * quantity).toFixed(2)}
                 </Button>
                 <Button 
                   size="lg" 
@@ -252,10 +346,10 @@ const ProductDetail = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(product.specifications).map(([key, value]) => (
+                    {Object.entries(displayProduct.specifications).map(([key, value]) => (
                       <div key={key} className="flex justify-between py-2 border-b">
                         <span className="font-medium">{key}:</span>
-                        <span className="text-muted-foreground">{value}</span>
+                        <span className="text-muted-foreground">{String(value)}</span>
                       </div>
                     ))}
                   </div>
@@ -267,7 +361,7 @@ const ProductDetail = () => {
               <Card>
                 <CardContent className="p-6">
                   <ul className="space-y-3">
-                    {product.features.map((feature, index) => (
+                    {displayProduct.features.map((feature: string, index: number) => (
                       <li key={index} className="flex items-start gap-3">
                         <Award className="w-5 h-5 text-gold mt-0.5 flex-shrink-0" />
                         <span>{feature}</span>
@@ -284,7 +378,7 @@ const ProductDetail = () => {
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">Reviews feature coming soon...</p>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Current rating: {product.rating}/5 based on {product.reviews} reviews
+                      Current rating: {displayProduct.rating}/5 based on {displayProduct.reviews} reviews
                     </p>
                   </div>
                 </CardContent>

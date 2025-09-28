@@ -17,12 +17,7 @@ export const parseGoldProductsCSV = async (csvPath: string): Promise<any[]> => {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          console.log('CSV Parse Results:', results);
-          console.log('Headers:', results.meta.fields);
-          
           const products = results.data.map((row: any, index: number) => {
-            console.log('Processing row:', row);
-            
             // Get the actual column names from the CSV
             const columns = Object.keys(row);
             const imageCol = columns.find(col => col.toLowerCase().includes('image')) || columns[0];
@@ -35,15 +30,11 @@ export const parseGoldProductsCSV = async (csvPath: string): Promise<any[]> => {
               return value && (value.includes('€') || value.includes('$') || /^\d+[.,]\d+/.test(value));
             }) || columns[4]; // Default to 5th column based on CSV structure
             
-            console.log('Price column:', priceCol, 'Value:', row[priceCol]);
-            
             // Extract price number from string like "€ 2,134.34"
             const priceStr = row[priceCol] || '0';
             const priceNumber = parseFloat(
               priceStr.replace(/[€$,\s"]/g, '').replace(/[^\d.]/g, '') || '0'
             );
-            
-            console.log('Extracted price:', priceNumber);
             
             // Extract weight from description
             const description = row[descCol] || '';
@@ -70,11 +61,9 @@ export const parseGoldProductsCSV = async (csvPath: string): Promise<any[]> => {
               description: description
             };
             
-            console.log('Created product:', product);
             return product;
           });
           
-          console.log('Final products:', products);
           resolve(products);
         },
         error: (error) => {
