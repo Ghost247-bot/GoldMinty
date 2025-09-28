@@ -12,7 +12,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar } from 'lucide-react';
+import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -437,9 +439,10 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="accounts">Investment Accounts</TabsTrigger>
+            <TabsTrigger value="portfolio">Portfolio Management</TabsTrigger>
             <TabsTrigger value="banners">User Banners</TabsTrigger>
           </TabsList>
           
@@ -894,6 +897,896 @@ export default function AdminDashboard() {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="portfolio">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Portfolio Management System
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="overview-admin" className="w-full">
+                  <TabsList className="grid w-full grid-cols-7">
+                    <TabsTrigger value="overview-admin">Overview</TabsTrigger>
+                    <TabsTrigger value="transactions-admin">Transactions</TabsTrigger>
+                    <TabsTrigger value="performance-admin">Performance</TabsTrigger>
+                    <TabsTrigger value="risk-admin">Risk Analysis</TabsTrigger>
+                    <TabsTrigger value="insights-admin">AI Insights</TabsTrigger>
+                    <TabsTrigger value="tools-admin">Tools</TabsTrigger>
+                    <TabsTrigger value="actions-admin">Actions</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="overview-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Portfolio Overview Management</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <Label htmlFor="user-select-portfolio">Select User</Label>
+                              <Select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a user to manage" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {allUsers.map((user) => (
+                                    <SelectItem key={user.user_id} value={user.user_id}>
+                                      {user.full_name || 'Unknown User'} ({user.email})
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label>Quick Actions</Label>
+                              <div className="flex gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Add Holdings
+                                </Button>
+                                <Button size="sm" variant="outline">
+                                  <Activity className="h-4 w-4 mr-1" />
+                                  Update Performance
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="grid gap-4 md:grid-cols-3">
+                            <Card className="p-4">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Gold Holdings</p>
+                                  <p className="text-2xl font-bold">96.0000 oz</p>
+                                </div>
+                                <Button size="sm" variant="ghost">
+                                  <Settings className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </Card>
+                            <Card className="p-4">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Silver Holdings</p>
+                                  <p className="text-2xl font-bold">0.0000 oz</p>
+                                </div>
+                                <Button size="sm" variant="ghost">
+                                  <Settings className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </Card>
+                            <Card className="p-4">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Portfolio Value</p>
+                                  <p className="text-2xl font-bold">$11,234,535</p>
+                                </div>
+                                <Button size="sm" variant="ghost">
+                                  <Settings className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <Card>
+                            <CardHeader>
+                              <CardTitle className="flex items-center justify-between">
+                                <span>Portfolio Allocation Settings</span>
+                                <Button size="sm">
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Add Metal
+                                </Button>
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="grid gap-4 md:grid-cols-3">
+                                <div className="space-y-2">
+                                  <Label>Gold Target (%)</Label>
+                                  <Input type="number" placeholder="60" />
+                                  <Progress value={65} className="h-2" />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Silver Target (%)</Label>
+                                  <Input type="number" placeholder="25" />
+                                  <Progress value={7} className="h-2" />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Platinum Target (%)</Label>
+                                  <Input type="number" placeholder="15" />
+                                  <Progress value={3} className="h-2" />
+                                </div>
+                              </div>
+                              <Button className="mt-4">Save Allocation Settings</Button>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="transactions-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>Transaction Management</span>
+                          <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Transaction
+                          </Button>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="grid gap-4 md:grid-cols-4">
+                            <div>
+                              <Label>Transaction Type</Label>
+                              <Select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="buy">Buy</SelectItem>
+                                  <SelectItem value="sell">Sell</SelectItem>
+                                  <SelectItem value="transfer">Transfer</SelectItem>
+                                  <SelectItem value="dividend">Dividend</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label>Metal Type</Label>
+                              <Select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select metal" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="gold">Gold</SelectItem>
+                                  <SelectItem value="silver">Silver</SelectItem>
+                                  <SelectItem value="platinum">Platinum</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label>Amount (oz)</Label>
+                              <Input type="number" step="0.0001" placeholder="0.0000" />
+                            </div>
+                            <div>
+                              <Label>Price per oz</Label>
+                              <Input type="number" step="0.01" placeholder="0.00" />
+                            </div>
+                          </div>
+                          
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <Label>Transaction Date</Label>
+                              <Input type="datetime-local" />
+                            </div>
+                            <div>
+                              <Label>Status</Label>
+                              <Select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="completed">Completed</SelectItem>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label>Transaction Notes</Label>
+                            <Textarea placeholder="Optional notes about this transaction..." />
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button>Create Transaction</Button>
+                            <Button variant="outline">Save as Draft</Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-8">
+                          <h4 className="font-semibold mb-4">Recent Transactions</h4>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Type</TableHead>
+                                <TableHead>Metal</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Price</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell>Oct 15, 2024</TableCell>
+                                <TableCell>
+                                  <Badge variant="default">Buy</Badge>
+                                </TableCell>
+                                <TableCell>Gold</TableCell>
+                                <TableCell>2.5000 oz</TableCell>
+                                <TableCell>$2,450.00</TableCell>
+                                <TableCell>
+                                  <Badge variant="default">Completed</Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex gap-1">
+                                    <Button size="sm" variant="ghost">Edit</Button>
+                                    <Button size="sm" variant="ghost">Delete</Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="performance-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Performance Metrics Management</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Return Settings</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>1 Month Return (%)</Label>
+                                  <Input type="number" step="0.01" placeholder="5.2" />
+                                </div>
+                                <div>
+                                  <Label>3 Month Return (%)</Label>
+                                  <Input type="number" step="0.01" placeholder="12.8" />
+                                </div>
+                                <div>
+                                  <Label>YTD Return (%)</Label>
+                                  <Input type="number" step="0.01" placeholder="28.4" />
+                                </div>
+                                <div>
+                                  <Label>All Time Return (%)</Label>
+                                  <Input type="number" step="0.01" placeholder="156.7" />
+                                </div>
+                              </div>
+                            </Card>
+
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Investment Goals</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>Gold Target (oz)</Label>
+                                  <Input type="number" placeholder="100" />
+                                </div>
+                                <div>
+                                  <Label>Portfolio Target ($)</Label>
+                                  <Input type="number" placeholder="15000000" />
+                                </div>
+                                <div>
+                                  <Label>Silver Target (oz)</Label>
+                                  <Input type="number" placeholder="500" />
+                                </div>
+                                <div>
+                                  <Label>Target Date</Label>
+                                  <Input type="date" />
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Performance History</h4>
+                            <div className="space-y-3">
+                              <div className="flex gap-2">
+                                <Button size="sm">
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Add Entry
+                                </Button>
+                                <Button size="sm" variant="outline">
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Export Data
+                                </Button>
+                              </div>
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Period</TableHead>
+                                    <TableHead>Return %</TableHead>
+                                    <TableHead>Portfolio Value</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell>October 2024</TableCell>
+                                    <TableCell className="text-green-600">+5.2%</TableCell>
+                                    <TableCell>$11,234,535</TableCell>
+                                    <TableCell>
+                                      <Button size="sm" variant="ghost">Edit</Button>
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </Card>
+
+                          <Button className="w-full">Update Performance Metrics</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="risk-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Risk Analysis Configuration</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Risk Metrics</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>Portfolio Risk Level</Label>
+                                  <Select>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select risk level" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="conservative">Conservative</SelectItem>
+                                      <SelectItem value="moderate">Moderate</SelectItem>
+                                      <SelectItem value="aggressive">Aggressive</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label>Volatility (30 day) %</Label>
+                                  <Input type="number" step="0.1" placeholder="12.3" />
+                                </div>
+                                <div>
+                                  <Label>Value at Risk (1%) %</Label>
+                                  <Input type="number" step="0.1" placeholder="8.7" />
+                                </div>
+                                <div>
+                                  <Label>Correlation to S&P 500</Label>
+                                  <Input type="number" step="0.01" min="-1" max="1" placeholder="0.45" />
+                                </div>
+                              </div>
+                            </Card>
+
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Risk Parameters</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>Sharpe Ratio</Label>
+                                  <Input type="number" step="0.01" placeholder="1.24" />
+                                </div>
+                                <div>
+                                  <Label>Beta</Label>
+                                  <Input type="number" step="0.01" placeholder="0.68" />
+                                </div>
+                                <div>
+                                  <Label>Max Drawdown %</Label>
+                                  <Input type="number" step="0.1" placeholder="5.8" />
+                                </div>
+                                <div>
+                                  <Label>Alpha %</Label>
+                                  <Input type="number" step="0.01" placeholder="2.3" />
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Risk Warnings & Alerts</h4>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                  <span className="font-medium">High Concentration Warning</span>
+                                  <p className="text-sm text-muted-foreground">Alert when single metal exceeds 80% allocation</p>
+                                </div>
+                                <Switch />
+                              </div>
+                              <div className="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                  <span className="font-medium">Volatility Alert</span>
+                                  <p className="text-sm text-muted-foreground">Notify when volatility exceeds threshold</p>
+                                </div>
+                                <Switch defaultChecked />
+                              </div>
+                              <div className="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                  <span className="font-medium">Drawdown Alert</span>
+                                  <p className="text-sm text-muted-foreground">Alert when portfolio drawdown is significant</p>
+                                </div>
+                                <Switch defaultChecked />
+                              </div>
+                            </div>
+                          </Card>
+
+                          <Button className="w-full">Save Risk Configuration</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="insights-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>AI Insights Management</span>
+                          <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Insight
+                          </Button>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Create Recommendation</h4>
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <div>
+                                <Label>Recommendation Type</Label>
+                                <Select>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="diversification">Diversification</SelectItem>
+                                    <SelectItem value="market-timing">Market Timing</SelectItem>
+                                    <SelectItem value="tax-optimization">Tax Optimization</SelectItem>
+                                    <SelectItem value="rebalancing">Rebalancing</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label>Priority Level</Label>
+                                <Select>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select priority" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="high">High</SelectItem>
+                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="low">Low</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <div className="mt-4 space-y-3">
+                              <div>
+                                <Label>Title</Label>
+                                <Input placeholder="Recommendation title..." />
+                              </div>
+                              <div>
+                                <Label>Description</Label>
+                                <Textarea placeholder="Detailed recommendation description..." />
+                              </div>
+                              <div>
+                                <Label>Suggested Action</Label>
+                                <Input placeholder="Action to take..." />
+                              </div>
+                            </div>
+                            <Button className="mt-4">Create Recommendation</Button>
+                          </Card>
+
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Market Sentiment Settings</h4>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span>Gold Sentiment</span>
+                                  <Select>
+                                    <SelectTrigger className="w-32">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="bullish">Bullish</SelectItem>
+                                      <SelectItem value="neutral">Neutral</SelectItem>
+                                      <SelectItem value="bearish">Bearish</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Silver Sentiment</span>
+                                  <Select>
+                                    <SelectTrigger className="w-32">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="bullish">Bullish</SelectItem>
+                                      <SelectItem value="neutral">Neutral</SelectItem>
+                                      <SelectItem value="bearish">Bearish</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Platinum Sentiment</span>
+                                  <Select>
+                                    <SelectTrigger className="w-32">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="bullish">Bullish</SelectItem>
+                                      <SelectItem value="neutral">Neutral</SelectItem>
+                                      <SelectItem value="bearish">Bearish</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            </Card>
+
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Portfolio Scoring</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>Overall Score (0-10)</Label>
+                                  <Input type="number" min="0" max="10" step="0.1" placeholder="8.5" />
+                                </div>
+                                <div>
+                                  <Label>Diversification Score (0-10)</Label>
+                                  <Input type="number" min="0" max="10" step="0.1" placeholder="9.0" />
+                                </div>
+                                <div>
+                                  <Label>Risk Management Score (0-10)</Label>
+                                  <Input type="number" min="0" max="10" step="0.1" placeholder="8.0" />
+                                </div>
+                                <div>
+                                  <Label>Performance Score (0-10)</Label>
+                                  <Input type="number" min="0" max="10" step="0.1" placeholder="8.5" />
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Active Recommendations</h4>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Type</TableHead>
+                                  <TableHead>Title</TableHead>
+                                  <TableHead>Priority</TableHead>
+                                  <TableHead>Created</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell>
+                                    <Badge variant="outline">Diversification</Badge>
+                                  </TableCell>
+                                  <TableCell>Consider increasing silver allocation</TableCell>
+                                  <TableCell>
+                                    <Badge variant="default">Medium</Badge>
+                                  </TableCell>
+                                  <TableCell>Oct 15, 2024</TableCell>
+                                  <TableCell>
+                                    <div className="flex gap-1">
+                                      <Button size="sm" variant="ghost">Edit</Button>
+                                      <Button size="sm" variant="ghost">Delete</Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </Card>
+
+                          <Button className="w-full">Save AI Insights Configuration</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="tools-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Investment Tools Configuration</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="grid gap-6 md:grid-cols-2">
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Calculator Settings</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>Default Expected Return (%)</Label>
+                                  <Input type="number" step="0.1" placeholder="8.0" />
+                                </div>
+                                <div>
+                                  <Label>Default Time Horizon (years)</Label>
+                                  <Input type="number" placeholder="10" />
+                                </div>
+                                <div>
+                                  <Label>Minimum Investment ($)</Label>
+                                  <Input type="number" placeholder="1000" />
+                                </div>
+                                <div>
+                                  <Label>Maximum Investment ($)</Label>
+                                  <Input type="number" placeholder="10000000" />
+                                </div>
+                              </div>
+                            </Card>
+
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Rebalancing Settings</h4>
+                              <div className="space-y-3">
+                                <div>
+                                  <Label>Default Gold Target (%)</Label>
+                                  <Input type="number" placeholder="60" />
+                                </div>
+                                <div>
+                                  <Label>Default Silver Target (%)</Label>
+                                  <Input type="number" placeholder="25" />
+                                </div>
+                                <div>
+                                  <Label>Default Platinum Target (%)</Label>
+                                  <Input type="number" placeholder="15" />
+                                </div>
+                                <div>
+                                  <Label>Rebalance Threshold (%)</Label>
+                                  <Input type="number" placeholder="5" />
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Price Alert Settings</h4>
+                            <div className="space-y-4">
+                              <div className="grid gap-4 md:grid-cols-3">
+                                <div>
+                                  <Label>Gold Price Alert ($)</Label>
+                                  <Input type="number" step="0.01" placeholder="2500.00" />
+                                </div>
+                                <div>
+                                  <Label>Silver Price Alert ($)</Label>
+                                  <Input type="number" step="0.01" placeholder="35.00" />
+                                </div>
+                                <div>
+                                  <Label>Platinum Price Alert ($)</Label>
+                                  <Input type="number" step="0.01" placeholder="1000.00" />
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <div className="flex items-center space-x-2">
+                                  <Switch />
+                                  <Label>Enable email alerts</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Switch />
+                                  <Label>Enable push notifications</Label>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Educational Resources</h4>
+                            <div className="space-y-3">
+                              <div className="flex gap-2">
+                                <Button size="sm">
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Add Resource
+                                </Button>
+                                <Button size="sm" variant="outline">
+                                  <BookOpen className="h-4 w-4 mr-1" />
+                                  Manage Library
+                                </Button>
+                              </div>
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Title</TableHead>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Actions</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell>Precious Metals Investment Guide</TableCell>
+                                    <TableCell>PDF</TableCell>
+                                    <TableCell>
+                                      <Badge variant="default">Active</Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Button size="sm" variant="ghost">Edit</Button>
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </Card>
+
+                          <Button className="w-full">Save Tools Configuration</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="actions-admin" className="space-y-6 mt-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>User Actions Management</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          <div className="grid gap-6 md:grid-cols-2">
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Account Actions</h4>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span>Allow Deposit Requests</span>
+                                  <Switch defaultChecked />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Allow Withdrawal Requests</span>
+                                  <Switch defaultChecked />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Auto-approve Small Deposits</span>
+                                  <Switch />
+                                </div>
+                                <div>
+                                  <Label>Auto-approve Limit ($)</Label>
+                                  <Input type="number" placeholder="10000" />
+                                </div>
+                              </div>
+                            </Card>
+
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Report Access</h4>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span>Monthly Reports</span>
+                                  <Switch defaultChecked />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Tax Reports</span>
+                                  <Switch defaultChecked />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Holdings Analysis</span>
+                                  <Switch defaultChecked />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Performance Reports</span>
+                                  <Switch defaultChecked />
+                                </div>
+                              </div>
+                            </Card>
+                          </div>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Notification Settings</h4>
+                            <div className="space-y-4">
+                              <div className="grid gap-4 md:grid-cols-2">
+                                <div>
+                                  <Label>Default Price Alerts</Label>
+                                  <Select>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select default" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="enabled">Enabled</SelectItem>
+                                      <SelectItem value="disabled">Disabled</SelectItem>
+                                      <SelectItem value="user-choice">User Choice</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label>Market News Notifications</Label>
+                                  <Select>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select default" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="enabled">Enabled</SelectItem>
+                                      <SelectItem value="disabled">Disabled</SelectItem>
+                                      <SelectItem value="user-choice">User Choice</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Support & Settings Access</h4>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span>Live Chat Support</span>
+                                <Switch defaultChecked />
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span>Phone Support</span>
+                                <Switch defaultChecked />
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span>Account Settings Access</span>
+                                <Switch defaultChecked />
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span>Goal Setting Access</span>
+                                <Switch defaultChecked />
+                              </div>
+                            </div>
+                          </Card>
+
+                          <Card className="p-4">
+                            <h4 className="font-semibold mb-3">Pending User Actions</h4>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>User</TableHead>
+                                  <TableHead>Action Type</TableHead>
+                                  <TableHead>Amount</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Date</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                <TableRow>
+                                  <TableCell>Roger Beaudry</TableCell>
+                                  <TableCell>Deposit Request</TableCell>
+                                  <TableCell>$50,000</TableCell>
+                                  <TableCell>
+                                    <Badge variant="secondary">Pending</Badge>
+                                  </TableCell>
+                                  <TableCell>Oct 15, 2024</TableCell>
+                                  <TableCell>
+                                    <div className="flex gap-1">
+                                      <Button size="sm" variant="default">Approve</Button>
+                                      <Button size="sm" variant="destructive">Reject</Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              </TableBody>
+                            </Table>
+                          </Card>
+
+                          <Button className="w-full">Save Action Settings</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </TabsContent>
