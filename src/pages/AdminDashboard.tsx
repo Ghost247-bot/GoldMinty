@@ -421,13 +421,13 @@ export default function AdminDashboard() {
                             </SelectTrigger>
                             <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
                               {usersLoading ? (
-                                <SelectItem value="" disabled>
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
                                   Loading users...
-                                </SelectItem>
+                                </div>
                               ) : allUsers.length === 0 ? (
-                                <SelectItem value="" disabled>
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
                                   No users found
-                                </SelectItem>
+                                </div>
                               ) : (
                                 allUsers.map((user) => (
                                   <SelectItem 
@@ -613,13 +613,13 @@ export default function AdminDashboard() {
                             </SelectTrigger>
                             <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
                               {usersLoading ? (
-                                <SelectItem value="" disabled>
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
                                   Loading users...
-                                </SelectItem>
+                                </div>
                               ) : allUsers.length === 0 ? (
-                                <SelectItem value="" disabled>
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
                                   No users found
-                                </SelectItem>
+                                </div>
                               ) : (
                                 allUsers.map((user) => (
                                   <SelectItem 
