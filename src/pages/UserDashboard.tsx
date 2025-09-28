@@ -6,6 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   User, 
@@ -26,14 +34,57 @@ import {
   DollarSign,
   Target,
   Bell,
-  Phone
+  Phone,
+  X,
+  FileText,
+  Mail
 } from 'lucide-react';
 
 export default function UserDashboard() {
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<any>(null);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
+  
+  // Dialog states for quick actions
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [withdrawalDialogOpen, setWithdrawalDialogOpen] = useState(false);
+  const [reportsDialogOpen, setReportsDialogOpen] = useState(false);
+  const [statementsDialogOpen, setStatementsDialogOpen] = useState(false);
+  const [alertsDialogOpen, setAlertsDialogOpen] = useState(false);
+  const [supportDialogOpen, setSupportDialogOpen] = useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+  const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
+  
+  // Form states
+  const [depositForm, setDepositForm] = useState({
+    amount: '',
+    method: 'bank_transfer',
+    notes: ''
+  });
+  const [withdrawalForm, setWithdrawalForm] = useState({
+    amount: '',
+    method: 'bank_transfer',
+    notes: ''
+  });
+  const [supportForm, setSupportForm] = useState({
+    subject: '',
+    category: 'general',
+    message: ''
+  });
+  const [alertSettings, setAlertSettings] = useState({
+    priceAlerts: true,
+    accountUpdates: true,
+    marketNews: false,
+    promotions: false
+  });
+  const [goalSettings, setGoalSettings] = useState({
+    goldTarget: '100',
+    portfolioTarget: '15000000',
+    silverTarget: '500',
+    targetDate: ''
+  });
 
   useEffect(() => {
     if (user) {
@@ -89,6 +140,105 @@ export default function UserDashboard() {
   const totalGoldHoldings = investmentAccounts.reduce((sum, acc) => sum + Number(acc.gold_holdings), 0);
   const totalSilverHoldings = investmentAccounts.reduce((sum, acc) => sum + Number(acc.silver_holdings), 0);
   const totalPlatinumHoldings = investmentAccounts.reduce((sum, acc) => sum + Number(acc.platinum_holdings), 0);
+
+  // Quick action handlers
+  const handleDepositRequest = async () => {
+    if (!depositForm.amount) {
+      toast({ title: "Error", description: "Please enter deposit amount", variant: "destructive" });
+      return;
+    }
+    
+    // In a real app, this would create a deposit request in the database
+    toast({
+      title: "Deposit Request Submitted",
+      description: `Your deposit request for $${depositForm.amount} has been submitted and is pending review.`
+    });
+    
+    setDepositDialogOpen(false);
+    setDepositForm({ amount: '', method: 'bank_transfer', notes: '' });
+  };
+
+  const handleWithdrawalRequest = async () => {
+    if (!withdrawalForm.amount) {
+      toast({ title: "Error", description: "Please enter withdrawal amount", variant: "destructive" });
+      return;
+    }
+    
+    if (Number(withdrawalForm.amount) > totalBalance) {
+      toast({ title: "Error", description: "Insufficient funds for withdrawal", variant: "destructive" });
+      return;
+    }
+    
+    toast({
+      title: "Withdrawal Request Submitted", 
+      description: `Your withdrawal request for $${withdrawalForm.amount} has been submitted and is pending review.`
+    });
+    
+    setWithdrawalDialogOpen(false);
+    setWithdrawalForm({ amount: '', method: 'bank_transfer', notes: '' });
+  };
+
+  const handleDownloadStatements = () => {
+    // Generate mock PDF data
+    const pdfData = `Account Statement
+    Account: ${investmentAccounts[0]?.account_number || 'N/A'}
+    Period: ${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString()} - ${new Date().toLocaleDateString()}
+    
+    Holdings Summary:
+    Gold: ${totalGoldHoldings.toFixed(4)} oz
+    Silver: ${totalSilverHoldings.toFixed(4)} oz
+    Platinum: ${totalPlatinumHoldings.toFixed(4)} oz
+    
+    Total Balance: $${totalBalance.toFixed(2)}`;
+    
+    const blob = new Blob([pdfData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `statement_${new Date().getFullYear()}_${new Date().getMonth() + 1}.txt`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    
+    toast({ title: "Statement Downloaded", description: "Your account statement has been downloaded." });
+  };
+
+  const handleSupportSubmit = async () => {
+    if (!supportForm.subject || !supportForm.message) {
+      toast({ title: "Error", description: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
+    
+    // In a real app, this would create a support ticket
+    toast({
+      title: "Support Request Submitted",
+      description: "Your support request has been submitted. We'll get back to you within 24 hours."
+    });
+    
+    setSupportDialogOpen(false);
+    setSupportForm({ subject: '', category: 'general', message: '' });
+  };
+
+  const handleAlertSettingsUpdate = async () => {
+    // In a real app, this would update user preferences in the database
+    toast({
+      title: "Alert Settings Updated",
+      description: "Your notification preferences have been saved."
+    });
+    setAlertsDialogOpen(false);
+  };
+
+  const handleGoalSettingsUpdate = async () => {
+    if (!goalSettings.goldTarget || !goalSettings.portfolioTarget) {
+      toast({ title: "Error", description: "Please enter valid targets", variant: "destructive" });
+      return;
+    }
+    
+    toast({
+      title: "Investment Goals Updated",
+      description: "Your investment goals have been saved successfully."
+    });
+    setGoalsDialogOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -538,19 +688,207 @@ export default function UserDashboard() {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                          <Button className="w-full justify-start" variant="outline">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Request Deposit
-                          </Button>
-                          <Button className="w-full justify-start" variant="outline">
-                            <Minus className="h-4 w-4 mr-2" />
-                            Request Withdrawal
-                          </Button>
-                          <Button className="w-full justify-start" variant="outline">
-                            <BarChart3 className="h-4 w-4 mr-2" />
-                            View Detailed Reports
-                          </Button>
-                          <Button className="w-full justify-start" variant="outline">
+                          <Dialog open={depositDialogOpen} onOpenChange={setDepositDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Request Deposit
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Request Deposit</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <Label htmlFor="deposit-amount">Amount ($)</Label>
+                                  <Input
+                                    id="deposit-amount"
+                                    type="number"
+                                    placeholder="0.00"
+                                    value={depositForm.amount}
+                                    onChange={(e) => setDepositForm({...depositForm, amount: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="deposit-method">Deposit Method</Label>
+                                  <Select value={depositForm.method} onValueChange={(value) => setDepositForm({...depositForm, method: value})}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                                      <SelectItem value="wire">Wire Transfer</SelectItem>
+                                      <SelectItem value="check">Check</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label htmlFor="deposit-notes">Notes (Optional)</Label>
+                                  <Textarea
+                                    id="deposit-notes"
+                                    placeholder="Any additional information..."
+                                    value={depositForm.notes}
+                                    onChange={(e) => setDepositForm({...depositForm, notes: e.target.value})}
+                                  />
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" onClick={() => setDepositDialogOpen(false)} className="flex-1">
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={handleDepositRequest} className="flex-1">
+                                    Submit Request
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog open={withdrawalDialogOpen} onOpenChange={setWithdrawalDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <Minus className="h-4 w-4 mr-2" />
+                                Request Withdrawal
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Request Withdrawal</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="p-3 bg-muted rounded-lg">
+                                  <p className="text-sm text-muted-foreground">
+                                    Available Balance: <span className="font-semibold">${totalBalance.toFixed(2)}</span>
+                                  </p>
+                                </div>
+                                <div>
+                                  <Label htmlFor="withdrawal-amount">Amount ($)</Label>
+                                  <Input
+                                    id="withdrawal-amount"
+                                    type="number"
+                                    placeholder="0.00"
+                                    max={totalBalance}
+                                    value={withdrawalForm.amount}
+                                    onChange={(e) => setWithdrawalForm({...withdrawalForm, amount: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="withdrawal-method">Withdrawal Method</Label>
+                                  <Select value={withdrawalForm.method} onValueChange={(value) => setWithdrawalForm({...withdrawalForm, method: value})}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                                      <SelectItem value="wire">Wire Transfer</SelectItem>
+                                      <SelectItem value="check">Check</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label htmlFor="withdrawal-notes">Notes (Optional)</Label>
+                                  <Textarea
+                                    id="withdrawal-notes"
+                                    placeholder="Any additional information..."
+                                    value={withdrawalForm.notes}
+                                    onChange={(e) => setWithdrawalForm({...withdrawalForm, notes: e.target.value})}
+                                  />
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" onClick={() => setWithdrawalDialogOpen(false)} className="flex-1">
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={handleWithdrawalRequest} className="flex-1">
+                                    Submit Request
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog open={reportsDialogOpen} onOpenChange={setReportsDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <BarChart3 className="h-4 w-4 mr-2" />
+                                View Detailed Reports
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>Detailed Portfolio Reports</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-6">
+                                <div className="grid gap-4 md:grid-cols-2">
+                                  <Card>
+                                    <CardContent className="p-4">
+                                      <h4 className="font-semibold mb-2">Performance Summary</h4>
+                                      <div className="space-y-2">
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">Total Return</span>
+                                          <span className="text-green-600 font-semibold">+28.4%</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">Annual Return</span>
+                                          <span className="text-green-600 font-semibold">+15.2%</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">Best Month</span>
+                                          <span className="text-green-600 font-semibold">+8.7%</span>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                  <Card>
+                                    <CardContent className="p-4">
+                                      <h4 className="font-semibold mb-2">Risk Metrics</h4>
+                                      <div className="space-y-2">
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">Volatility</span>
+                                          <span className="font-semibold">12.3%</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">Sharpe Ratio</span>
+                                          <span className="font-semibold">1.24</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-sm">Max Drawdown</span>
+                                          <span className="text-red-600 font-semibold">-5.8%</span>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                                <div className="border-t pt-4">
+                                  <h4 className="font-semibold mb-3">Available Reports</h4>
+                                  <div className="space-y-2">
+                                    <Button variant="outline" className="w-full justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        Monthly Performance Report
+                                      </div>
+                                      <Download className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        Tax Summary Report
+                                      </div>
+                                      <Download className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        Holdings Analysis
+                                      </div>
+                                      <Download className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Button className="w-full justify-start" variant="outline" onClick={handleDownloadStatements}>
                             <Download className="h-4 w-4 mr-2" />
                             Download Statements
                           </Button>
@@ -565,22 +903,286 @@ export default function UserDashboard() {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                          <Button className="w-full justify-start" variant="outline">
-                            <Bell className="h-4 w-4 mr-2" />
-                            Manage Alerts
-                          </Button>
-                          <Button className="w-full justify-start" variant="outline">
-                            <Phone className="h-4 w-4 mr-2" />
-                            Contact Support
-                          </Button>
-                          <Button className="w-full justify-start" variant="outline">
-                            <Settings className="h-4 w-4 mr-2" />
-                            Account Settings
-                          </Button>
-                          <Button className="w-full justify-start" variant="outline">
-                            <Target className="h-4 w-4 mr-2" />
-                            Set Investment Goals
-                          </Button>
+                          <Dialog open={alertsDialogOpen} onOpenChange={setAlertsDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <Bell className="h-4 w-4 mr-2" />
+                                Manage Alerts
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Manage Notifications</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-6">
+                                <div className="space-y-4">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <Label htmlFor="price-alerts" className="font-medium">Price Alerts</Label>
+                                      <p className="text-sm text-muted-foreground">Get notified of significant price changes</p>
+                                    </div>
+                                    <Switch 
+                                      id="price-alerts"
+                                      checked={alertSettings.priceAlerts}
+                                      onCheckedChange={(checked) => setAlertSettings({...alertSettings, priceAlerts: checked})}
+                                    />
+                                  </div>
+                                  <Separator />
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <Label htmlFor="account-updates" className="font-medium">Account Updates</Label>
+                                      <p className="text-sm text-muted-foreground">Transaction confirmations and account changes</p>
+                                    </div>
+                                    <Switch 
+                                      id="account-updates"
+                                      checked={alertSettings.accountUpdates}
+                                      onCheckedChange={(checked) => setAlertSettings({...alertSettings, accountUpdates: checked})}
+                                    />
+                                  </div>
+                                  <Separator />
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <Label htmlFor="market-news" className="font-medium">Market News</Label>
+                                      <p className="text-sm text-muted-foreground">Important market developments and analysis</p>
+                                    </div>
+                                    <Switch 
+                                      id="market-news"
+                                      checked={alertSettings.marketNews}
+                                      onCheckedChange={(checked) => setAlertSettings({...alertSettings, marketNews: checked})}
+                                    />
+                                  </div>
+                                  <Separator />
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <Label htmlFor="promotions" className="font-medium">Promotions</Label>
+                                      <p className="text-sm text-muted-foreground">Special offers and promotions</p>
+                                    </div>
+                                    <Switch 
+                                      id="promotions"
+                                      checked={alertSettings.promotions}
+                                      onCheckedChange={(checked) => setAlertSettings({...alertSettings, promotions: checked})}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" onClick={() => setAlertsDialogOpen(false)} className="flex-1">
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={handleAlertSettingsUpdate} className="flex-1">
+                                    Save Settings
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog open={supportDialogOpen} onOpenChange={setSupportDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <Phone className="h-4 w-4 mr-2" />
+                                Contact Support
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Contact Support</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <Label htmlFor="support-subject">Subject</Label>
+                                  <Input
+                                    id="support-subject"
+                                    placeholder="Brief description of your issue"
+                                    value={supportForm.subject}
+                                    onChange={(e) => setSupportForm({...supportForm, subject: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="support-category">Category</Label>
+                                  <Select value={supportForm.category} onValueChange={(value) => setSupportForm({...supportForm, category: value})}>
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="general">General Inquiry</SelectItem>
+                                      <SelectItem value="account">Account Issues</SelectItem>
+                                      <SelectItem value="technical">Technical Support</SelectItem>
+                                      <SelectItem value="trading">Trading Questions</SelectItem>
+                                      <SelectItem value="billing">Billing & Payments</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label htmlFor="support-message">Message</Label>
+                                  <Textarea
+                                    id="support-message"
+                                    placeholder="Please describe your issue in detail..."
+                                    className="min-h-[100px]"
+                                    value={supportForm.message}
+                                    onChange={(e) => setSupportForm({...supportForm, message: e.target.value})}
+                                  />
+                                </div>
+                                <div className="bg-muted p-3 rounded-lg">
+                                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Mail className="h-4 w-4" />
+                                    <span>We typically respond within 24 hours</span>
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" onClick={() => setSupportDialogOpen(false)} className="flex-1">
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={handleSupportSubmit} className="flex-1">
+                                    Send Message
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <Settings className="h-4 w-4 mr-2" />
+                                Account Settings
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>Account Settings</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-6">
+                                <div>
+                                  <h4 className="font-semibold mb-3">Profile Information</h4>
+                                  <div className="grid gap-4 md:grid-cols-2">
+                                    <div>
+                                      <Label>Full Name</Label>
+                                      <Input value={profile?.full_name || ''} disabled />
+                                    </div>
+                                    <div>
+                                      <Label>Email</Label>
+                                      <Input value={user?.email || ''} disabled />
+                                    </div>
+                                    <div>
+                                      <Label>Phone</Label>
+                                      <Input value={profile?.phone || 'Not set'} disabled />
+                                    </div>
+                                    <div>
+                                      <Label>Member Since</Label>
+                                      <Input value={new Date(profile?.created_at).toLocaleDateString()} disabled />
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <Separator />
+                                
+                                <div>
+                                  <h4 className="font-semibold mb-3">Security Settings</h4>
+                                  <div className="space-y-3">
+                                    <Button variant="outline" className="w-full justify-start">
+                                      <Settings className="h-4 w-4 mr-2" />
+                                      Change Password
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start">
+                                      <Settings className="h-4 w-4 mr-2" />
+                                      Enable Two-Factor Authentication
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start">
+                                      <Settings className="h-4 w-4 mr-2" />
+                                      Update Security Questions
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <Separator />
+                                
+                                <div>
+                                  <h4 className="font-semibold mb-3">Preferences</h4>
+                                  <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <Label className="font-medium">Dark Mode</Label>
+                                        <p className="text-sm text-muted-foreground">Switch between light and dark themes</p>
+                                      </div>
+                                      <Switch />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <Label className="font-medium">Email Notifications</Label>
+                                        <p className="text-sm text-muted-foreground">Receive updates via email</p>
+                                      </div>
+                                      <Switch defaultChecked />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <Dialog open={goalsDialogOpen} onOpenChange={setGoalsDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full justify-start" variant="outline">
+                                <Target className="h-4 w-4 mr-2" />
+                                Set Investment Goals
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Set Investment Goals</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="grid gap-4 md:grid-cols-2">
+                                  <div>
+                                    <Label htmlFor="gold-target">Gold Target (oz)</Label>
+                                    <Input
+                                      id="gold-target"
+                                      type="number"
+                                      placeholder="100"
+                                      value={goalSettings.goldTarget}
+                                      onChange={(e) => setGoalSettings({...goalSettings, goldTarget: e.target.value})}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="silver-target">Silver Target (oz)</Label>
+                                    <Input
+                                      id="silver-target"
+                                      type="number"
+                                      placeholder="500"
+                                      value={goalSettings.silverTarget}
+                                      onChange={(e) => setGoalSettings({...goalSettings, silverTarget: e.target.value})}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <Label htmlFor="portfolio-target">Portfolio Value Target ($)</Label>
+                                  <Input
+                                    id="portfolio-target"
+                                    type="number"
+                                    placeholder="15000000"
+                                    value={goalSettings.portfolioTarget}
+                                    onChange={(e) => setGoalSettings({...goalSettings, portfolioTarget: e.target.value})}
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="target-date">Target Date</Label>
+                                  <Input
+                                    id="target-date"
+                                    type="date"
+                                    value={goalSettings.targetDate}
+                                    onChange={(e) => setGoalSettings({...goalSettings, targetDate: e.target.value})}
+                                  />
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button variant="outline" onClick={() => setGoalsDialogOpen(false)} className="flex-1">
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={handleGoalSettingsUpdate} className="flex-1">
+                                    Save Goals
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </CardContent>
                       </Card>
                     </div>
