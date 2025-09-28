@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import ButtonShowcase from "./pages/ButtonShowcase";
 import Products from "./pages/Products";
@@ -44,42 +45,46 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/buttons" element={<ButtonShowcase />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:category" element={<Products />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
+              {/* Pages with Layout (Header + Footer) */}
+              <Route path="/" element={<Layout><Index /></Layout>} />
+              <Route path="/buttons" element={<Layout><ButtonShowcase /></Layout>} />
+              <Route path="/products" element={<Layout><Products /></Layout>} />
+              <Route path="/products/:category" element={<Layout><Products /></Layout>} />
+              <Route path="/product/:id" element={<Layout><ProductDetail /></Layout>} />
+              <Route path="/cart" element={<Layout><Cart /></Layout>} />
+              <Route path="/charts" element={<Layout><Charts /></Layout>} />
+              <Route path="/prices" element={<Layout><Prices /></Layout>} />
+              <Route path="/resources" element={<Layout><Resources /></Layout>} />
+              <Route path="/about" element={<Layout><About /></Layout>} />
+              <Route path="/contact" element={<Layout><Contact /></Layout>} />
+              <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
+              <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />
+              <Route path="/cookie-policy" element={<Layout><CookiePolicy /></Layout>} />
+              <Route path="/help-center" element={<Layout><HelpCenter /></Layout>} />
+              <Route path="/shipping" element={<Layout><Shipping /></Layout>} />
+              <Route path="/returns" element={<Layout><Returns /></Layout>} />
+              <Route path="/careers" element={<Layout><Careers /></Layout>} />
+              <Route path="/press" element={<Layout><Press /></Layout>} />
+              <Route path="/blog" element={<Layout><Blog /></Layout>} />
+              <Route path="/blog/:slug" element={<Layout><BlogPost /></Layout>} />
+              <Route path="/legal-notice" element={<Layout><LegalNotice /></Layout>} />
+              
+              {/* Standalone pages (no Layout) */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <UserDashboard />
+                  <Layout><UserDashboard /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/admin" element={
                 <ProtectedRoute requiredRole="admin">
-                  <AdminDashboard />
+                  <Layout><AdminDashboard /></Layout>
                 </ProtectedRoute>
               } />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/charts" element={<Charts />} />
-              <Route path="/prices" element={<Prices />} />
-              <Route path="/resources" element={<Resources />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/cookie-policy" element={<CookiePolicy />} />
-              <Route path="/help-center" element={<HelpCenter />} />
-              <Route path="/shipping" element={<Shipping />} />
-              <Route path="/returns" element={<Returns />} />
-              <Route path="/careers" element={<Careers />} />
-              <Route path="/press" element={<Press />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/legal-notice" element={<LegalNotice />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<Layout><NotFound /></Layout>} />
             </Routes>
           </BrowserRouter>
         </CartProvider>
