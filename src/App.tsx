@@ -46,7 +46,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               {/* Pages with Layout (Header + Footer) */}
-              <Route path="/" element={<Layout><Index /></Layout>} />
+              <Route path="/" element={<Layout showPriceTicker><Index /></Layout>} />
               <Route path="/buttons" element={<Layout><ButtonShowcase /></Layout>} />
               <Route path="/products" element={<Layout><Products /></Layout>} />
               <Route path="/products/:category" element={<Layout><Products /></Layout>} />
