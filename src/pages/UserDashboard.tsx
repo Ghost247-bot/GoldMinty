@@ -37,7 +37,19 @@ import {
   Phone,
   X,
   FileText,
-  Mail
+  Mail,
+  Calculator,
+  BookOpen,
+  Shield,
+  Zap,
+  Eye,
+  RefreshCw,
+  TrendingDown,
+  Award,
+  LineChart,
+  RotateCcw,
+  Lightbulb,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function UserDashboard() {
@@ -56,6 +68,12 @@ export default function UserDashboard() {
   const [supportDialogOpen, setSupportDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
+  
+  // New dialog states for enhanced features
+  const [rebalanceDialogOpen, setRebalanceDialogOpen] = useState(false);
+  const [calculatorDialogOpen, setCalculatorDialogOpen] = useState(false);
+  const [riskDialogOpen, setRiskDialogOpen] = useState(false);
+  const [recommendationsDialogOpen, setRecommendationsDialogOpen] = useState(false);
   
   // Form states
   const [depositForm, setDepositForm] = useState({
@@ -84,6 +102,25 @@ export default function UserDashboard() {
     portfolioTarget: '15000000',
     silverTarget: '500',
     targetDate: ''
+  });
+  
+  // New form states for enhanced features
+  const [calculatorForm, setCalculatorForm] = useState({
+    initialInvestment: '',
+    monthlyContribution: '',
+    timeHorizon: '10',
+    expectedReturn: '8',
+    metalAllocation: {
+      gold: '60',
+      silver: '25',
+      platinum: '15'
+    }
+  });
+  const [rebalanceSettings, setRebalanceSettings] = useState({
+    targetGold: '60',
+    targetSilver: '25',
+    targetPlatinum: '15',
+    rebalanceThreshold: '5'
   });
 
   useEffect(() => {
@@ -240,6 +277,66 @@ export default function UserDashboard() {
     setGoalsDialogOpen(false);
   };
 
+  // Enhanced feature handlers
+  const handlePortfolioRebalance = async () => {
+    const currentAllocation = {
+      gold: (totalGoldHoldings * 2456.80 / totalBalance * 100).toFixed(1),
+      silver: (totalSilverHoldings * 31.24 / totalBalance * 100).toFixed(1),
+      platinum: (totalPlatinumHoldings * 952.10 / totalBalance * 100).toFixed(1)
+    };
+    
+    toast({
+      title: "Rebalancing Recommended",
+      description: `Current allocation: Gold ${currentAllocation.gold}%, Silver ${currentAllocation.silver}%, Platinum ${currentAllocation.platinum}%. Target: Gold ${rebalanceSettings.targetGold}%, Silver ${rebalanceSettings.targetSilver}%, Platinum ${rebalanceSettings.targetPlatinum}%`
+    });
+    setRebalanceDialogOpen(false);
+  };
+
+  const calculateInvestmentProjection = () => {
+    const initial = parseFloat(calculatorForm.initialInvestment) || 0;
+    const monthly = parseFloat(calculatorForm.monthlyContribution) || 0;
+    const years = parseFloat(calculatorForm.timeHorizon) || 10;
+    const returnRate = parseFloat(calculatorForm.expectedReturn) / 100 || 0.08;
+    
+    const futureValue = initial * Math.pow(1 + returnRate, years) + 
+                       monthly * (Math.pow(1 + returnRate, years) - 1) / returnRate * 12;
+    
+    return futureValue.toFixed(2);
+  };
+
+  const getRiskLevel = () => {
+    const portfolioValue = totalBalance;
+    const goldPercentage = (totalGoldHoldings * 2456.80 / portfolioValue * 100);
+    
+    if (goldPercentage > 80) return { level: "Conservative", color: "text-green-600" };
+    if (goldPercentage > 50) return { level: "Moderate", color: "text-yellow-600" };
+    return { level: "Aggressive", color: "text-red-600" };
+  };
+
+  const getRecommendations = () => [
+    {
+      type: "Diversification",
+      title: "Consider increasing silver allocation",
+      description: "Your portfolio is heavily weighted in gold. Consider diversifying with silver for better risk management.",
+      priority: "Medium",
+      action: "Rebalance Portfolio"
+    },
+    {
+      type: "Market Timing",
+      title: "Gold prices are near yearly highs",
+      description: "Consider taking some profits or dollar-cost averaging your next purchases.",
+      priority: "High",
+      action: "Review Positions"
+    },
+    {
+      type: "Tax Optimization",
+      title: "Review tax-loss harvesting opportunities",
+      description: "Some positions may be eligible for tax-loss harvesting to optimize your tax situation.",
+      priority: "Low",
+      action: "Consult Advisor"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -359,12 +456,14 @@ export default function UserDashboard() {
                 </div>
               ) : (
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-5">
+                  <TabsList className="grid w-full grid-cols-7">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="transactions">Transactions</TabsTrigger>
                     <TabsTrigger value="performance">Performance</TabsTrigger>
-                    <TabsTrigger value="market">Market Data</TabsTrigger>
-                    <TabsTrigger value="actions">Quick Actions</TabsTrigger>
+                    <TabsTrigger value="analysis">Risk Analysis</TabsTrigger>
+                    <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
+                    <TabsTrigger value="tools">Tools</TabsTrigger>
+                    <TabsTrigger value="actions">Actions</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="overview" className="space-y-4 mt-6">
@@ -601,81 +700,441 @@ export default function UserDashboard() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="market" className="mt-6">
-                    <div className="grid gap-4 md:grid-cols-3">
-                      <Card>
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-sm font-medium">Gold Spot Price</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold">$2,456.80</div>
-                          <div className="flex items-center gap-1 text-sm">
-                            <ArrowUpRight className="h-3 w-3 text-green-600" />
-                            <span className="text-green-600">+1.2% (+$29.40)</span>
-                          </div>
-                        </CardContent>
-                      </Card>
+                  <TabsContent value="analysis" className="mt-6">
+                    <div className="space-y-6">
+                      <div className="grid gap-6 md:grid-cols-2">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <Shield className="h-4 w-4" />
+                              Risk Assessment
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Portfolio Risk Level</span>
+                                <Badge className={getRiskLevel().color}>{getRiskLevel().level}</Badge>
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                  <span>Volatility (30 day)</span>
+                                  <span>12.3%</span>
+                                </div>
+                                <Progress value={12.3} className="h-2" />
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                  <span>Correlation to S&P 500</span>
+                                  <span>0.45</span>
+                                </div>
+                                <Progress value={45} className="h-2" />
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                  <span>Value at Risk (1%)</span>
+                                  <span className="text-red-600">-8.7%</span>
+                                </div>
+                                <Progress value={8.7} className="h-2 bg-red-100" />
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <BarChart3 className="h-4 w-4" />
+                              Allocation Analysis
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                  <span>Gold Allocation</span>
+                                  <span>{((totalGoldHoldings * 2456.80 / totalBalance) * 100).toFixed(1)}%</span>
+                                </div>
+                                <Progress value={((totalGoldHoldings * 2456.80 / totalBalance) * 100)} className="h-2" />
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                  <span>Silver Allocation</span>
+                                  <span>{((totalSilverHoldings * 31.24 / totalBalance) * 100).toFixed(1)}%</span>
+                                </div>
+                                <Progress value={((totalSilverHoldings * 31.24 / totalBalance) * 100)} className="h-2" />
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-sm mb-2">
+                                  <span>Platinum Allocation</span>
+                                  <span>{((totalPlatinumHoldings * 952.10 / totalBalance) * 100).toFixed(1)}%</span>
+                                </div>
+                                <Progress value={((totalPlatinumHoldings * 952.10 / totalBalance) * 100)} className="h-2" />
+                              </div>
+                              <div className="mt-4 p-3 bg-muted rounded-lg">
+                                <div className="flex items-center gap-2 text-sm">
+                                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                  <span>Your portfolio is concentrated in precious metals. Consider diversification.</span>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
 
                       <Card>
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-sm font-medium">Silver Spot Price</CardTitle>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <LineChart className="h-4 w-4" />
+                            Performance Metrics
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold">$31.24</div>
-                          <div className="flex items-center gap-1 text-sm">
-                            <ArrowDownRight className="h-3 w-3 text-red-600" />
-                            <span className="text-red-600">-0.8% (-$0.24)</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card>
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-sm font-medium">Platinum Spot Price</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold">$952.10</div>
-                          <div className="flex items-center gap-1 text-sm">
-                            <ArrowUpRight className="h-3 w-3 text-green-600" />
-                            <span className="text-green-600">+0.3% (+$2.85)</span>
+                          <div className="grid gap-4 md:grid-cols-4">
+                            <div className="text-center p-4 border rounded-lg">
+                              <div className="text-sm text-muted-foreground">Sharpe Ratio</div>
+                              <div className="text-2xl font-bold text-green-600">1.24</div>
+                            </div>
+                            <div className="text-center p-4 border rounded-lg">
+                              <div className="text-sm text-muted-foreground">Beta</div>
+                              <div className="text-2xl font-bold">0.68</div>
+                            </div>
+                            <div className="text-center p-4 border rounded-lg">
+                              <div className="text-sm text-muted-foreground">Max Drawdown</div>
+                              <div className="text-2xl font-bold text-red-600">-5.8%</div>
+                            </div>
+                            <div className="text-center p-4 border rounded-lg">
+                              <div className="text-sm text-muted-foreground">Alpha</div>
+                              <div className="text-2xl font-bold text-green-600">+2.3%</div>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
                     </div>
+                  </TabsContent>
 
-                    <Card className="mt-6">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Activity className="h-4 w-4" />
-                          Market Activity
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between p-3 border rounded">
-                            <div className="flex items-center gap-3">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Gold reaches new weekly high</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground">2 hours ago</span>
+                  <TabsContent value="recommendations" className="mt-6">
+                    <div className="space-y-6">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Lightbulb className="h-4 w-4" />
+                            AI-Powered Investment Insights
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {getRecommendations().map((rec, index) => (
+                              <div key={index} className="p-4 border rounded-lg">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div>
+                                    <Badge variant="outline" className="mb-2">{rec.type}</Badge>
+                                    <h4 className="font-semibold">{rec.title}</h4>
+                                  </div>
+                                  <Badge variant={rec.priority === 'High' ? 'destructive' : rec.priority === 'Medium' ? 'default' : 'secondary'}>
+                                    {rec.priority}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-3">{rec.description}</p>
+                                <Button variant="outline" size="sm">
+                                  {rec.action}
+                                </Button>
+                              </div>
+                            ))}
                           </div>
-                          <div className="flex items-center justify-between p-3 border rounded">
-                            <div className="flex items-center gap-3">
-                              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                              <span className="text-sm">Silver futures show volatility</span>
+                        </CardContent>
+                      </Card>
+
+                      <div className="grid gap-6 md:grid-cols-2">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <TrendingUp className="h-4 w-4" />
+                              Market Sentiment
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">Gold Sentiment</span>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                  <span className="text-sm font-semibold text-green-600">Bullish</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">Silver Sentiment</span>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                  <span className="text-sm font-semibold text-yellow-600">Neutral</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">Platinum Sentiment</span>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                  <span className="text-sm font-semibold text-green-600">Bullish</span>
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-xs text-muted-foreground">4 hours ago</span>
-                          </div>
-                          <div className="flex items-center justify-between p-3 border rounded">
-                            <div className="flex items-center gap-3">
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                              <span className="text-sm">Platinum supply report released</span>
+                          </CardContent>
+                        </Card>
+
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              <Award className="h-4 w-4" />
+                              Portfolio Score
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-center">
+                              <div className="text-4xl font-bold text-green-600 mb-2">8.5/10</div>
+                              <p className="text-sm text-muted-foreground mb-4">Excellent diversification and risk management</p>
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Diversification</span>
+                                  <span className="font-semibold">9/10</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span>Risk Management</span>
+                                  <span className="font-semibold">8/10</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span>Performance</span>
+                                  <span className="font-semibold">8.5/10</span>
+                                </div>
+                              </div>
                             </div>
-                            <span className="text-xs text-muted-foreground">6 hours ago</span>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="tools" className="mt-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Calculator className="h-4 w-4" />
+                            Investment Calculator
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Dialog open={calculatorDialogOpen} onOpenChange={setCalculatorDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full">
+                                <Calculator className="h-4 w-4 mr-2" />
+                                Open Calculator
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl">
+                              <DialogHeader>
+                                <DialogTitle>Investment Growth Calculator</DialogTitle>
+                              </DialogHeader>
+                              <div className="grid gap-6 md:grid-cols-2">
+                                <div className="space-y-4">
+                                  <div>
+                                    <Label>Initial Investment ($)</Label>
+                                    <Input
+                                      type="number"
+                                      value={calculatorForm.initialInvestment}
+                                      onChange={(e) => setCalculatorForm({...calculatorForm, initialInvestment: e.target.value})}
+                                      placeholder="10000"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Monthly Contribution ($)</Label>
+                                    <Input
+                                      type="number"
+                                      value={calculatorForm.monthlyContribution}
+                                      onChange={(e) => setCalculatorForm({...calculatorForm, monthlyContribution: e.target.value})}
+                                      placeholder="1000"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Time Horizon (years)</Label>
+                                    <Input
+                                      type="number"
+                                      value={calculatorForm.timeHorizon}
+                                      onChange={(e) => setCalculatorForm({...calculatorForm, timeHorizon: e.target.value})}
+                                      placeholder="10"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Expected Annual Return (%)</Label>
+                                    <Input
+                                      type="number"
+                                      value={calculatorForm.expectedReturn}
+                                      onChange={(e) => setCalculatorForm({...calculatorForm, expectedReturn: e.target.value})}
+                                      placeholder="8"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="space-y-4">
+                                  <div className="p-6 border rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50">
+                                    <h4 className="font-semibold mb-4">Projection Results</h4>
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between">
+                                        <span className="text-sm">Future Value:</span>
+                                        <span className="font-bold text-lg text-green-600">
+                                          ${parseFloat(calculateInvestmentProjection()).toLocaleString()}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-sm">Total Invested:</span>
+                                        <span className="font-semibold">
+                                          ${((parseFloat(calculatorForm.initialInvestment) || 0) + 
+                                            (parseFloat(calculatorForm.monthlyContribution) || 0) * 12 * 
+                                            (parseFloat(calculatorForm.timeHorizon) || 0)).toLocaleString()}
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-sm">Total Growth:</span>
+                                        <span className="font-semibold text-green-600">
+                                          ${(parseFloat(calculateInvestmentProjection()) - 
+                                            (parseFloat(calculatorForm.initialInvestment) || 0) - 
+                                            (parseFloat(calculatorForm.monthlyContribution) || 0) * 12 * 
+                                            (parseFloat(calculatorForm.timeHorizon) || 0)).toLocaleString()}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    * This is a simplified calculation for illustrative purposes only. 
+                                    Actual returns may vary and past performance does not guarantee future results.
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <div className="mt-4 p-3 bg-muted rounded-lg">
+                            <p className="text-sm">Calculate potential returns based on your investment strategy and timeline.</p>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <RefreshCw className="h-4 w-4" />
+                            Portfolio Rebalancing
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <Dialog open={rebalanceDialogOpen} onOpenChange={setRebalanceDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button className="w-full" variant="outline">
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                Rebalance Portfolio
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Portfolio Rebalancing Tool</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="grid gap-4 md:grid-cols-3">
+                                  <div>
+                                    <Label>Target Gold (%)</Label>
+                                    <Input
+                                      type="number"
+                                      value={rebalanceSettings.targetGold}
+                                      onChange={(e) => setRebalanceSettings({...rebalanceSettings, targetGold: e.target.value})}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Target Silver (%)</Label>
+                                    <Input
+                                      type="number"
+                                      value={rebalanceSettings.targetSilver}
+                                      onChange={(e) => setRebalanceSettings({...rebalanceSettings, targetSilver: e.target.value})}
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label>Target Platinum (%)</Label>
+                                    <Input
+                                      type="number"
+                                      value={rebalanceSettings.targetPlatinum}
+                                      onChange={(e) => setRebalanceSettings({...rebalanceSettings, targetPlatinum: e.target.value})}
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <Label>Rebalance Threshold (%)</Label>
+                                  <Input
+                                    type="number"
+                                    value={rebalanceSettings.rebalanceThreshold}
+                                    onChange={(e) => setRebalanceSettings({...rebalanceSettings, rebalanceThreshold: e.target.value})}
+                                    placeholder="5"
+                                  />
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Trigger rebalancing when allocation deviates by this percentage
+                                  </p>
+                                </div>
+                                <Button onClick={handlePortfolioRebalance} className="w-full">
+                                  Analyze Rebalancing Needs
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+
+                          <div className="mt-4 p-3 bg-muted rounded-lg">
+                            <p className="text-sm">Automatically rebalance your portfolio to maintain target allocations.</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Eye className="h-4 w-4" />
+                            Price Alerts & Watchlist
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <Button variant="outline" className="w-full justify-start">
+                              <Bell className="h-4 w-4 mr-2" />
+                              Set Price Alerts
+                            </Button>
+                            <Button variant="outline" className="w-full justify-start">
+                              <Eye className="h-4 w-4 mr-2" />
+                              Manage Watchlist
+                            </Button>
+                            <div className="p-3 bg-muted rounded-lg">
+                              <p className="text-sm">Get notified when precious metals hit your target prices.</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <BookOpen className="h-4 w-4" />
+                            Educational Resources
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <Button variant="outline" className="w-full justify-start">
+                              <BookOpen className="h-4 w-4 mr-2" />
+                              Investment Guides
+                            </Button>
+                            <Button variant="outline" className="w-full justify-start">
+                              <TrendingUp className="h-4 w-4 mr-2" />
+                              Market Analysis
+                            </Button>
+                            <div className="p-3 bg-muted rounded-lg">
+                              <p className="text-sm">Learn about precious metals investing and market trends.</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="actions" className="mt-6">
