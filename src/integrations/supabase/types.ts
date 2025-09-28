@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      investment_accounts: {
+        Row: {
+          account_number: string
+          account_type: string
+          balance: number
+          created_at: string
+          created_by: string
+          gold_holdings: number
+          id: string
+          notes: string | null
+          platinum_holdings: number
+          silver_holdings: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_number: string
+          account_type?: string
+          balance?: number
+          created_at?: string
+          created_by: string
+          gold_holdings?: number
+          id?: string
+          notes?: string | null
+          platinum_holdings?: number
+          silver_holdings?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string
+          account_type?: string
+          balance?: number
+          created_at?: string
+          created_by?: string
+          gold_holdings?: number
+          id?: string
+          notes?: string | null
+          platinum_holdings?: number
+          silver_holdings?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address_line1: string | null
@@ -147,6 +195,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_account_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
