@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
+import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -136,6 +137,12 @@ export default function AdminDashboard() {
       fetchUserAIInsights();
       fetchUserToolSettings();
       fetchUserActionPermissions();
+      
+      // Update form data with selected user
+      setTransactionFormData(prev => ({...prev, userId: selectedUserId}));
+      setPerformanceFormData(prev => ({...prev, userId: selectedUserId}));
+      setRiskFormData(prev => ({...prev, userId: selectedUserId}));
+      setInsightFormData(prev => ({...prev, userId: selectedUserId}));
     }
   }, [selectedUserId]);
 
@@ -1518,86 +1525,16 @@ export default function AdminDashboard() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center justify-between">
-                          <span>Transaction Management</span>
-                          <Button>
+                          <span>Transaction Management for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</span>
+                          <Button onClick={() => setIsTransactionDialogOpen(true)}>
                             <Plus className="h-4 w-4 mr-2" />
                             Add Transaction
                           </Button>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="space-y-4">
-                          <div className="grid gap-4 md:grid-cols-4">
-                            <div>
-                              <Label>Transaction Type</Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="buy">Buy</SelectItem>
-                                  <SelectItem value="sell">Sell</SelectItem>
-                                  <SelectItem value="transfer">Transfer</SelectItem>
-                                  <SelectItem value="dividend">Dividend</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label>Metal Type</Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select metal" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="gold">Gold</SelectItem>
-                                  <SelectItem value="silver">Silver</SelectItem>
-                                  <SelectItem value="platinum">Platinum</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label>Amount (oz)</Label>
-                              <Input type="number" step="0.0001" placeholder="0.0000" />
-                            </div>
-                            <div>
-                              <Label>Price per oz</Label>
-                              <Input type="number" step="0.01" placeholder="0.00" />
-                            </div>
-                          </div>
-                          
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                              <Label>Transaction Date</Label>
-                              <Input type="datetime-local" />
-                            </div>
-                            <div>
-                              <Label>Status</Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="completed">Completed</SelectItem>
-                                  <SelectItem value="pending">Pending</SelectItem>
-                                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-
-                          <div>
-                            <Label>Transaction Notes</Label>
-                            <Textarea placeholder="Optional notes about this transaction..." />
-                          </div>
-
-                          <div className="flex gap-2">
-                            <Button>Create Transaction</Button>
-                            <Button variant="outline">Save as Draft</Button>
-                          </div>
-                        </div>
-
-                        <div className="mt-8">
-                          <h4 className="font-semibold mb-4">Recent Transactions</h4>
+                        <div className="mt-6">
+                          <h4 className="font-semibold mb-4">User Transactions</h4>
                           <Table>
                             <TableHeader>
                               <TableRow>
@@ -1605,30 +1542,66 @@ export default function AdminDashboard() {
                                 <TableHead>Type</TableHead>
                                 <TableHead>Metal</TableHead>
                                 <TableHead>Amount</TableHead>
-                                <TableHead>Price</TableHead>
+                                <TableHead>Price/oz</TableHead>
+                                <TableHead>Total Value</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Actions</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              <TableRow>
-                                <TableCell>Oct 15, 2024</TableCell>
-                                <TableCell>
-                                  <Badge variant="default">Buy</Badge>
-                                </TableCell>
-                                <TableCell>Gold</TableCell>
-                                <TableCell>2.5000 oz</TableCell>
-                                <TableCell>$2,450.00</TableCell>
-                                <TableCell>
-                                  <Badge variant="default">Completed</Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex gap-1">
-                                    <Button size="sm" variant="ghost">Edit</Button>
-                                    <Button size="sm" variant="ghost">Delete</Button>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
+                              {userTransactions.length > 0 ? userTransactions.map((transaction) => (
+                                <TableRow key={transaction.id}>
+                                  <TableCell>
+                                    {new Date(transaction.transaction_date).toLocaleDateString()}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge variant={transaction.transaction_type === 'buy' ? 'default' : 
+                                      transaction.transaction_type === 'sell' ? 'destructive' : 'secondary'}>
+                                      {transaction.transaction_type}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="capitalize">{transaction.metal_type}</TableCell>
+                                  <TableCell>{Number(transaction.amount).toFixed(4)} oz</TableCell>
+                                  <TableCell>${Number(transaction.price_per_oz).toFixed(2)}</TableCell>
+                                  <TableCell>${Number(transaction.total_value).toFixed(2)}</TableCell>
+                                  <TableCell>
+                                    <Badge variant={transaction.status === 'completed' ? 'default' : 
+                                      transaction.status === 'pending' ? 'secondary' : 'destructive'}>
+                                      {transaction.status}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex gap-1">
+                                      <Button size="sm" variant="ghost" onClick={() => {
+                                        setEditingTransaction(transaction);
+                                        setTransactionFormData({
+                                          userId: selectedUserId,
+                                          transactionType: transaction.transaction_type,
+                                          metalType: transaction.metal_type,
+                                          amount: transaction.amount.toString(),
+                                          pricePerOz: transaction.price_per_oz.toString(),
+                                          transactionDate: new Date(transaction.transaction_date).toISOString().slice(0, 16),
+                                          status: transaction.status,
+                                          notes: transaction.notes || ''
+                                        });
+                                        setIsTransactionDialogOpen(true);
+                                      }}>Edit</Button>
+                                      <Button size="sm" variant="destructive" onClick={() => handleDeleteTransaction(transaction.id)}>
+                                        Delete
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )) : (
+                                <TableRow>
+                                  <TableCell colSpan={8} className="text-center py-8">
+                                    <p className="text-muted-foreground">No transactions found for this user.</p>
+                                    <Button onClick={() => setIsTransactionDialogOpen(true)} className="mt-2">
+                                      Create First Transaction
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              )}
                             </TableBody>
                           </Table>
                         </div>
@@ -1639,7 +1612,7 @@ export default function AdminDashboard() {
                   <TabsContent value="performance-admin" className="space-y-6 mt-6">
                     <Card>
                       <CardHeader>
-                        <CardTitle>Performance Metrics Management</CardTitle>
+                        <CardTitle>Performance Metrics for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-6">
@@ -1649,19 +1622,43 @@ export default function AdminDashboard() {
                               <div className="space-y-3">
                                 <div>
                                   <Label>1 Month Return (%)</Label>
-                                  <Input type="number" step="0.01" placeholder="5.2" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01" 
+                                    value={userPerformanceMetrics?.one_month_return || performanceFormData.oneMonthReturn}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, oneMonthReturn: e.target.value})}
+                                    placeholder="5.2" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>3 Month Return (%)</Label>
-                                  <Input type="number" step="0.01" placeholder="12.8" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01" 
+                                    value={userPerformanceMetrics?.three_month_return || performanceFormData.threeMonthReturn}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, threeMonthReturn: e.target.value})}
+                                    placeholder="12.8" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>YTD Return (%)</Label>
-                                  <Input type="number" step="0.01" placeholder="28.4" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01" 
+                                    value={userPerformanceMetrics?.ytd_return || performanceFormData.ytdReturn}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, ytdReturn: e.target.value})}
+                                    placeholder="28.4" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>All Time Return (%)</Label>
-                                  <Input type="number" step="0.01" placeholder="156.7" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01" 
+                                    value={userPerformanceMetrics?.all_time_return || performanceFormData.allTimeReturn}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, allTimeReturn: e.target.value})}
+                                    placeholder="156.7" 
+                                  />
                                 </div>
                               </div>
                             </Card>
@@ -1671,61 +1668,79 @@ export default function AdminDashboard() {
                               <div className="space-y-3">
                                 <div>
                                   <Label>Gold Target (oz)</Label>
-                                  <Input type="number" placeholder="100" />
-                                </div>
-                                <div>
-                                  <Label>Portfolio Target ($)</Label>
-                                  <Input type="number" placeholder="15000000" />
+                                  <Input 
+                                    type="number" 
+                                    value={userPerformanceMetrics?.gold_target_oz || performanceFormData.goldTargetOz}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, goldTargetOz: e.target.value})}
+                                    placeholder="100" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Silver Target (oz)</Label>
-                                  <Input type="number" placeholder="500" />
+                                  <Input 
+                                    type="number" 
+                                    value={userPerformanceMetrics?.silver_target_oz || performanceFormData.silverTargetOz}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, silverTargetOz: e.target.value})}
+                                    placeholder="500" 
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Platinum Target (oz)</Label>
+                                  <Input 
+                                    type="number" 
+                                    value={userPerformanceMetrics?.platinum_target_oz || performanceFormData.platinumTargetOz}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, platinumTargetOz: e.target.value})}
+                                    placeholder="50" 
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Portfolio Target ($)</Label>
+                                  <Input 
+                                    type="number" 
+                                    value={userPerformanceMetrics?.portfolio_target_value || performanceFormData.portfolioTargetValue}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, portfolioTargetValue: e.target.value})}
+                                    placeholder="15000000" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Target Date</Label>
-                                  <Input type="date" />
+                                  <Input 
+                                    type="date" 
+                                    value={userPerformanceMetrics?.target_date ? new Date(userPerformanceMetrics.target_date).toISOString().slice(0, 10) : performanceFormData.targetDate}
+                                    onChange={(e) => setPerformanceFormData({...performanceFormData, targetDate: e.target.value})}
+                                  />
                                 </div>
                               </div>
                             </Card>
                           </div>
 
-                          <Card className="p-4">
-                            <h4 className="font-semibold mb-3">Performance History</h4>
-                            <div className="space-y-3">
-                              <div className="flex gap-2">
-                                <Button size="sm">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  Add Entry
-                                </Button>
-                                <Button size="sm" variant="outline">
-                                  <Download className="h-4 w-4 mr-1" />
-                                  Export Data
-                                </Button>
-                              </div>
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead>Period</TableHead>
-                                    <TableHead>Return %</TableHead>
-                                    <TableHead>Portfolio Value</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  <TableRow>
-                                    <TableCell>October 2024</TableCell>
-                                    <TableCell className="text-green-600">+5.2%</TableCell>
-                                    <TableCell>$11,234,535</TableCell>
-                                    <TableCell>
-                                      <Button size="sm" variant="ghost">Edit</Button>
-                                    </TableCell>
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </Card>
+                          <Button onClick={handleSavePerformanceMetrics} className="w-full">
+                            Save Performance Metrics
+                          </Button>
 
-                          <Button className="w-full">Update Performance Metrics</Button>
+                          {userPerformanceMetrics && (
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Current Performance Summary</h4>
+                              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">1 Month</p>
+                                  <p className="text-2xl font-bold text-green-600">+{userPerformanceMetrics.one_month_return || 0}%</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">3 Month</p>
+                                  <p className="text-2xl font-bold text-green-600">+{userPerformanceMetrics.three_month_return || 0}%</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">YTD</p>
+                                  <p className="text-2xl font-bold text-green-600">+{userPerformanceMetrics.ytd_return || 0}%</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">All Time</p>
+                                  <p className="text-2xl font-bold text-green-600">+{userPerformanceMetrics.all_time_return || 0}%</p>
+                                </div>
+                              </div>
+                            </Card>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -2524,6 +2539,51 @@ export default function AdminDashboard() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Transaction Dialog */}
+        <TransactionDialog
+          isOpen={isTransactionDialogOpen}
+          onClose={() => {
+            setIsTransactionDialogOpen(false);
+            setEditingTransaction(null);
+            setTransactionFormData({
+              userId: selectedUserId,
+              transactionType: 'buy',
+              metalType: 'gold',
+              amount: '0.0000',
+              pricePerOz: '0.00',
+              transactionDate: new Date().toISOString().slice(0, 16),
+              status: 'completed',
+              notes: ''
+            });
+          }}
+          onSave={editingTransaction ? handleUpdateTransaction : handleCreateTransaction}
+          formData={transactionFormData}
+          setFormData={setTransactionFormData}
+          isEditing={!!editingTransaction}
+        />
+
+        {/* AI Insight Dialog */}
+        <AIInsightDialog
+          isOpen={isInsightDialogOpen}
+          onClose={() => {
+            setIsInsightDialogOpen(false);
+            setInsightFormData({
+              userId: selectedUserId,
+              insightType: 'buy_signal',
+              metalFocus: 'gold',
+              confidenceScore: '75',
+              recommendation: '',
+              reasoning: '',
+              isActive: true,
+              priority: '1',
+              expiresAt: ''
+            });
+          }}
+          onSave={handleCreateAIInsight}
+          formData={insightFormData}
+          setFormData={setInsightFormData}
+        />
       </main>
     </div>
   );
