@@ -16,51 +16,69 @@ export const parseGoldProductsCSV = async (csvPath: string): Promise<any[]> => {
       Papa.parse(csvText, {
         header: true,
         skipEmptyLines: true,
-        transformHeader: (header: string) => {
-          // Clean up header names
-          if (header.includes('Image')) return 'Image';
-          if (header.includes('URL')) return 'URL';
-          if (header.includes('Description')) return 'Description';
-          if (header.includes('�')) return 'Price';
-          return header;
-        },
         complete: (results) => {
+          console.log('CSV Parse Results:', results);
+          console.log('Headers:', results.meta.fields);
+          
           const products = results.data.map((row: any, index: number) => {
+            console.log('Processing row:', row);
+            
+            // Get the actual column names from the CSV
+            const columns = Object.keys(row);
+            const imageCol = columns.find(col => col.toLowerCase().includes('image')) || columns[0];
+            const urlCol = columns.find(col => col.toLowerCase().includes('url')) || columns[1]; 
+            const descCol = columns.find(col => col.toLowerCase().includes('description')) || columns[2];
+            
+            // Find price column - look for € symbol or price-like data
+            const priceCol = columns.find(col => {
+              const value = row[col];
+              return value && (value.includes('€') || value.includes('$') || /^\d+[.,]\d+/.test(value));
+            }) || columns[4]; // Default to 5th column based on CSV structure
+            
+            console.log('Price column:', priceCol, 'Value:', row[priceCol]);
+            
             // Extract price number from string like "€ 2,134.34"
-            const priceStr = row.Price || '0';
+            const priceStr = row[priceCol] || '0';
             const priceNumber = parseFloat(
-              priceStr.replace(/[€,\s]/g, '').replace(/[^\d.]/g, '') || '0'
+              priceStr.replace(/[€$,\s"]/g, '').replace(/[^\d.]/g, '') || '0'
             );
             
+            console.log('Extracted price:', priceNumber);
+            
             // Extract weight from description
-            const description = row.Description || '';
+            const description = row[descCol] || '';
             const weightMatch = description.match(/(\d+\s*(gram|ounce|oz))/i);
             const weight = weightMatch ? weightMatch[0] : '1 oz';
             
             // Extract mint from description
-            const mintMatch = description.match(/(PAMP Suisse|Credit Suisse|Royal Canadian Mint|US Mint|Perth Mint)/i);
+            const mintMatch = description.match(/(PAMP Suisse|Credit Suisse|Royal Canadian Mint|US Mint|Perth Mint|C\. Hafner|Argor-Heraeus|Heraeus)/i);
             const mint = mintMatch ? mintMatch[0] : 'Unknown Mint';
             
-            return {
+            const product = {
               id: `csv-gold-${index + 1}`,
               name: description,
               price: priceNumber * 1.1, // Convert EUR to USD roughly
               originalPrice: undefined,
-              image: row.Image || "/api/placeholder/300/300",
+              image: row[imageCol] || "/api/placeholder/300/300",
               metal: "gold" as const,
               weight: weight,
               purity: description.toLowerCase().includes('999') ? '99.9% fine' : '24 karat',
               mint: mint,
               inStock: true,
-              rating: 4.5 + Math.random() * 0.4, // Random rating between 4.5-4.9
+              rating: 4.5 + Math.random() * 0.4,
               reviews: Math.floor(Math.random() * 500) + 100,
               description: description
             };
+            
+            console.log('Created product:', product);
+            return product;
           });
           
+          console.log('Final products:', products);
           resolve(products);
         },
         error: (error) => {
+          console.error('CSV parsing error:', error);
           reject(error);
         }
       });
