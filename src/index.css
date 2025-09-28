@@ -136,4 +136,31 @@ All colors MUST be HSL.
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
+
+  /* Text Gradient Utilities */
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-gold-dark to-gold bg-clip-text text-transparent;
+  }
+
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-navy-light bg-clip-text text-transparent;
+  }
+
+  /* Backdrop Effects */
+  .glass-effect {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-muted rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gold/50 rounded-full hover:bg-gold;
+  }
 }
