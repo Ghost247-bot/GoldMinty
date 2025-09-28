@@ -526,9 +526,13 @@ export default function Login() {
                           <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:border-gold">
                             <SelectValue placeholder="Select your first security question" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
                             {securityQuestions.map((question) => (
-                              <SelectItem key={question.id} value={question.id}>
+                              <SelectItem 
+                                key={question.id} 
+                                value={question.id}
+                                className="hover:bg-muted focus:bg-muted cursor-pointer"
+                              >
                                 {question.question}
                               </SelectItem>
                             ))}
@@ -552,11 +556,15 @@ export default function Login() {
                           <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:border-gold">
                             <SelectValue placeholder="Select your second security question" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
                             {securityQuestions
                               .filter(q => q.id !== selectedQuestion1)
                               .map((question) => (
-                                <SelectItem key={question.id} value={question.id}>
+                                <SelectItem 
+                                  key={question.id} 
+                                  value={question.id}
+                                  className="hover:bg-muted focus:bg-muted cursor-pointer"
+                                >
                                   {question.question}
                                 </SelectItem>
                               ))}
