@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import categoryGold from "@/assets/category-gold.jpg";
 import categorySilver from "@/assets/category-silver.jpg";
 import categoryPlatinum from "@/assets/category-platinum.jpg";
@@ -13,24 +14,25 @@ interface Category {
 }
 
 const ProductCategories = () => {
+  const navigate = useNavigate();
   const categories: Category[] = [
     {
       title: "Gold",
       subtitle: "Bars & Coins",
       image: categoryGold,
-      href: "#gold"
+      href: "/products/gold"
     },
     {
       title: "Silver",
       subtitle: "Premium Selection",
       image: categorySilver,
-      href: "#silver"
+      href: "/products/silver"
     },
     {
       title: "Platinum & Palladium",
       subtitle: "Rare Metals",
       image: categoryPlatinum,
-      href: "#platinum"
+      href: "/products/platinum"
     }
   ];
 
@@ -52,7 +54,11 @@ const ProductCategories = () => {
           <h3 className="text-2xl font-bold text-primary mb-8">Shop our categories</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categories.map((category, index) => (
-              <Card key={index} className="group overflow-hidden cursor-pointer border-0 shadow-card hover:shadow-luxury transition-all duration-300">
+              <Card 
+                key={index} 
+                className="group overflow-hidden cursor-pointer border-0 shadow-card hover:shadow-luxury transition-all duration-300"
+                onClick={() => navigate(category.href)}
+              >
                 <CardContent className="p-0">
                   <div className="relative aspect-square overflow-hidden">
                     <img 
@@ -69,6 +75,10 @@ const ProductCategories = () => {
                       variant="secondary"
                       size="sm"
                       className="absolute bottom-6 right-6 bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(category.href);
+                      }}
                     >
                       Shop Now
                       <ArrowRight className="ml-2 w-3 h-3" />
@@ -108,7 +118,11 @@ const ProductCategories = () => {
             </div>
           </div>
           
-          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button 
+            size="lg" 
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={() => navigate("/products")}
+          >
             View All Products
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>

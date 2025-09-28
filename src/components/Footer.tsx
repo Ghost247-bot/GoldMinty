@@ -2,16 +2,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
 
 const Footer = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+
+  const handleNewsletterSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      toast({
+        title: "Thank you for subscribing!",
+        description: "You'll receive our latest market insights and exclusive offers.",
+      });
+      setEmail("");
+    }
+  };
   const productLinks = [
-    { label: "Gold Bars", href: "#" },
-    { label: "Gold Coins", href: "#" },
-    { label: "Silver Bars", href: "#" },
-    { label: "Silver Coins", href: "#" },
-    { label: "Platinum Products", href: "#" },
-    { label: "Palladium Products", href: "#" },
+    { label: "Gold Bars", href: "/products/gold" },
+    { label: "Gold Coins", href: "/products/gold" },
+    { label: "Silver Bars", href: "/products/silver" },
+    { label: "Silver Coins", href: "/products/silver" },
+    { label: "Platinum Products", href: "/products/platinum" },
+    { label: "Palladium Products", href: "/products/platinum" },
   ];
 
   const companyLinks = [
@@ -58,16 +75,19 @@ const Footer = () => {
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
               Get exclusive market analysis, precious metals insights, and early access to new products.
             </p>
-            <div className="flex max-w-md mx-auto gap-4">
+            <form onSubmit={handleNewsletterSignup} className="flex max-w-md mx-auto gap-4">
               <Input
                 type="email"
                 placeholder="Enter your email"
                 className="bg-navy-light border-navy-light text-white placeholder:text-gray-400"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              <Button variant="gold" className="whitespace-nowrap">
+              <Button variant="gold" className="whitespace-nowrap" type="submit">
                 Subscribe
               </Button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -77,7 +97,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
+            <div 
+              className="flex items-center gap-3 mb-6 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate("/")}
+            >
               <img src={logoSymbol} alt="Gold Avenue" className="h-8 w-8" />
               <span className="text-xl font-bold">GOLD AVENUE</span>
             </div>
@@ -107,12 +130,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {productLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-gold transition-colors duration-200"
+                  <button
+                    onClick={() => navigate(link.href)}
+                    className="text-gray-300 hover:text-gold transition-colors duration-200 text-left"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>

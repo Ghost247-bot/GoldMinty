@@ -1,8 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import heroGoldBars from "@/assets/hero-gold-bars.jpg";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = 5;
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
   return (
     <section className="relative bg-gradient-to-r from-navy-deep to-navy-light overflow-hidden">
       <div className="container mx-auto px-4 py-16 lg:py-24">
@@ -25,6 +42,7 @@ const HeroSection = () => {
             <Button 
               size="lg"
               variant="hero"
+              onClick={() => navigate("/products/gold")}
             >
               SHOP NOW
               <ArrowRight className="ml-2 w-4 h-4" />
@@ -45,18 +63,25 @@ const HeroSection = () => {
 
         {/* Navigation dots */}
         <div className="flex items-center justify-center mt-12 gap-2">
-          <ChevronLeft className="w-6 h-6 text-white/50 hover:text-white cursor-pointer transition-colors" />
+          <ChevronLeft 
+            className="w-6 h-6 text-white/50 hover:text-white cursor-pointer transition-colors" 
+            onClick={prevSlide}
+          />
           <div className="flex gap-2">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(totalSlides)].map((_, i) => (
               <div 
                 key={i}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  i === 0 ? 'bg-white' : 'bg-white/30'
+                className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${
+                  i === currentSlide ? 'bg-white' : 'bg-white/30'
                 }`}
+                onClick={() => goToSlide(i)}
               />
             ))}
           </div>
-          <ChevronRight className="w-6 h-6 text-white/50 hover:text-white cursor-pointer transition-colors" />
+          <ChevronRight 
+            className="w-6 h-6 text-white/50 hover:text-white cursor-pointer transition-colors" 
+            onClick={nextSlide}
+          />
         </div>
       </div>
     </section>
