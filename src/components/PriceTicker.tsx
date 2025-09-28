@@ -16,29 +16,20 @@ const PriceTicker = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-primary via-navy-light to-primary text-primary-foreground py-4 px-4 overflow-hidden relative">
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0 bg-white/5 animate-pulse"></div>
-      </div>
-      <div className="container mx-auto relative z-10">
+    <div className="bg-primary text-primary-foreground py-3 px-4 border-b">
+      <div className="container mx-auto">
         <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-3 animate-fade-in">
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full backdrop-blur-sm">
-              <TrendingUp className="w-4 h-4 text-success animate-pulse" />
-              <span className="font-medium">Live Market Data</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-success" />
+            <span className="font-medium">Live Market Prices</span>
           </div>
           <div className="flex items-center gap-8">
-            {priceData.map((data, index) => (
-              <div 
-                key={data.metal} 
-                className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg backdrop-blur-sm hover:bg-white/10 transition-all duration-300 animate-fade-in hover-scale"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <span className="font-medium text-white/80">{data.metal}</span>
+            {priceData.map((data) => (
+              <div key={data.metal} className="flex items-center gap-2">
+                <span className="font-medium">{data.metal}</span>
                 <span className="font-bold text-gold">{data.price}</span>
-                <span className={`text-xs px-2 py-1 rounded-full ${data.isPositive ? 'text-success bg-success/20' : 'text-destructive bg-destructive/20'}`}>
-                  {data.change}
+                <span className={`text-xs ${data.isPositive ? 'text-success' : 'text-destructive'}`}>
+                  ({data.change})
                 </span>
               </div>
             ))}

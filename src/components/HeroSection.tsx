@@ -1,264 +1,98 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronLeft, ChevronRight, Play, Pause, TrendingUp, Shield, Award } from "lucide-react";
+import { ArrowRight, Shield, Award, Globe, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import heroGoldBars from "@/assets/hero-gold-bars.jpg";
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const slides = [
-    {
-      title: "TRUSTED MINTS,",
-      titleHighlight: "GLOBAL PRESTIGE",
-      subtitle: "Gold Bars",
-      description: "Discover premium gold bars from the world's most trusted mints. Secure your wealth with internationally recognized precious metals.",
-      image: heroGoldBars,
-      ctaText: "SHOP GOLD BARS",
-      ctaAction: () => navigate("/products/gold"),
-      stats: { label: "Gold Spot Price", value: "$2,089.50", change: "+0.74%" }
-    },
-    {
-      title: "SECURE VAULT",
-      titleHighlight: "STORAGE",
-      subtitle: "Swiss Security",
-      description: "Store your precious metals in our certified Swiss vaults with bank-level security and full insurance coverage.",
-      image: heroGoldBars,
-      ctaText: "LEARN MORE",
-      ctaAction: () => navigate("/about"),
-      stats: { label: "Assets Secured", value: "$2.5B+", change: "100% Insured" }
-    },
-    {
-      title: "INSTANT",
-      titleHighlight: "BUYBACK",
-      subtitle: "Liquidity",
-      description: "Sell your precious metals instantly at competitive market rates. Access your investment when you need it most.",
-      image: heroGoldBars,
-      ctaText: "START TRADING",
-      ctaAction: () => navigate("/products"),
-      stats: { label: "Avg. Processing", value: "< 24hrs", change: "Guaranteed" }
-    },
-    {
-      title: "MARKET",
-      titleHighlight: "INSIGHTS",
-      subtitle: "Expert Analysis",
-      description: "Stay ahead with our comprehensive market analysis and expert commentary on precious metals trends.",
-      image: heroGoldBars,
-      ctaText: "VIEW CHARTS",
-      ctaAction: () => navigate("/charts"),
-      stats: { label: "Market Cap", value: "$15.7T", change: "+12.3%" }
-    },
-    {
-      title: "GLOBAL",
-      titleHighlight: "DELIVERY",
-      subtitle: "Worldwide Shipping",
-      description: "Secure delivery to 40+ countries with full insurance and tracking. Your investment, delivered safely.",
-      image: heroGoldBars,
-      ctaText: "SHIPPING INFO",
-      ctaAction: () => navigate("/shipping"),
-      stats: { label: "Countries Served", value: "40+", change: "Free Shipping" }
-    }
-  ];
-
-  const totalSlides = slides.length;
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlaying(!isAutoPlaying);
-  };
-
-  // Auto-play functionality
-  useEffect(() => {
-    if (isAutoPlaying && !isHovered) {
-      const interval = setInterval(() => {
-        nextSlide();
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [isAutoPlaying, isHovered, currentSlide]);
-
-  const currentSlideData = slides[currentSlide];
 
   return (
-    <section 
-      className="relative bg-gradient-to-r from-navy-deep to-navy-light overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent"></div>
-      </div>
-
-      <div className="container mx-auto px-4 py-16 lg:py-24 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <div className="text-white space-y-8">
-            {/* Animated Badge */}
-            <div className="animate-fade-in">
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-                <Award className="w-4 h-4 text-gold" />
-                <p className="text-gold text-sm font-medium tracking-wide">
-                  {currentSlideData.subtitle}
+    <section className="relative bg-gradient-to-b from-background to-muted/30 py-20">
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Content */}
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight">
+                  Premium <span className="text-gold">Precious Metals</span> for Smart Investors
+                </h1>
+                
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  Discover our carefully curated selection of gold, silver, platinum, and palladium from the world's most trusted mints. Build your wealth with confidence.
                 </p>
-              </div>
-            </div>
-
-            {/* Main Title with Animation */}
-            <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                <span className="block">{currentSlideData.title}</span>
-                <span className="text-gold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
-                  {currentSlideData.titleHighlight}
-                </span>
-              </h1>
-              
-              {/* Stats Display */}
-              <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/10">
-                <TrendingUp className="w-5 h-5 text-green-400" />
-                <div>
-                  <span className="text-sm text-white/60">{currentSlideData.stats.label}: </span>
-                  <span className="font-bold text-lg">{currentSlideData.stats.value}</span>
-                  <span className="text-green-400 text-sm ml-2">{currentSlideData.stats.change}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <p className="text-lg text-white/80 max-w-lg leading-relaxed animate-fade-in" style={{ animationDelay: '0.4s' }}>
-              {currentSlideData.description}
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-              <Button 
-                size="lg"
-                variant="hero"
-                onClick={currentSlideData.ctaAction}
-                className="hover-scale group"
-              >
-                {currentSlideData.ctaText}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              
-              <Button 
-                size="lg"
-                variant="outline"
-                onClick={() => navigate("/contact")}
-                className="border-white/30 text-white hover:bg-white/10"
-              >
-                <Shield className="mr-2 w-4 h-4" />
-                Get Expert Advice
-              </Button>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="flex items-center gap-6 pt-4 animate-fade-in" style={{ animationDelay: '0.8s' }}>
-              <div className="flex items-center gap-2 text-white/60">
-                <Shield className="w-4 h-4" />
-                <span className="text-sm">FINMA Regulated</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/60">
-                <Award className="w-4 h-4" />
-                <span className="text-sm">25+ Years Experience</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Image */}
-          <div className="relative animate-scale-in" style={{ animationDelay: '0.3s' }}>
-            <div className="aspect-video rounded-xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
-              <img 
-                src={currentSlideData.image} 
-                alt="Premium Precious Metals"
-                className="w-full h-full object-cover"
-              />
-              {/* Overlay with gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/50 to-transparent"></div>
-              
-              {/* Floating Stats Card */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white/80 text-sm">Current Spot Price</p>
-                      <p className="text-white font-bold text-lg">Gold: $2,089.50</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-green-400 text-sm">+0.74%</p>
-                      <p className="text-white/80 text-xs">24h Change</p>
-                    </div>
+                
+                {/* Key Features */}
+                <div className="flex flex-wrap gap-4 text-sm">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border">
+                    <Shield className="w-4 h-4 text-gold" />
+                    <span>Swiss-Grade Security</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border">
+                    <Award className="w-4 h-4 text-gold" />
+                    <span>Certified Authentic</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-card rounded-lg border">
+                    <Globe className="w-4 h-4 text-gold" />
+                    <span>Worldwide Delivery</span>
                   </div>
                 </div>
               </div>
+              
+              {/* Call to Action */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg" 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => navigate("/products")}
+                >
+                  Browse Collection
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => navigate("/prices")}
+                >
+                  View Live Prices
+                </Button>
+              </div>
+              
+              {/* Trust Indicators */}
+              <div className="pt-6 border-t">
+                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 fill-gold text-gold" />
+                    <span className="font-semibold text-foreground">4.9/5</span>
+                    <span>Customer Rating</span>
+                  </div>
+                  <div className="w-px h-4 bg-border"></div>
+                  <span><strong>151,000+</strong> Satisfied Customers</span>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Enhanced Navigation */}
-        <div className="flex items-center justify-center mt-12 gap-6 animate-fade-in" style={{ animationDelay: '1s' }}>
-          {/* Previous Button */}
-          <button 
-            onClick={prevSlide}
-            className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-colors hover-scale"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-
-          {/* Slide Indicators */}
-          <div className="flex items-center gap-3">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                className={`transition-all duration-300 rounded-full ${
-                  i === currentSlide 
-                    ? 'w-8 h-2 bg-gold' 
-                    : 'w-2 h-2 bg-white/30 hover:bg-white/50'
-                }`}
-                onClick={() => goToSlide(i)}
-              />
-            ))}
-          </div>
-
-          {/* Next Button */}
-          <button 
-            onClick={nextSlide}
-            className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-colors hover-scale"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-
-          {/* Auto-play Toggle */}
-          <button 
-            onClick={toggleAutoPlay}
-            className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 transition-colors ml-4 hover-scale"
-            title={isAutoPlaying ? "Pause slideshow" : "Play slideshow"}
-          >
-            {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          </button>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mt-6 max-w-xs mx-auto">
-          <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-gold to-yellow-400 transition-all duration-300 ease-out"
-              style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
-            />
+            
+            {/* Hero Image */}
+            <div className="relative">
+              <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-gold/10 to-gold/5 border">
+                <img 
+                  src={heroGoldBars}
+                  alt="Premium gold bars and coins"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              
+              {/* Floating Stats */}
+              <div className="absolute -bottom-6 -left-6 bg-card border rounded-xl p-4 shadow-lg">
+                <div className="text-2xl font-bold text-gold">$550M+</div>
+                <div className="text-sm text-muted-foreground">Total Sales</div>
+              </div>
+              
+              <div className="absolute -top-6 -right-6 bg-card border rounded-xl p-4 shadow-lg">
+                <div className="text-2xl font-bold text-gold">20+</div>
+                <div className="text-sm text-muted-foreground">Years Experience</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

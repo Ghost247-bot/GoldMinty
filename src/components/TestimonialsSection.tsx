@@ -35,32 +35,23 @@ const TestimonialsSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-muted/30 to-background">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-primary mb-4">
-            What Our <span className="text-gold">Investors</span> Say
+        <div className="text-center mb-12">
+          <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
+            Customer Testimonials
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Don't just take our word for it. Here's what our satisfied customers have to say about their experience.
+            Read what our satisfied customers have to say about their experience with Gold Avenue.
           </p>
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {testimonials.map((testimonial, index) => (
-            <Card 
-              key={index}
-              className="group relative overflow-hidden border-0 bg-gradient-to-br from-card to-card/50 shadow-card hover:shadow-luxury transition-all duration-500 animate-scale-in hover-scale"
-              style={{ animationDelay: `${index * 0.2}s` }}
-            >
-              <CardContent className="p-8">
-                {/* Quote Icon */}
-                <div className="mb-6">
-                  <Quote className="w-8 h-8 text-gold/60" />
-                </div>
-
+            <Card key={index} className="h-full">
+              <CardContent className="p-6">
                 {/* Rating */}
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -69,43 +60,40 @@ const TestimonialsSection = () => {
                 </div>
 
                 {/* Content */}
-                <p className="text-muted-foreground leading-relaxed mb-6 italic">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   "{testimonial.content}"
                 </p>
 
                 {/* Author */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <img 
                     src={testimonial.image}
                     alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full object-cover"
                   />
                   <div>
-                    <div className="font-semibold text-primary">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                    <div className="font-semibold text-primary text-sm">{testimonial.name}</div>
+                    <div className="text-xs text-muted-foreground">{testimonial.role}</div>
                   </div>
                 </div>
-
-                {/* Decorative gradient */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gold/5 to-transparent rounded-full blur-2xl group-hover:from-gold/10 transition-all duration-500"></div>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Trust indicators */}
-        <div className="mt-16 text-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
-          <div className="inline-flex items-center gap-8 px-8 py-4 bg-card/50 rounded-full border border-border/50">
+        <div className="text-center">
+          <div className="inline-flex items-center gap-6 px-6 py-3 bg-muted rounded-lg">
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 fill-gold text-gold" />
+              <Star className="w-4 h-4 fill-gold text-gold" />
               <span className="font-semibold text-primary">4.9/5</span>
-              <span className="text-sm text-muted-foreground">Customer Rating</span>
+              <span className="text-sm text-muted-foreground">Rating</span>
             </div>
-            <div className="w-px h-6 bg-border"></div>
+            <div className="w-px h-4 bg-border"></div>
             <div className="text-sm text-muted-foreground">
               <span className="font-semibold text-primary">10,000+</span> Reviews
             </div>
-            <div className="w-px h-6 bg-border"></div>
+            <div className="w-px h-4 bg-border"></div>
             <div className="text-sm text-muted-foreground">
               <span className="font-semibold text-primary">A+</span> BBB Rating
             </div>
