@@ -349,7 +349,7 @@ export default function AdminDashboard() {
                         <TableCell className="font-medium">
                           {user.full_name || 'Unknown'}
                         </TableCell>
-                        <TableCell>{user.user_id}</TableCell>
+                        <TableCell>{user.email || user.user_id}</TableCell>
                         <TableCell>
                           <Badge variant={user.user_roles.role === 'admin' ? 'destructive' : 'secondary'}>
                             {user.user_roles.role}
@@ -401,10 +401,14 @@ export default function AdminDashboard() {
                             <SelectTrigger>
                               <SelectValue placeholder="Select a user" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
                               {allUsers.map((user) => (
-                                <SelectItem key={user.user_id} value={user.user_id}>
-                                  {user.full_name || 'Unknown User'} - {user.user_id.slice(0, 8)}...
+                                <SelectItem 
+                                  key={user.user_id} 
+                                  value={user.user_id}
+                                  className="hover:bg-muted focus:bg-muted cursor-pointer"
+                                >
+                                  {user.full_name || 'Unknown User'} ({user.email || 'No email'})
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -570,10 +574,14 @@ export default function AdminDashboard() {
                             <SelectTrigger>
                               <SelectValue placeholder="Select a user" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
                               {allUsers.map((user) => (
-                                <SelectItem key={user.user_id} value={user.user_id}>
-                                  {user.full_name || 'Unknown User'} - {user.user_id.slice(0, 8)}...
+                                <SelectItem 
+                                  key={user.user_id} 
+                                  value={user.user_id}
+                                  className="hover:bg-muted focus:bg-muted cursor-pointer"
+                                >
+                                  {user.full_name || 'Unknown User'} ({user.email || 'No email'})
                                 </SelectItem>
                               ))}
                             </SelectContent>
