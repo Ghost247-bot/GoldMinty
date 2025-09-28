@@ -56,6 +56,13 @@ const HeroSection = () => {
                 >
                   View Live Prices
                 </Button>
+                <Button 
+                  variant="secondary" 
+                  size="lg"
+                  onClick={() => navigate("/login")}
+                >
+                  Login to Dashboard
+                </Button>
               </div>
               
               {/* Trust Indicators */}

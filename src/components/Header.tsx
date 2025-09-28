@@ -1,12 +1,13 @@
-import { Search, Phone, Globe, ShoppingCart, User, ChevronDown, Menu } from "lucide-react";
+import { Search, Phone, Globe, ShoppingCart, User, ChevronDown, Menu, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -21,6 +22,15 @@ const Header = () => {
     cartState = cartContext.state;
   } catch (error) {
     console.warn('Cart context not available:', error);
+  }
+
+  // Safe auth access with fallback
+  let authState = { user: null, userRole: null, signOut: () => {} };
+  try {
+    const authContext = useAuth();
+    authState = authContext;
+  } catch (error) {
+    console.warn('Auth context not available:', error);
   }
 
   const languages = [
@@ -111,13 +121,41 @@ const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
             <span>$ USD</span>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => navigate("/auth")}
-            >
-              Sign in
-            </Button>
+            {!authState.user ? (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate("/login")}
+              >
+                Sign in
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    {authState.user.email}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  {authState.userRole === 'admin' && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={authState.signOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 
@@ -197,13 +235,37 @@ const Header = () => {
               )}
             </Button>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate("/auth")}
-            >
-              <User className="w-5 h-5" />
-            </Button>
+{!authState.user ? (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate("/login")}
+              >
+                <User className="w-5 h-5" />
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <User className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    Dashboard
+                  </DropdownMenuItem>
+                  {authState.userRole === 'admin' && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={authState.signOut}>
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
 
