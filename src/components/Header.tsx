@@ -1,7 +1,8 @@
-import { Search, Phone, Globe, ShoppingCart, User, ChevronDown } from "lucide-react";
+import { Search, Phone, Globe, ShoppingCart, User, ChevronDown, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
@@ -11,6 +12,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("EN");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Safe cart access with fallback
   let cartState = { totalItems: 0 };

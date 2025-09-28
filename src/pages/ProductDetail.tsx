@@ -215,150 +215,151 @@ const ProductDetail = () => {
           Back to Products
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Images */}
-          <div className="space-y-4">
-            <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-              <img
-                src={displayProduct.images[selectedImage]}
-                alt={displayProduct.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="grid grid-cols-4 gap-4">
-              {displayProduct.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImage === index ? 'border-gold' : 'border-transparent'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`${displayProduct.name} view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Product Details */}
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline">{displayProduct.metal.toUpperCase()}</Badge>
-                <Badge variant="outline">{displayProduct.year}</Badge>
-                {displayProduct.originalPrice && <Badge className="bg-red-500">Sale</Badge>}
-              </div>
-              <h1 className="text-3xl font-bold text-primary mb-4">{displayProduct.name}</h1>
-              
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.floor(displayProduct.rating) 
-                          ? 'text-yellow-400 fill-current' 
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  {displayProduct.rating} ({displayProduct.reviews} reviews)
-                </span>
-              </div>
-
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-4xl font-bold text-gold">
-                  ${displayProduct.price.toFixed(2)}
-                </span>
-                {displayProduct.originalPrice && (
-                  <span className="text-xl text-muted-foreground line-through">
-                    ${displayProduct.originalPrice.toFixed(2)}
-                  </span>
-                )}
-              </div>
-
-              <p className="text-muted-foreground mb-6">{displayProduct.description}</p>
-            </div>
-
-            {/* Quantity and Add to Cart */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+            {/* Product Images */}
             <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <label className="font-medium">Quantity:</label>
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => updateQuantity(quantity - 1)}
-                    disabled={quantity <= 1}
+              <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                <img
+                  src={displayProduct.images[selectedImage]}
+                  alt={displayProduct.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="grid grid-cols-4 gap-2 md:gap-4">
+                {displayProduct.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`aspect-square rounded-lg overflow-hidden border-2 transition-colors ${
+                      selectedImage === index ? 'border-gold' : 'border-transparent'
+                    }`}
                   >
-                    <Minus className="w-4 h-4" />
+                    <img
+                      src={image}
+                      alt={`${displayProduct.name} view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Product Details */}
+            <div className="space-y-4 md:space-y-6">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <Badge variant="outline">{displayProduct.metal.toUpperCase()}</Badge>
+                  <Badge variant="outline">{displayProduct.year}</Badge>
+                  {displayProduct.originalPrice && <Badge className="bg-red-500">Sale</Badge>}
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-primary mb-3 md:mb-4 leading-tight">{displayProduct.name}</h1>
+                
+                <div className="flex items-center gap-2 mb-4 md:mb-6">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < Math.floor(displayProduct.rating) 
+                            ? 'text-yellow-400 fill-current' 
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {displayProduct.rating} ({displayProduct.reviews} reviews)
+                  </span>
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-4 md:mb-6">
+                  <span className="text-3xl md:text-4xl font-bold text-gold">
+                    ${displayProduct.price.toFixed(2)}
+                  </span>
+                  {displayProduct.originalPrice && (
+                    <span className="text-lg md:text-xl text-muted-foreground line-through">
+                      ${displayProduct.originalPrice.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-muted-foreground mb-4 md:mb-6 text-sm md:text-base leading-relaxed">{displayProduct.description}</p>
+              </div>
+
+              {/* Quantity and Add to Cart */}
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <label className="font-medium text-sm md:text-base">Quantity:</label>
+                  <div className="flex items-center border rounded-md">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => updateQuantity(quantity - 1)}
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span className="px-4 py-2 min-w-16 text-center">{quantity}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => updateQuantity(quantity + 1)}
+                      disabled={quantity >= displayProduct.stockQuantity}
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    ({displayProduct.stockQuantity} available)
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    size="lg" 
+                    variant="gold" 
+                    className="flex-1 text-sm md:text-base"
+                    onClick={handleAddToCart}
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart - ${(displayProduct.price * quantity).toFixed(2)}
                   </Button>
-                  <span className="px-4 py-2 min-w-16 text-center">{quantity}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => updateQuantity(quantity + 1)}
-                    disabled={quantity >= displayProduct.stockQuantity}
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={addToWishlist}
+                    className="sm:w-auto"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Heart className="w-4 h-4" />
                   </Button>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  ({displayProduct.stockQuantity} available)
-                </span>
               </div>
 
-              <div className="flex gap-3">
-                <Button 
-                  size="lg" 
-                  variant="gold" 
-                  className="flex-1"
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add to Cart - ${(displayProduct.price * quantity).toFixed(2)}
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  onClick={addToWishlist}
-                >
-                  <Heart className="w-4 h-4" />
-                </Button>
+              {/* Trust Indicators */}
+              <div className="grid grid-cols-3 gap-4 pt-4 md:pt-6 border-t">
+                <div className="text-center">
+                  <Shield className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-2 text-green-600" />
+                  <p className="text-xs md:text-sm font-medium">Secure Storage</p>
+                </div>
+                <div className="text-center">
+                  <Truck className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-2 text-blue-600" />
+                  <p className="text-xs md:text-sm font-medium">Free Shipping</p>
+                </div>
+                <div className="text-center">
+                  <RotateCcw className="w-5 h-5 md:w-6 md:h-6 mx-auto mb-2 text-purple-600" />
+                  <p className="text-xs md:text-sm font-medium">Easy Returns</p>
+                </div>
               </div>
             </div>
-
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t">
-              <div className="text-center">
-                <Shield className="w-6 h-6 mx-auto mb-2 text-green-600" />
-                <p className="text-sm font-medium">Secure Storage</p>
-              </div>
-              <div className="text-center">
-                <Truck className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                <p className="text-sm font-medium">Free Shipping</p>
-              </div>
-              <div className="text-center">
-                <RotateCcw className="w-6 h-6 mx-auto mb-2 text-purple-600" />
-                <p className="text-sm font-medium">Easy Returns</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Product Details Tabs */}
-        <div className="mt-16">
+        <div className="mt-12 md:mt-16">
           <Tabs defaultValue="specifications" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="features">Features</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="specifications" className="text-sm md:text-base">Specifications</TabsTrigger>
+              <TabsTrigger value="features" className="text-sm md:text-base">Features</TabsTrigger>
+              <TabsTrigger value="reviews" className="text-sm md:text-base">Reviews</TabsTrigger>
             </TabsList>
             
             <TabsContent value="specifications" className="mt-6">

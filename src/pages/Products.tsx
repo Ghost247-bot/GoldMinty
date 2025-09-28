@@ -238,7 +238,7 @@ const Products = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex flex-col lg:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -249,23 +249,25 @@ const Products = () => {
             />
           </div>
           
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-48">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="featured">Featured</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Highest Rated</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="featured">Featured</SelectItem>
+                <SelectItem value="price-low">Price: Low to High</SelectItem>
+                <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectItem value="rating">Highest Rated</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Button variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
-          </Button>
+            <Button variant="outline" className="w-full sm:w-auto">
+              <Filter className="w-4 h-4 mr-2" />
+              Filters
+            </Button>
+          </div>
         </div>
 
         {/* Products Grid */}
@@ -274,97 +276,101 @@ const Products = () => {
             <p className="text-muted-foreground text-lg">Loading products...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {sortedProducts.map((product) => (
-            <Card key={product.id} className="group hover:shadow-luxury transition-all duration-300">
-              <CardHeader className="p-0">
-                <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {product.originalPrice && (
-                    <Badge className="absolute top-3 left-3 bg-red-500">
-                      Sale
-                    </Badge>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-3 right-3 bg-white/80 hover:bg-white"
-                    onClick={() => toggleWishlist(product.id)}
-                  >
-                    <Heart 
-                      className={`w-4 h-4 ${
-                        wishlist.includes(product.id) 
-                          ? 'fill-red-500 text-red-500' 
-                          : 'text-gray-600'
-                      }`} 
+              <Card key={product.id} className="group hover:shadow-luxury transition-all duration-300 hover-scale">
+                <CardHeader className="p-0">
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                  </Button>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="p-4">
-                <div className="flex items-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-3 h-3 ${
-                        i < Math.floor(product.rating) 
-                          ? 'text-yellow-400 fill-current' 
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                  <span className="text-xs text-muted-foreground ml-1">
-                    ({product.reviews})
-                  </span>
-                </div>
-                
-                <CardTitle className="text-lg mb-2 line-clamp-2">{product.name}</CardTitle>
-                <CardDescription className="text-sm mb-3">
-                  {product.weight} • {product.purity} • {product.mint}
-                </CardDescription>
-                
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-gold">
-                      ${product.price.toFixed(2)}
-                    </span>
                     {product.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        ${product.originalPrice.toFixed(2)}
-                      </span>
+                      <Badge className="absolute top-3 left-3 bg-red-500">
+                        Sale
+                      </Badge>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white"
+                      onClick={() => toggleWishlist(product.id)}
+                    >
+                      <Heart 
+                        className={`w-4 h-4 ${
+                          wishlist.includes(product.id) 
+                            ? 'fill-red-500 text-red-500' 
+                            : 'text-gray-600'
+                        }`} 
+                      />
+                    </Button>
                   </div>
-                  <Badge variant={product.inStock ? "default" : "destructive"}>
-                    {product.inStock ? "In Stock" : "Out of Stock"}
-                  </Badge>
-                </div>
+                </CardHeader>
                 
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1"
-                    variant="gold"
-                    disabled={!product.inStock}
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add to Cart
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate(`/product/${product.id}`, { 
-                      state: { product } 
-                    })}
-                  >
-                    View
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex items-center gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3 h-3 ${
+                          i < Math.floor(product.rating) 
+                            ? 'text-yellow-400 fill-current' 
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs text-muted-foreground ml-1">
+                      ({product.reviews})
+                    </span>
+                  </div>
+                  
+                  <CardTitle className="text-sm md:text-lg mb-2 line-clamp-2 leading-tight">{product.name}</CardTitle>
+                  <CardDescription className="text-xs md:text-sm mb-3 line-clamp-1">
+                    {product.weight} • {product.purity} • {product.mint}
+                  </CardDescription>
+                  
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-lg md:text-2xl font-bold text-gold">
+                          ${product.price.toFixed(2)}
+                        </span>
+                        {product.originalPrice && (
+                          <span className="text-xs md:text-sm text-muted-foreground line-through">
+                            ${product.originalPrice.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <Badge variant={product.inStock ? "default" : "destructive"} className="text-xs">
+                        {product.inStock ? "In Stock" : "Out of Stock"}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 text-xs md:text-sm"
+                        variant="gold"
+                        disabled={!product.inStock}
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <ShoppingCart className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                        Add to Cart
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/product/${product.id}`, { 
+                          state: { product } 
+                        })}
+                        className="px-2 md:px-3"
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
