@@ -24,7 +24,13 @@ const Header = () => {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
+      setSearchTerm(""); // Clear search after navigation
     }
+  };
+
+  const handleQuickSearch = (term: string) => {
+    navigate(`/products?search=${encodeURIComponent(term)}`);
+    setSearchTerm("");
   };
 
   const handleLogoClick = () => {
@@ -76,14 +82,46 @@ const Header = () => {
 
           {/* Search */}
           <form onSubmit={handleSearch} className="flex-1 max-w-md mx-8">
-            <div className="relative">
+            <div className="relative group">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
-                placeholder="Search a product"
-                className="pl-10"
+                placeholder="Search gold, silver, platinum..."
+                className="pl-10 focus:ring-2 focus:ring-gold/20"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
+              
+              {/* Quick search suggestions */}
+              {searchTerm && (
+                <div className="absolute top-full left-0 right-0 bg-background border border-border rounded-md shadow-lg mt-1 z-50">
+                  <div className="p-2 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => handleQuickSearch("gold eagle")}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm flex items-center gap-2"
+                    >
+                      <Search className="w-3 h-3" />
+                      Gold American Eagle
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickSearch("silver bar")}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm flex items-center gap-2"
+                    >
+                      <Search className="w-3 h-3" />
+                      Silver Bars
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleQuickSearch("platinum")}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm flex items-center gap-2"
+                    >
+                      <Search className="w-3 h-3" />
+                      Platinum Coins
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </form>
 
