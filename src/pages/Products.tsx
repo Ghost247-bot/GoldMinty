@@ -9,6 +9,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { parseGoldProductsCSV } from "@/utils/csvParser";
 
 interface Product {
   id: string;
@@ -35,6 +36,8 @@ const Products = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [cartItems, setCartItems] = useState<string[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [csvProducts, setCsvProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // Initialize search term from URL params
   useEffect(() => {
@@ -43,6 +46,22 @@ const Products = () => {
       setSearchTerm(urlSearchTerm);
     }
   }, [searchParams]);
+
+  // Load CSV products for gold category
+  useEffect(() => {
+    if (category === 'gold') {
+      setLoading(true);
+      parseGoldProductsCSV('/data/gold-products.csv')
+        .then((products) => {
+          setCsvProducts(products);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error loading CSV products:', error);
+          setLoading(false);
+        });
+    }
+  }, [category]);
 
   const mockProducts: Product[] = [
     {
@@ -132,7 +151,10 @@ const Products = () => {
     }
   ];
 
-  const filteredProducts = mockProducts.filter(product => {
+  // Use CSV products for gold category, mock products for others
+  const allProducts = category === 'gold' && csvProducts.length > 0 ? csvProducts : mockProducts;
+  
+  const filteredProducts = allProducts.filter(product => {
     const matchesCategory = !category || category === "all" || product.metal === category;
     const matchesSearch = !searchTerm || 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -234,8 +256,13 @@ const Products = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedProducts.map((product) => (
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedProducts.map((product) => (
             <Card key={product.id} className="group hover:shadow-luxury transition-all duration-300">
               <CardHeader className="p-0">
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -323,8 +350,9 @@ const Products = () => {
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {sortedProducts.length === 0 && (
           <div className="text-center py-12">
