@@ -137,6 +137,120 @@ export type Database = {
         }
         Relationships: []
       }
+      user_action_permissions: {
+        Row: {
+          account_settings_access: boolean | null
+          allow_deposit_requests: boolean | null
+          allow_withdrawal_requests: boolean | null
+          auto_approve_deposits: boolean | null
+          auto_approve_limit: number | null
+          created_at: string
+          created_by: string
+          goal_setting_access: boolean | null
+          holdings_analysis_access: boolean | null
+          id: string
+          live_chat_support: boolean | null
+          market_news_notifications: boolean | null
+          monthly_reports_access: boolean | null
+          performance_reports_access: boolean | null
+          phone_support: boolean | null
+          price_alerts_enabled: boolean | null
+          tax_reports_access: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_settings_access?: boolean | null
+          allow_deposit_requests?: boolean | null
+          allow_withdrawal_requests?: boolean | null
+          auto_approve_deposits?: boolean | null
+          auto_approve_limit?: number | null
+          created_at?: string
+          created_by: string
+          goal_setting_access?: boolean | null
+          holdings_analysis_access?: boolean | null
+          id?: string
+          live_chat_support?: boolean | null
+          market_news_notifications?: boolean | null
+          monthly_reports_access?: boolean | null
+          performance_reports_access?: boolean | null
+          phone_support?: boolean | null
+          price_alerts_enabled?: boolean | null
+          tax_reports_access?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_settings_access?: boolean | null
+          allow_deposit_requests?: boolean | null
+          allow_withdrawal_requests?: boolean | null
+          auto_approve_deposits?: boolean | null
+          auto_approve_limit?: number | null
+          created_at?: string
+          created_by?: string
+          goal_setting_access?: boolean | null
+          holdings_analysis_access?: boolean | null
+          id?: string
+          live_chat_support?: boolean | null
+          market_news_notifications?: boolean | null
+          monthly_reports_access?: boolean | null
+          performance_reports_access?: boolean | null
+          phone_support?: boolean | null
+          price_alerts_enabled?: boolean | null
+          tax_reports_access?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_ai_insights: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          insight_type: string
+          is_active: boolean
+          metal_focus: string | null
+          priority: number | null
+          reasoning: string | null
+          recommendation: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          insight_type: string
+          is_active?: boolean
+          metal_focus?: string | null
+          priority?: number | null
+          reasoning?: string | null
+          recommendation: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          insight_type?: string
+          is_active?: boolean
+          metal_focus?: string | null
+          priority?: number | null
+          reasoning?: string | null
+          recommendation?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_banners: {
         Row: {
           banner_type: string
@@ -176,6 +290,96 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_performance_metrics: {
+        Row: {
+          all_time_return: number | null
+          created_at: string
+          created_by: string
+          gold_target_oz: number | null
+          id: string
+          one_month_return: number | null
+          platinum_target_oz: number | null
+          portfolio_target_value: number | null
+          silver_target_oz: number | null
+          target_date: string | null
+          three_month_return: number | null
+          updated_at: string
+          user_id: string
+          ytd_return: number | null
+        }
+        Insert: {
+          all_time_return?: number | null
+          created_at?: string
+          created_by: string
+          gold_target_oz?: number | null
+          id?: string
+          one_month_return?: number | null
+          platinum_target_oz?: number | null
+          portfolio_target_value?: number | null
+          silver_target_oz?: number | null
+          target_date?: string | null
+          three_month_return?: number | null
+          updated_at?: string
+          user_id: string
+          ytd_return?: number | null
+        }
+        Update: {
+          all_time_return?: number | null
+          created_at?: string
+          created_by?: string
+          gold_target_oz?: number | null
+          id?: string
+          one_month_return?: number | null
+          platinum_target_oz?: number | null
+          portfolio_target_value?: number | null
+          silver_target_oz?: number | null
+          target_date?: string | null
+          three_month_return?: number | null
+          updated_at?: string
+          user_id?: string
+          ytd_return?: number | null
+        }
+        Relationships: []
+      }
+      user_risk_profiles: {
+        Row: {
+          created_at: string
+          created_by: string
+          diversification_score: number | null
+          id: string
+          market_correlation: number | null
+          notes: string | null
+          risk_tolerance: string
+          updated_at: string
+          user_id: string
+          volatility_comfort: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          diversification_score?: number | null
+          id?: string
+          market_correlation?: number | null
+          notes?: string | null
+          risk_tolerance?: string
+          updated_at?: string
+          user_id: string
+          volatility_comfort?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          diversification_score?: number | null
+          id?: string
+          market_correlation?: number | null
+          notes?: string | null
+          risk_tolerance?: string
+          updated_at?: string
+          user_id?: string
+          volatility_comfort?: number | null
         }
         Relationships: []
       }
@@ -234,6 +438,117 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_tool_settings: {
+        Row: {
+          calculator_expected_return: number | null
+          calculator_time_horizon: number | null
+          created_at: string
+          created_by: string
+          email_alerts_enabled: boolean | null
+          gold_price_alert: number | null
+          gold_target_percentage: number | null
+          id: string
+          maximum_investment: number | null
+          minimum_investment: number | null
+          platinum_price_alert: number | null
+          platinum_target_percentage: number | null
+          push_notifications_enabled: boolean | null
+          rebalance_threshold: number | null
+          silver_price_alert: number | null
+          silver_target_percentage: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calculator_expected_return?: number | null
+          calculator_time_horizon?: number | null
+          created_at?: string
+          created_by: string
+          email_alerts_enabled?: boolean | null
+          gold_price_alert?: number | null
+          gold_target_percentage?: number | null
+          id?: string
+          maximum_investment?: number | null
+          minimum_investment?: number | null
+          platinum_price_alert?: number | null
+          platinum_target_percentage?: number | null
+          push_notifications_enabled?: boolean | null
+          rebalance_threshold?: number | null
+          silver_price_alert?: number | null
+          silver_target_percentage?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calculator_expected_return?: number | null
+          calculator_time_horizon?: number | null
+          created_at?: string
+          created_by?: string
+          email_alerts_enabled?: boolean | null
+          gold_price_alert?: number | null
+          gold_target_percentage?: number | null
+          id?: string
+          maximum_investment?: number | null
+          minimum_investment?: number | null
+          platinum_price_alert?: number | null
+          platinum_target_percentage?: number | null
+          push_notifications_enabled?: boolean | null
+          rebalance_threshold?: number | null
+          silver_price_alert?: number | null
+          silver_target_percentage?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          id: string
+          metal_type: string
+          notes: string | null
+          price_per_oz: number
+          status: string
+          total_value: number | null
+          transaction_date: string
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          id?: string
+          metal_type: string
+          notes?: string | null
+          price_per_oz: number
+          status?: string
+          total_value?: number | null
+          transaction_date?: string
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          metal_type?: string
+          notes?: string | null
+          price_per_oz?: number
+          status?: string
+          total_value?: number | null
+          transaction_date?: string
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

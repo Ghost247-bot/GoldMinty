@@ -24,12 +24,32 @@ export default function AdminDashboard() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
+  
+  // Portfolio management states
+  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [userTransactions, setUserTransactions] = useState<any[]>([]);
+  const [userPerformanceMetrics, setUserPerformanceMetrics] = useState<any>(null);
+  const [userRiskProfile, setUserRiskProfile] = useState<any>(null);
+  const [userAIInsights, setUserAIInsights] = useState<any[]>([]);
+  const [userToolSettings, setUserToolSettings] = useState<any>(null);
+  const [userActionPermissions, setUserActionPermissions] = useState<any>(null);
+  
+  // Dialog states
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isEditBannerDialogOpen, setIsEditBannerDialogOpen] = useState(false);
+  const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
+  const [isPerformanceDialogOpen, setIsPerformanceDialogOpen] = useState(false);
+  const [isRiskDialogOpen, setIsRiskDialogOpen] = useState(false);
+  const [isInsightDialogOpen, setIsInsightDialogOpen] = useState(false);
+  
+  // Editing states
   const [editingAccount, setEditingAccount] = useState<any>(null);
   const [editingBanner, setEditingBanner] = useState<any>(null);
+  const [editingTransaction, setEditingTransaction] = useState<any>(null);
+  
+  // Form data states
   const [formData, setFormData] = useState({
     userId: undefined as string | undefined,
     accountType: 'standard',
@@ -39,6 +59,7 @@ export default function AdminDashboard() {
     platinumHoldings: '0.0000',
     notes: ''
   });
+  
   const [bannerFormData, setBannerFormData] = useState({
     userId: undefined as string | undefined,
     title: '',
@@ -47,6 +68,52 @@ export default function AdminDashboard() {
     priority: '1',
     expiresAt: ''
   });
+  
+  const [transactionFormData, setTransactionFormData] = useState({
+    userId: selectedUserId,
+    transactionType: 'buy',
+    metalType: 'gold',
+    amount: '0.0000',
+    pricePerOz: '0.00',
+    transactionDate: new Date().toISOString().slice(0, 16),
+    status: 'completed',
+    notes: ''
+  });
+  
+  const [performanceFormData, setPerformanceFormData] = useState({
+    userId: selectedUserId,
+    oneMonthReturn: '0.00',
+    threeMonthReturn: '0.00',
+    ytdReturn: '0.00',
+    allTimeReturn: '0.00',
+    goldTargetOz: '0.0000',
+    silverTargetOz: '0.0000',
+    platinumTargetOz: '0.0000',
+    portfolioTargetValue: '0.00',
+    targetDate: ''
+  });
+  
+  const [riskFormData, setRiskFormData] = useState({
+    userId: selectedUserId,
+    riskTolerance: 'moderate',
+    volatilityComfort: '5.0',
+    diversificationScore: '75',
+    marketCorrelation: '0.65',
+    notes: ''
+  });
+  
+  const [insightFormData, setInsightFormData] = useState({
+    userId: selectedUserId,
+    insightType: 'buy_signal',
+    metalFocus: 'gold',
+    confidenceScore: '75',
+    recommendation: '',
+    reasoning: '',
+    isActive: true,
+    priority: '1',
+    expiresAt: ''
+  });
+  
   const [stats, setStats] = useState({
     totalUsers: 0,
     adminUsers: 0,
@@ -60,6 +127,17 @@ export default function AdminDashboard() {
     fetchInvestmentAccounts();
     fetchUserBanners();
   }, []);
+  
+  useEffect(() => {
+    if (selectedUserId) {
+      fetchUserTransactions();
+      fetchUserPerformanceMetrics();
+      fetchUserRiskProfile();
+      fetchUserAIInsights();
+      fetchUserToolSettings();
+      fetchUserActionPermissions();
+    }
+  }, [selectedUserId]);
 
   const fetchUsers = async () => {
     const { data, error } = await supabase
@@ -197,6 +275,99 @@ export default function AdminDashboard() {
     
     if (data) {
       setUserBanners(data);
+    }
+  };
+  
+  // Fetch user-specific portfolio data
+  const fetchUserTransactions = async () => {
+    if (!selectedUserId) return;
+    
+    const { data, error } = await supabase
+      .from('user_transactions')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .order('transaction_date', { ascending: false });
+    
+    if (data) {
+      setUserTransactions(data);
+    }
+  };
+  
+  const fetchUserPerformanceMetrics = async () => {
+    if (!selectedUserId) return;
+    
+    const { data, error } = await supabase
+      .from('user_performance_metrics')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .single();
+    
+    if (data) {
+      setUserPerformanceMetrics(data);
+    } else {
+      setUserPerformanceMetrics(null);
+    }
+  };
+  
+  const fetchUserRiskProfile = async () => {
+    if (!selectedUserId) return;
+    
+    const { data, error } = await supabase
+      .from('user_risk_profiles')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .single();
+    
+    if (data) {
+      setUserRiskProfile(data);
+    } else {
+      setUserRiskProfile(null);
+    }
+  };
+  
+  const fetchUserAIInsights = async () => {
+    if (!selectedUserId) return;
+    
+    const { data, error } = await supabase
+      .from('user_ai_insights')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setUserAIInsights(data);
+    }
+  };
+  
+  const fetchUserToolSettings = async () => {
+    if (!selectedUserId) return;
+    
+    const { data, error } = await supabase
+      .from('user_tool_settings')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .single();
+    
+    if (data) {
+      setUserToolSettings(data);
+    } else {
+      setUserToolSettings(null);
+    }
+  };
+  
+  const fetchUserActionPermissions = async () => {
+    if (!selectedUserId) return;
+    
+    const { data, error } = await supabase
+      .from('user_action_permissions')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .single();
+    
+    if (data) {
+      setUserActionPermissions(data);
+    } else {
+      setUserActionPermissions(null);
     }
   };
 
@@ -358,6 +529,301 @@ export default function AdminDashboard() {
       toast({
         title: "Success",
         description: "Banner updated successfully"
+      });
+    }
+  };
+  
+  // Portfolio management CRUD operations
+  const handleCreateTransaction = async () => {
+    if (!selectedUserId || !user?.id) return;
+
+    const { error } = await supabase
+      .from('user_transactions')
+      .insert({
+        user_id: selectedUserId,
+        transaction_type: transactionFormData.transactionType,
+        metal_type: transactionFormData.metalType,
+        amount: parseFloat(transactionFormData.amount),
+        price_per_oz: parseFloat(transactionFormData.pricePerOz),
+        transaction_date: new Date(transactionFormData.transactionDate).toISOString(),
+        status: transactionFormData.status,
+        notes: transactionFormData.notes,
+        created_by: user.id
+      });
+
+    if (!error) {
+      setIsTransactionDialogOpen(false);
+      setTransactionFormData({
+        userId: selectedUserId,
+        transactionType: 'buy',
+        metalType: 'gold',
+        amount: '0.0000',
+        pricePerOz: '0.00',
+        transactionDate: new Date().toISOString().slice(0, 16),
+        status: 'completed',
+        notes: ''
+      });
+      fetchUserTransactions();
+      toast({
+        title: "Success",
+        description: "Transaction created successfully"
+      });
+    }
+  };
+  
+  const handleUpdateTransaction = async () => {
+    if (!editingTransaction || !user?.id) return;
+
+    const { error } = await supabase
+      .from('user_transactions')
+      .update({
+        transaction_type: transactionFormData.transactionType,
+        metal_type: transactionFormData.metalType,
+        amount: parseFloat(transactionFormData.amount),
+        price_per_oz: parseFloat(transactionFormData.pricePerOz),
+        transaction_date: new Date(transactionFormData.transactionDate).toISOString(),
+        status: transactionFormData.status,
+        notes: transactionFormData.notes,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingTransaction.id);
+
+    if (!error) {
+      setIsTransactionDialogOpen(false);
+      setEditingTransaction(null);
+      fetchUserTransactions();
+      toast({
+        title: "Success",
+        description: "Transaction updated successfully"
+      });
+    }
+  };
+  
+  const handleDeleteTransaction = async (transactionId: string) => {
+    const { error } = await supabase
+      .from('user_transactions')
+      .delete()
+      .eq('id', transactionId);
+
+    if (!error) {
+      fetchUserTransactions();
+      toast({
+        title: "Success",
+        description: "Transaction deleted successfully"
+      });
+    }
+  };
+  
+  const handleSavePerformanceMetrics = async () => {
+    if (!selectedUserId || !user?.id) return;
+
+    const performanceData = {
+      user_id: selectedUserId,
+      one_month_return: parseFloat(performanceFormData.oneMonthReturn),
+      three_month_return: parseFloat(performanceFormData.threeMonthReturn),
+      ytd_return: parseFloat(performanceFormData.ytdReturn),
+      all_time_return: parseFloat(performanceFormData.allTimeReturn),
+      gold_target_oz: parseFloat(performanceFormData.goldTargetOz),
+      silver_target_oz: parseFloat(performanceFormData.silverTargetOz),
+      platinum_target_oz: parseFloat(performanceFormData.platinumTargetOz),
+      portfolio_target_value: parseFloat(performanceFormData.portfolioTargetValue),
+      target_date: performanceFormData.targetDate ? performanceFormData.targetDate : null,
+      created_by: user.id
+    };
+
+    const { error } = userPerformanceMetrics
+      ? await supabase
+          .from('user_performance_metrics')
+          .update(performanceData)
+          .eq('user_id', selectedUserId)
+      : await supabase
+          .from('user_performance_metrics')
+          .insert(performanceData);
+
+    if (!error) {
+      fetchUserPerformanceMetrics();
+      toast({
+        title: "Success",
+        description: "Performance metrics saved successfully"
+      });
+    }
+  };
+  
+  const handleSaveRiskProfile = async () => {
+    if (!selectedUserId || !user?.id) return;
+
+    const riskData = {
+      user_id: selectedUserId,
+      risk_tolerance: riskFormData.riskTolerance,
+      volatility_comfort: parseFloat(riskFormData.volatilityComfort),
+      diversification_score: parseInt(riskFormData.diversificationScore),
+      market_correlation: parseFloat(riskFormData.marketCorrelation),
+      notes: riskFormData.notes,
+      created_by: user.id
+    };
+
+    const { error } = userRiskProfile
+      ? await supabase
+          .from('user_risk_profiles')
+          .update(riskData)
+          .eq('user_id', selectedUserId)
+      : await supabase
+          .from('user_risk_profiles')
+          .insert(riskData);
+
+    if (!error) {
+      fetchUserRiskProfile();
+      toast({
+        title: "Success",
+        description: "Risk profile saved successfully"
+      });
+    }
+  };
+  
+  const handleCreateAIInsight = async () => {
+    if (!selectedUserId || !user?.id) return;
+
+    const { error } = await supabase
+      .from('user_ai_insights')
+      .insert({
+        user_id: selectedUserId,
+        insight_type: insightFormData.insightType,
+        metal_focus: insightFormData.metalFocus,
+        confidence_score: parseInt(insightFormData.confidenceScore),
+        recommendation: insightFormData.recommendation,
+        reasoning: insightFormData.reasoning,
+        is_active: insightFormData.isActive,
+        priority: parseInt(insightFormData.priority),
+        expires_at: insightFormData.expiresAt ? new Date(insightFormData.expiresAt).toISOString() : null,
+        created_by: user.id
+      });
+
+    if (!error) {
+      setIsInsightDialogOpen(false);
+      setInsightFormData({
+        userId: selectedUserId,
+        insightType: 'buy_signal',
+        metalFocus: 'gold',
+        confidenceScore: '75',
+        recommendation: '',
+        reasoning: '',
+        isActive: true,
+        priority: '1',
+        expiresAt: ''
+      });
+      fetchUserAIInsights();
+      toast({
+        title: "Success",
+        description: "AI insight created successfully"
+      });
+    }
+  };
+  
+  const handleToggleAIInsight = async (insightId: string, isActive: boolean) => {
+    const { error } = await supabase
+      .from('user_ai_insights')
+      .update({ is_active: !isActive })
+      .eq('id', insightId);
+
+    if (!error) {
+      fetchUserAIInsights();
+      toast({
+        title: "Success",
+        description: `AI insight ${isActive ? 'deactivated' : 'activated'} successfully`
+      });
+    }
+  };
+  
+  const handleDeleteAIInsight = async (insightId: string) => {
+    const { error } = await supabase
+      .from('user_ai_insights')
+      .delete()
+      .eq('id', insightId);
+
+    if (!error) {
+      fetchUserAIInsights();
+      toast({
+        title: "Success",
+        description: "AI insight deleted successfully"
+      });
+    }
+  };
+  
+  const handleSaveToolSettings = async () => {
+    if (!selectedUserId || !user?.id) return;
+
+    const toolData = {
+      user_id: selectedUserId,
+      calculator_expected_return: parseFloat(userToolSettings?.calculator_expected_return || '8.0'),
+      calculator_time_horizon: parseInt(userToolSettings?.calculator_time_horizon || '10'),
+      minimum_investment: parseFloat(userToolSettings?.minimum_investment || '1000.00'),
+      maximum_investment: parseFloat(userToolSettings?.maximum_investment || '10000000.00'),
+      gold_target_percentage: parseInt(userToolSettings?.gold_target_percentage || '60'),
+      silver_target_percentage: parseInt(userToolSettings?.silver_target_percentage || '25'),
+      platinum_target_percentage: parseInt(userToolSettings?.platinum_target_percentage || '15'),
+      rebalance_threshold: parseInt(userToolSettings?.rebalance_threshold || '5'),
+      gold_price_alert: userToolSettings?.gold_price_alert ? parseFloat(userToolSettings.gold_price_alert) : null,
+      silver_price_alert: userToolSettings?.silver_price_alert ? parseFloat(userToolSettings.silver_price_alert) : null,
+      platinum_price_alert: userToolSettings?.platinum_price_alert ? parseFloat(userToolSettings.platinum_price_alert) : null,
+      email_alerts_enabled: userToolSettings?.email_alerts_enabled ?? true,
+      push_notifications_enabled: userToolSettings?.push_notifications_enabled ?? true,
+      created_by: user.id
+    };
+
+    const { error } = userToolSettings
+      ? await supabase
+          .from('user_tool_settings')
+          .update(toolData)
+          .eq('user_id', selectedUserId)
+      : await supabase
+          .from('user_tool_settings')
+          .insert(toolData);
+
+    if (!error) {
+      fetchUserToolSettings();
+      toast({
+        title: "Success",
+        description: "Tool settings saved successfully"
+      });
+    }
+  };
+  
+  const handleSaveActionPermissions = async () => {
+    if (!selectedUserId || !user?.id) return;
+
+    const permissionsData = {
+      user_id: selectedUserId,
+      allow_deposit_requests: userActionPermissions?.allow_deposit_requests ?? true,
+      allow_withdrawal_requests: userActionPermissions?.allow_withdrawal_requests ?? true,
+      auto_approve_deposits: userActionPermissions?.auto_approve_deposits ?? false,
+      auto_approve_limit: parseFloat(userActionPermissions?.auto_approve_limit || '10000.00'),
+      monthly_reports_access: userActionPermissions?.monthly_reports_access ?? true,
+      tax_reports_access: userActionPermissions?.tax_reports_access ?? true,
+      holdings_analysis_access: userActionPermissions?.holdings_analysis_access ?? true,
+      performance_reports_access: userActionPermissions?.performance_reports_access ?? true,
+      price_alerts_enabled: userActionPermissions?.price_alerts_enabled ?? true,
+      market_news_notifications: userActionPermissions?.market_news_notifications ?? true,
+      live_chat_support: userActionPermissions?.live_chat_support ?? true,
+      phone_support: userActionPermissions?.phone_support ?? true,
+      account_settings_access: userActionPermissions?.account_settings_access ?? true,
+      goal_setting_access: userActionPermissions?.goal_setting_access ?? true,
+      created_by: user.id
+    };
+
+    const { error } = userActionPermissions
+      ? await supabase
+          .from('user_action_permissions')
+          .update(permissionsData)
+          .eq('user_id', selectedUserId)
+      : await supabase
+          .from('user_action_permissions')
+          .insert(permissionsData);
+
+    if (!error) {
+      fetchUserActionPermissions();
+      toast({
+        title: "Success",
+        description: "Action permissions saved successfully"
       });
     }
   };
@@ -910,126 +1376,143 @@ export default function AdminDashboard() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="overview-admin" className="w-full">
-                  <TabsList className="grid w-full grid-cols-7">
-                    <TabsTrigger value="overview-admin">Overview</TabsTrigger>
-                    <TabsTrigger value="transactions-admin">Transactions</TabsTrigger>
-                    <TabsTrigger value="performance-admin">Performance</TabsTrigger>
-                    <TabsTrigger value="risk-admin">Risk Analysis</TabsTrigger>
-                    <TabsTrigger value="insights-admin">AI Insights</TabsTrigger>
-                    <TabsTrigger value="tools-admin">Tools</TabsTrigger>
-                    <TabsTrigger value="actions-admin">Actions</TabsTrigger>
-                  </TabsList>
+                <div className="mb-6">
+                  <Label htmlFor="user-select-portfolio">Select User to Manage</Label>
+                  <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a user to manage their portfolio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allUsers.map((user) => (
+                        <SelectItem key={user.user_id} value={user.user_id}>
+                          {user.full_name || 'Unknown User'} ({user.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {selectedUserId && (
+                  <Tabs defaultValue="overview-admin" className="w-full">
+                    <TabsList className="grid w-full grid-cols-7">
+                      <TabsTrigger value="overview-admin">Overview</TabsTrigger>
+                      <TabsTrigger value="transactions-admin">Transactions</TabsTrigger>
+                      <TabsTrigger value="performance-admin">Performance</TabsTrigger>
+                      <TabsTrigger value="risk-admin">Risk Analysis</TabsTrigger>
+                      <TabsTrigger value="insights-admin">AI Insights</TabsTrigger>
+                      <TabsTrigger value="tools-admin">Tools</TabsTrigger>
+                      <TabsTrigger value="actions-admin">Actions</TabsTrigger>
+                    </TabsList>
 
-                  <TabsContent value="overview-admin" className="space-y-6 mt-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Portfolio Overview Management</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-6">
-                          <div className="grid gap-4 md:grid-cols-2">
-                            <div>
-                              <Label htmlFor="user-select-portfolio">Select User</Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a user to manage" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {allUsers.map((user) => (
-                                    <SelectItem key={user.user_id} value={user.user_id}>
-                                      {user.full_name || 'Unknown User'} ({user.email})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                    <TabsContent value="overview-admin" className="space-y-6 mt-6">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Portfolio Overview for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-6">
+                            <div className="grid gap-4 md:grid-cols-3">
+                              {(() => {
+                                const account = investmentAccounts.find(acc => acc.user_id === selectedUserId);
+                                return (
+                                  <>
+                                    <Card className="p-4">
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Gold Holdings</p>
+                                          <p className="text-2xl font-bold">{account ? Number(account.gold_holdings).toFixed(4) : '0.0000'} oz</p>
+                                        </div>
+                                        <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
+                                          <Settings className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </Card>
+                                    <Card className="p-4">
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Silver Holdings</p>
+                                          <p className="text-2xl font-bold">{account ? Number(account.silver_holdings).toFixed(4) : '0.0000'} oz</p>
+                                        </div>
+                                        <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
+                                          <Settings className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </Card>
+                                    <Card className="p-4">
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Portfolio Value</p>
+                                          <p className="text-2xl font-bold">${account ? Number(account.balance).toFixed(2) : '0.00'}</p>
+                                        </div>
+                                        <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
+                                          <Settings className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </Card>
+                                  </>
+                                );
+                              })()}
                             </div>
-                            <div>
-                              <Label>Quick Actions</Label>
-                              <div className="flex gap-2">
-                                <Button size="sm" variant="outline">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  Add Holdings
-                                </Button>
-                                <Button size="sm" variant="outline">
-                                  <Activity className="h-4 w-4 mr-1" />
-                                  Update Performance
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="grid gap-4 md:grid-cols-3">
-                            <Card className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Gold Holdings</p>
-                                  <p className="text-2xl font-bold">96.0000 oz</p>
-                                </div>
-                                <Button size="sm" variant="ghost">
-                                  <Settings className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </Card>
-                            <Card className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Silver Holdings</p>
-                                  <p className="text-2xl font-bold">0.0000 oz</p>
-                                </div>
-                                <Button size="sm" variant="ghost">
-                                  <Settings className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </Card>
-                            <Card className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Portfolio Value</p>
-                                  <p className="text-2xl font-bold">$11,234,535</p>
-                                </div>
-                                <Button size="sm" variant="ghost">
-                                  <Settings className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </Card>
-                          </div>
 
-                          <Card>
-                            <CardHeader>
-                              <CardTitle className="flex items-center justify-between">
-                                <span>Portfolio Allocation Settings</span>
-                                <Button size="sm">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  Add Metal
-                                </Button>
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="grid gap-4 md:grid-cols-3">
-                                <div className="space-y-2">
-                                  <Label>Gold Target (%)</Label>
-                                  <Input type="number" placeholder="60" />
-                                  <Progress value={65} className="h-2" />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label>Silver Target (%)</Label>
-                                  <Input type="number" placeholder="25" />
-                                  <Progress value={7} className="h-2" />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label>Platinum Target (%)</Label>
-                                  <Input type="number" placeholder="15" />
-                                  <Progress value={3} className="h-2" />
-                                </div>
-                              </div>
-                              <Button className="mt-4">Save Allocation Settings</Button>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+                            <Card>
+                              <CardHeader>
+                                <CardTitle className="flex items-center justify-between">
+                                  <span>Portfolio Allocation Settings</span>
+                                  {!investmentAccounts.find(acc => acc.user_id === selectedUserId) && (
+                                    <Button size="sm" onClick={() => {
+                                      setFormData({...formData, userId: selectedUserId});
+                                      setIsDialogOpen(true);
+                                    }}>
+                                      <Plus className="h-4 w-4 mr-1" />
+                                      Create Account
+                                    </Button>
+                                  )}
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                {userToolSettings ? (
+                                  <div className="grid gap-4 md:grid-cols-3">
+                                    <div className="space-y-2">
+                                      <Label>Gold Target (%)</Label>
+                                      <Input 
+                                        type="number" 
+                                        value={userToolSettings.gold_target_percentage || 60}
+                                        onChange={(e) => setUserToolSettings({...userToolSettings, gold_target_percentage: parseInt(e.target.value)})}
+                                      />
+                                      <Progress value={userToolSettings.gold_target_percentage || 60} className="h-2" />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Silver Target (%)</Label>
+                                      <Input 
+                                        type="number" 
+                                        value={userToolSettings.silver_target_percentage || 25}
+                                        onChange={(e) => setUserToolSettings({...userToolSettings, silver_target_percentage: parseInt(e.target.value)})}
+                                      />
+                                      <Progress value={userToolSettings.silver_target_percentage || 25} className="h-2" />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Platinum Target (%)</Label>
+                                      <Input 
+                                        type="number" 
+                                        value={userToolSettings.platinum_target_percentage || 15}
+                                        onChange={(e) => setUserToolSettings({...userToolSettings, platinum_target_percentage: parseInt(e.target.value)})}
+                                      />
+                                      <Progress value={userToolSettings.platinum_target_percentage || 15} className="h-2" />
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="text-center py-8">
+                                    <p className="text-muted-foreground mb-4">No tool settings found for this user.</p>
+                                    <Button onClick={handleSaveToolSettings}>Create Default Settings</Button>
+                                  </div>
+                                )}
+                                <Button className="mt-4" onClick={handleSaveToolSettings}>Save Allocation Settings</Button>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
 
                   <TabsContent value="transactions-admin" className="space-y-6 mt-6">
                     <Card>
@@ -1787,6 +2270,7 @@ export default function AdminDashboard() {
                     </Card>
                   </TabsContent>
                 </Tabs>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
