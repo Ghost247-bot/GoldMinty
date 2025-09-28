@@ -49,7 +49,9 @@ import {
   LineChart,
   RotateCcw,
   Lightbulb,
-  AlertTriangle
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 export default function UserDashboard() {
@@ -58,6 +60,7 @@ export default function UserDashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
+  const [expandedBanners, setExpandedBanners] = useState<Set<string>>(new Set());
   
   // Dialog states for quick actions
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
@@ -337,6 +340,18 @@ export default function UserDashboard() {
     }
   ];
 
+  const toggleBannerExpansion = (bannerId: string) => {
+    setExpandedBanners(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(bannerId)) {
+        newSet.delete(bannerId);
+      } else {
+        newSet.add(bannerId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -362,75 +377,102 @@ export default function UserDashboard() {
         {/* User Banners */}
         {userBanners.length > 0 && (
           <div className="space-y-6 mb-8">
-            {userBanners.map((banner) => (
-              <div
-                key={banner.id}
-                className={`relative overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl hover-scale ${
-                  banner.banner_type === 'error'
-                    ? 'bg-gradient-to-r from-destructive/10 via-destructive/5 to-background border-destructive/20'
-                    : banner.banner_type === 'warning'
-                    ? 'bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-background border-amber-500/20'
-                    : banner.banner_type === 'success'
-                    ? 'bg-gradient-to-r from-success/10 via-success/5 to-background border-success/20'
-                    : 'bg-gradient-to-r from-primary/10 via-primary/5 to-background border-primary/20'
-                }`}
-              >
+            {userBanners.map((banner) => {
+              const isExpanded = expandedBanners.has(banner.id);
+              return (
                 <div
-                  className={`absolute left-0 top-0 bottom-0 w-1 ${
+                  key={banner.id}
+                  className={`relative overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${
                     banner.banner_type === 'error'
-                      ? 'bg-gradient-to-b from-destructive to-destructive/70'
+                      ? 'bg-gradient-to-r from-destructive/10 via-destructive/5 to-background border-destructive/20'
                       : banner.banner_type === 'warning'
-                      ? 'bg-gradient-to-b from-amber-500 to-amber-600'
+                      ? 'bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-background border-amber-500/20'
                       : banner.banner_type === 'success'
-                      ? 'bg-gradient-to-b from-success to-success/70'
-                      : 'bg-gradient-to-b from-primary to-gold'
+                      ? 'bg-gradient-to-r from-success/10 via-success/5 to-background border-success/20'
+                      : 'bg-gradient-to-r from-primary/10 via-primary/5 to-background border-primary/20'
                   }`}
-                />
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-center gap-3">
+                  onClick={() => toggleBannerExpansion(banner.id)}
+                >
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-1 ${
+                      banner.banner_type === 'error'
+                        ? 'bg-gradient-to-b from-destructive to-destructive/70'
+                        : banner.banner_type === 'warning'
+                        ? 'bg-gradient-to-b from-amber-500 to-amber-600'
+                        : banner.banner_type === 'success'
+                        ? 'bg-gradient-to-b from-success to-success/70'
+                        : 'bg-gradient-to-b from-primary to-gold'
+                    }`}
+                  />
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`p-2 rounded-lg ${
+                              banner.banner_type === 'error'
+                                ? 'bg-destructive/20 text-destructive'
+                                : banner.banner_type === 'warning'
+                                ? 'bg-amber-500/20 text-amber-600'
+                                : banner.banner_type === 'success'
+                                ? 'bg-success/20 text-success'
+                                : 'bg-primary/20 text-primary'
+                            }`}
+                          >
+                            {banner.banner_type === 'error' ? (
+                              <AlertTriangle className="h-5 w-5" />
+                            ) : banner.banner_type === 'warning' ? (
+                              <AlertCircle className="h-5 w-5" />
+                            ) : banner.banner_type === 'success' ? (
+                              <Award className="h-5 w-5" />
+                            ) : (
+                              <Lightbulb className="h-5 w-5" />
+                            )}
+                          </div>
+                          <h3 className="font-display font-bold text-xl text-foreground">
+                            {banner.title}
+                          </h3>
+                        </div>
+                        
+                        {isExpanded && (
+                          <div className="space-y-3 mt-4 pl-11 animate-fade-in">
+                            <p className="text-muted-foreground leading-relaxed">
+                              {banner.message}
+                            </p>
+                            {banner.expires_at && (
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground">
+                                  Expires: {new Date(banner.expires_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
                         <div
-                          className={`p-2 rounded-lg ${
+                          className={`p-1 rounded transition-transform duration-300 ${
+                            isExpanded ? 'rotate-180' : ''
+                          } ${
                             banner.banner_type === 'error'
-                              ? 'bg-destructive/20 text-destructive'
+                              ? 'text-destructive'
                               : banner.banner_type === 'warning'
-                              ? 'bg-amber-500/20 text-amber-600'
+                              ? 'text-amber-600'
                               : banner.banner_type === 'success'
-                              ? 'bg-success/20 text-success'
-                              : 'bg-primary/20 text-primary'
+                              ? 'text-success'
+                              : 'text-primary'
                           }`}
                         >
-                          {banner.banner_type === 'error' ? (
-                            <AlertTriangle className="h-5 w-5" />
-                          ) : banner.banner_type === 'warning' ? (
-                            <AlertCircle className="h-5 w-5" />
-                          ) : banner.banner_type === 'success' ? (
-                            <Award className="h-5 w-5" />
-                          ) : (
-                            <Lightbulb className="h-5 w-5" />
-                          )}
+                          <ChevronDown className="h-5 w-5" />
                         </div>
-                        <h3 className="font-display font-bold text-xl text-foreground">
-                          {banner.title}
-                        </h3>
                       </div>
-                      <p className="text-muted-foreground leading-relaxed pl-11">
-                        {banner.message}
-                      </p>
-                      {banner.expires_at && (
-                        <div className="flex items-center gap-2 pl-11">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">
-                            Expires: {new Date(banner.expires_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
