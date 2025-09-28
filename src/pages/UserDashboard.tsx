@@ -427,22 +427,6 @@ export default function UserDashboard() {
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <Badge 
-                        variant="secondary" 
-                        className={`font-medium ${
-                          banner.banner_type === 'error'
-                            ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-                            : banner.banner_type === 'warning'
-                            ? 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20'
-                            : banner.banner_type === 'success'
-                            ? 'bg-success/10 text-success hover:bg-success/20'
-                            : 'bg-primary/10 text-primary hover:bg-primary/20'
-                        }`}
-                      >
-                        Priority {banner.priority}
-                      </Badge>
-                    </div>
                   </div>
                 </div>
               </div>
