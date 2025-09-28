@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { ShoppingCart, Heart, Star, Search, Filter } from "lucide-react";
+import { ShoppingCart, Heart, Star, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
@@ -39,6 +39,8 @@ const Products = () => {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [csvProducts, setCsvProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PRODUCTS_PER_PAGE = 25;
 
   // Initialize search term from URL params
   useEffect(() => {
@@ -181,6 +183,52 @@ const Products = () => {
     }
   });
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortBy, category]);
+
+  // Pagination calculations
+  const totalProducts = sortedProducts.length;
+  const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const endIndex = startIndex + PRODUCTS_PER_PAGE;
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPaginationPages = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push('...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
   const handleAddToCart = (product: Product) => {
     addItem({
       id: product.id,
@@ -270,6 +318,18 @@ const Products = () => {
           </div>
         </div>
 
+        {/* Results Info */}
+        {!loading && totalProducts > 0 && (
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-2">
+            <p className="text-muted-foreground">
+              Showing {startIndex + 1}-{Math.min(endIndex, totalProducts)} of {totalProducts} products
+            </p>
+            <p className="text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </p>
+          </div>
+        )}
+
         {/* Products Grid */}
         {loading ? (
           <div className="text-center py-12">
@@ -277,7 +337,7 @@ const Products = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {sortedProducts.map((product) => (
+            {currentProducts.map((product) => (
               <Card key={product.id} className="group hover:shadow-luxury transition-all duration-300 hover-scale">
                 <CardHeader className="p-0">
                   <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -375,7 +435,51 @@ const Products = () => {
           </div>
         )}
 
-        {sortedProducts.length === 0 && (
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="w-full sm:w-auto"
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
+            
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              {getPaginationPages().map((page, index) => (
+                <div key={index}>
+                  {page === '...' ? (
+                    <span className="px-3 py-2 text-muted-foreground">...</span>
+                  ) : (
+                    <Button
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page as number)}
+                      className="min-w-[40px]"
+                    >
+                      {page}
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="w-full sm:w-auto"
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        )}
+
+        {sortedProducts.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
             <Button 
