@@ -9,8 +9,8 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { parseGoldProductsCSV } from "@/utils/csvParser";
 import { useCart } from "@/contexts/CartContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Product {
   id: string;
@@ -37,8 +37,8 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("featured");
   const [wishlist, setWishlist] = useState<string[]>([]);
-  const [csvProducts, setCsvProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const PRODUCTS_PER_PAGE = 25;
 
@@ -50,112 +50,58 @@ const Products = () => {
     }
   }, [searchParams]);
 
-  // Load CSV products for gold category
+  // Load products from Supabase
   useEffect(() => {
-    if (category === 'gold') {
+    const fetchProducts = async () => {
       setLoading(true);
-      parseGoldProductsCSV('/data/gold-products.csv')
-        .then((products) => {
-          setCsvProducts(products);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error loading CSV products:', error);
-          setLoading(false);
+      try {
+        let query = supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true);
+
+        // Filter by category if specified
+        if (category && category !== 'all') {
+          query = query.eq('metal_type', category);
+        }
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        // Map Supabase data to Product interface
+        const mappedProducts: Product[] = (data || []).map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: Number(item.price_usd),
+          image: item.image_url || "/api/placeholder/300/300",
+          metal: (item.metal_type || 'gold') as "gold" | "silver" | "platinum" | "palladium",
+          weight: item.weight || "N/A",
+          purity: item.purity || "N/A",
+          mint: item.brand || "N/A",
+          inStock: true,
+          rating: 4.8,
+          reviews: Math.floor(Math.random() * 1000) + 100,
+          description: item.description || item.name
+        }));
+
+        setProducts(mappedProducts);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        toast({
+          title: "Error loading products",
+          description: "Failed to fetch products from database.",
+          variant: "destructive"
         });
-    }
-  }, [category]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const mockProducts: Product[] = [
-    {
-      id: "1",
-      name: "1 oz American Gold Eagle",
-      price: 2089.50,
-      originalPrice: 2150.00,
-      image: "/api/placeholder/300/300",
-      metal: "gold",
-      weight: "1 oz",
-      purity: "22 karat",
-      mint: "US Mint",
-      inStock: true,
-      rating: 4.9,
-      reviews: 1250,
-      description: "The American Gold Eagle is one of the most popular gold coins in the world."
-    },
-    {
-      id: "2",
-      name: "1 oz Silver American Eagle",
-      price: 48.75,
-      image: "/api/placeholder/300/300",
-      metal: "silver",
-      weight: "1 oz",
-      purity: "99.9% fine",
-      mint: "US Mint",
-      inStock: true,
-      rating: 4.8,
-      reviews: 892,
-      description: "The Silver American Eagle is the official silver bullion coin of the United States."
-    },
-    {
-      id: "3",
-      name: "1/10 oz Gold Canadian Maple Leaf",
-      price: 215.30,
-      image: "/api/placeholder/300/300",
-      metal: "gold",
-      weight: "1/10 oz",
-      purity: "24 karat",
-      mint: "Royal Canadian Mint",
-      inStock: true,
-      rating: 4.7,
-      reviews: 456,
-      description: "The Gold Maple Leaf is the official gold bullion coin of Canada."
-    },
-    {
-      id: "4",
-      name: "1 oz Platinum American Eagle",
-      price: 1650.00,
-      image: "/api/placeholder/300/300",
-      metal: "platinum",
-      weight: "1 oz",
-      purity: "99.95% fine",
-      mint: "US Mint",
-      inStock: false,
-      rating: 4.6,
-      reviews: 234,
-      description: "The Platinum American Eagle is the official platinum bullion coin of the United States."
-    },
-    {
-      id: "5",
-      name: "10 oz Silver Bar - PAMP Suisse",
-      price: 487.50,
-      image: "/api/placeholder/300/300",
-      metal: "silver",
-      weight: "10 oz",
-      purity: "99.9% fine",
-      mint: "PAMP Suisse",
-      inStock: true,
-      rating: 4.9,
-      reviews: 678,
-      description: "PAMP Suisse silver bars are known for their exceptional quality and design."
-    },
-    {
-      id: "6",
-      name: "1 oz Gold Bar - Credit Suisse",
-      price: 2045.00,
-      image: "/api/placeholder/300/300",
-      metal: "gold",
-      weight: "1 oz",
-      purity: "99.99% fine",
-      mint: "Credit Suisse",
-      inStock: true,
-      rating: 4.8,
-      reviews: 543,
-      description: "Credit Suisse gold bars are recognized worldwide for their purity and authenticity."
-    }
-  ];
+    fetchProducts();
+  }, [category, toast]);
 
-  // Use CSV products for gold category, mock products for others
-  const allProducts = category === 'gold' && csvProducts.length > 0 ? csvProducts : mockProducts;
+  const allProducts = products;
   
   const filteredProducts = allProducts.filter(product => {
     const matchesCategory = !category || category === "all" || product.metal === category;
