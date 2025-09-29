@@ -301,22 +301,22 @@ const Checkout = () => {
                           control={form.control}
                           name="country"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Country</FormLabel>
-                              <FormControl>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <SelectTrigger className="bg-background/50">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="United States">United States</SelectItem>
-                                    <SelectItem value="Canada">Canada</SelectItem>
-                                    <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                           <FormItem>
+                             <FormLabel>Country</FormLabel>
+                             <FormControl>
+                               <Select onValueChange={field.onChange} value={field.value || "United States"}>
+                                 <SelectTrigger className="bg-background/50">
+                                   <SelectValue />
+                                 </SelectTrigger>
+                                 <SelectContent>
+                                   <SelectItem value="United States">United States</SelectItem>
+                                   <SelectItem value="Canada">Canada</SelectItem>
+                                   <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                                 </SelectContent>
+                               </Select>
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
                           )}
                         />
                       </div>

@@ -7,24 +7,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Product mapping for cart items to Stripe prices
-const PRODUCT_MAPPING: Record<string, string> = {
-  "1oz-gold-bar": "price_1SCfulF7R4NOS6oQwhP0lsPQ", // 1 oz Gold Bar - PAMP Suisse
-  "20g-gold-bar": "price_1SCfuxF7R4NOS6oQuKVAkFjY", // 20g Gold Bar - PAMP Suisse
-  "10g-gold-bar": "price_1SCfviF7R4NOS6oQVJWAi6Qd", // 10g Gold Bar - PAMP Suisse
-};
-
-// Default price for unmapped products (using 10g gold bar as fallback)
-const DEFAULT_PRICE_ID = "price_1SCfviF7R4NOS6oQVJWAi6Qd";
-
 interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  category: string;
-  weight: string;
-  image: string;
+  category?: string;
+  weight?: string;
+  image?: string;
 }
 
 serve(async (req) => {
@@ -33,12 +23,6 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Create Supabase client using the anon key for user authentication
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
-
   try {
     const { items } = await req.json();
     
@@ -46,7 +30,15 @@ serve(async (req) => {
       throw new Error("No items provided for checkout");
     }
 
-    // Check if user is authenticated (optional for guest checkout)
+    console.log("Processing checkout for items:", items);
+
+    // Create Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    );
+
+    // Check if user is authenticated
     let user = null;
     let customerId = undefined;
     let customerEmail = undefined;
@@ -77,16 +69,44 @@ serve(async (req) => {
       }
     }
 
-    // Convert cart items to Stripe line items
-    const lineItems = items.map((item: CartItem) => {
-      // Try to map product ID to Stripe price, fallback to default
-      const priceId = PRODUCT_MAPPING[item.id] || DEFAULT_PRICE_ID;
-      
-      return {
-        price: priceId,
-        quantity: item.quantity,
-      };
-    });
+    // Create dynamic line items for checkout
+    const lineItems = [];
+    
+    for (const item of items) {
+      try {
+        // Create a product for this cart item
+        const product = await stripe.products.create({
+          name: item.name,
+          description: item.description || item.name,
+          images: item.image ? [item.image] : [],
+          metadata: {
+            weight: item.weight || '',
+            metal: item.metal || 'gold',
+            mint: item.mint || '',
+            purity: item.purity || ''
+          }
+        });
+
+        console.log(`Created Stripe product: ${product.id} for ${item.name}`);
+
+        // Create a price for this product
+        const price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: Math.round(item.price * 100), // Convert to cents
+          currency: 'usd',
+        });
+
+        console.log(`Created Stripe price: ${price.id} for ${item.name} at $${item.price}`);
+
+        lineItems.push({
+          price: price.id,
+          quantity: item.quantity,
+        });
+      } catch (error) {
+        console.error(`Error creating Stripe product/price for ${item.name}:`, error);
+        throw new Error(`Failed to create product for ${item.name}`);
+      }
+    }
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -111,6 +131,8 @@ serve(async (req) => {
         total_items: items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0).toString()
       }
     });
+
+    console.log(`Created checkout session: ${session.id}`);
 
     return new Response(JSON.stringify({ url: session.url, sessionId: session.id }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
