@@ -70,10 +70,6 @@ export default function Login() {
     }
   };
 
-  const hashAnswer = (answer: string) => {
-    // Simple hash function - in production, use a proper crypto library
-    return btoa(answer.toLowerCase().trim());
-  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +127,7 @@ export default function Login() {
         )
         .single();
 
-      if (userAnswer && userAnswer.answer_hash === hashAnswer(loginSecurityAnswer)) {
+      if (userAnswer && userAnswer.answer_hash === loginSecurityAnswer.toLowerCase().trim()) {
         toast({
           title: 'Success',
           description: 'Security verification passed. Logged in successfully.',
@@ -222,12 +218,12 @@ export default function Login() {
             {
               user_id: data.user.id,
               question_id: selectedQuestion1,
-              answer_hash: hashAnswer(answer1)
+              answer_hash: answer1.toLowerCase().trim() // Store as plain text
             },
             {
               user_id: data.user.id,
               question_id: selectedQuestion2,
-              answer_hash: hashAnswer(answer2)
+              answer_hash: answer2.toLowerCase().trim() // Store as plain text
             }
           ];
 
