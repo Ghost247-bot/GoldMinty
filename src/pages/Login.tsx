@@ -80,7 +80,7 @@ export default function Login() {
     setLoading(true);
     
     try {
-      const { error } = await signIn(email, password);
+      const { error, requiresVerification } = await signIn(email, password);
       
       if (error) {
         toast({
@@ -88,32 +88,18 @@ export default function Login() {
           description: error.message,
           variant: 'destructive',
         });
+      } else if (requiresVerification) {
+        toast({
+          title: 'Security Verification Required',
+          description: 'Please complete security verification to access your dashboard',
+        });
+        navigate('/security-verification');
       } else {
-        // Get a random security question for this user
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData.user) {
-          const { data: userAnswers } = await supabase
-            .from('user_security_answers')
-            .select(`
-              question_id,
-              security_questions!inner(question)
-            `)
-            .eq('user_id', userData.user.id)
-            .limit(1);
-
-          if (userAnswers && userAnswers.length > 0) {
-            setLoginSecurityQuestion(userAnswers[0].security_questions.question);
-            setTempUserId(userData.user.id);
-            setShowSecurityVerification(true);
-          } else {
-            // No security questions set, proceed with login
-            toast({
-              title: 'Success',
-              description: 'Logged in successfully',
-            });
-            navigate('/');
-          }
-        }
+        toast({
+          title: 'Success',
+          description: 'Logged in successfully',
+        });
+        navigate('/');
       }
     } catch (error) {
       toast({

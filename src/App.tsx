@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SecurityVerification from "./components/SecurityVerification";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import ButtonShowcase from "./pages/ButtonShowcase";
@@ -66,6 +67,7 @@ const App = () => (
           {/* Standalone pages (no Layout) */}
           <Route path="/auth" element={<Auth />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/security-verification" element={<SecurityVerification />} />
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Layout><UserDashboard /></Layout>

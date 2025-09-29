@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
-  const { user, userRole, loading } = useAuth();
+  const { user, userRole, loading, requiresSecurityVerification } = useAuth();
 
   if (loading) {
     return (
@@ -16,6 +16,11 @@ export default function ProtectedRoute({ children, requiredRole }: ProtectedRout
         <div className="text-lg">Loading...</div>
       </div>
     );
+  }
+
+  // If security verification is required, redirect to security verification page
+  if (requiresSecurityVerification) {
+    return <Navigate to="/security-verification" replace />;
   }
 
   if (!user) {

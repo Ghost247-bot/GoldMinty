@@ -6,9 +6,11 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: string | null;
+  requiresSecurityVerification: boolean;
   signUp: (email: string, password: string, fullName: string, additionalData?: any) => Promise<{ error: any; data?: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any; requiresVerification?: boolean }>;
   signOut: () => Promise<void>;
+  verifySecurityAnswer: (answer: string) => Promise<{ error: any }>;
   loading: boolean;
 }
 
@@ -18,6 +20,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [requiresSecurityVerification, setRequiresSecurityVerification] = useState(false);
+  const [pendingUserEmail, setPendingUserEmail] = useState<string | null>(null);
+  const [pendingUserPassword, setPendingUserPassword] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -87,6 +92,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
+    // First check if user has security questions before actual sign in
+    const { data: existingUser } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      const { data: userAnswers } = await supabase
+        .from('user_security_answers')
+        .select('question_id')
+        .eq('user_id', existingUser.user_id)
+        .limit(1);
+
+      if (userAnswers && userAnswers.length > 0) {
+        // User has security questions, store credentials and require verification
+        setPendingUserEmail(email);
+        setPendingUserPassword(password);
+        setRequiresSecurityVerification(true);
+        return { error: null, requiresVerification: true };
+      }
+    }
+
+    // No security questions or user not found, proceed with normal login
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -95,17 +124,76 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
 
+  const verifySecurityAnswer = async (answer: string) => {
+    if (!pendingUserEmail || !pendingUserPassword) {
+      return { error: new Error('No pending verification') };
+    }
+
+    try {
+      // First get the user ID from email
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('email', pendingUserEmail)
+        .single();
+
+      if (!profile) {
+        return { error: new Error('User not found') };
+      }
+
+      // Get the user's security question and verify answer
+      const { data: userAnswer } = await supabase
+        .from('user_security_answers')
+        .select(`
+          answer_hash,
+          security_questions!inner(question)
+        `)
+        .eq('user_id', profile.user_id)
+        .limit(1)
+        .single();
+
+      if (!userAnswer) {
+        return { error: new Error('Security answer not found') };
+      }
+
+      if (userAnswer.answer_hash === btoa(answer.toLowerCase().trim())) {
+        // Verification successful, complete the login
+        const { error } = await supabase.auth.signInWithPassword({
+          email: pendingUserEmail,
+          password: pendingUserPassword,
+        });
+        
+        if (!error) {
+          setRequiresSecurityVerification(false);
+          setPendingUserEmail(null);
+          setPendingUserPassword(null);
+        }
+        
+        return { error };
+      } else {
+        return { error: new Error('Incorrect security answer') };
+      }
+    } catch (error) {
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
+    setRequiresSecurityVerification(false);
+    setPendingUserEmail(null);
+    setPendingUserPassword(null);
   };
 
   const value = {
     user,
     session,
     userRole,
+    requiresSecurityVerification,
     signUp,
     signIn,
     signOut,
+    verifySecurityAnswer,
     loading,
   };
 
