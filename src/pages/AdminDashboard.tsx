@@ -174,17 +174,37 @@ export default function AdminDashboard() {
   }, [selectedUserId]);
 
   const fetchUsers = async () => {
-    const { data, error } = await supabase
+    // Fetch profiles
+    const { data: profilesData, error: profilesError } = await supabase
       .from('profiles')
-      .select(`
-        *,
-        user_roles!inner(role)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     
-    if (data) {
-      setUsers(data);
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+      return;
     }
+
+    // Fetch user roles
+    const { data: rolesData, error: rolesError } = await supabase
+      .from('user_roles')
+      .select('*');
+    
+    if (rolesError) {
+      console.error('Error fetching roles:', rolesError);
+      return;
+    }
+
+    // Manually join the data
+    const usersWithRoles = profilesData?.map(profile => {
+      const userRole = rolesData?.find(role => role.user_id === profile.user_id);
+      return {
+        ...profile,
+        user_roles: userRole || { role: 'user' }
+      };
+    }).filter(user => user.user_roles) || [];
+    
+    setUsers(usersWithRoles);
   };
 
   const fetchAllUsers = async () => {
@@ -211,21 +231,39 @@ export default function AdminDashboard() {
   };
 
   const fetchInvestmentAccounts = async () => {
-    const { data, error } = await supabase
+    // Fetch investment accounts
+    const { data: accountsData, error: accountsError } = await supabase
       .from('investment_accounts')
-      .select(`
-        *,
-        profiles(full_name, user_id)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     
-    console.log('Investment accounts fetch result:', data, 'Error:', error);
-    
-    if (data) {
-      setInvestmentAccounts(data);
-    } else if (error) {
-      console.error('Error fetching investment accounts:', error);
+    if (accountsError) {
+      console.error('Error fetching investment accounts:', accountsError);
+      return;
     }
+
+    // Fetch profiles to get user names
+    const { data: profilesData, error: profilesError } = await supabase
+      .from('profiles')
+      .select('user_id, full_name, email');
+    
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+      setInvestmentAccounts(accountsData || []);
+      return;
+    }
+
+    // Manually join the data
+    const accountsWithProfiles = accountsData?.map(account => {
+      const profile = profilesData?.find(p => p.user_id === account.user_id);
+      return {
+        ...account,
+        profiles: profile || { full_name: 'Unknown User', user_id: account.user_id }
+      };
+    }) || [];
+    
+    console.log('Investment accounts with profiles:', accountsWithProfiles);
+    setInvestmentAccounts(accountsWithProfiles);
   };
 
   const fetchStats = async () => {
@@ -301,17 +339,38 @@ export default function AdminDashboard() {
   };
 
   const fetchUserBanners = async () => {
-    const { data, error } = await supabase
+    // Fetch user banners
+    const { data: bannersData, error: bannersError } = await supabase
       .from('user_banners')
-      .select(`
-        *,
-        profiles!inner(full_name, user_id)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     
-    if (data) {
-      setUserBanners(data);
+    if (bannersError) {
+      console.error('Error fetching user banners:', bannersError);
+      return;
     }
+
+    // Fetch profiles to get user names
+    const { data: profilesData, error: profilesError } = await supabase
+      .from('profiles')
+      .select('user_id, full_name, email');
+    
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+      setUserBanners(bannersData || []);
+      return;
+    }
+
+    // Manually join the data
+    const bannersWithProfiles = bannersData?.map(banner => {
+      const profile = profilesData?.find(p => p.user_id === banner.user_id);
+      return {
+        ...banner,
+        profiles: profile || { full_name: 'Unknown User', user_id: banner.user_id }
+      };
+    }) || [];
+    
+    setUserBanners(bannersWithProfiles);
   };
   
   // Fetch user-specific portfolio data
@@ -1144,8 +1203,8 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{user.email || user.user_id}</TableCell>
                         <TableCell>
-                          <Badge variant={user.user_roles.role === 'admin' ? 'destructive' : 'secondary'}>
-                            {user.user_roles.role}
+                          <Badge variant={user.user_roles?.role === 'admin' ? 'destructive' : 'secondary'}>
+                            {user.user_roles?.role || 'user'}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -1155,9 +1214,9 @@ export default function AdminDashboard() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => toggleUserRole(user.user_id, user.user_roles.role)}
+                            onClick={() => toggleUserRole(user.user_id, user.user_roles?.role || 'user')}
                           >
-                            {user.user_roles.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                            {user.user_roles?.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -1521,7 +1580,7 @@ export default function AdminDashboard() {
                     {userBanners.map((banner) => (
                       <TableRow key={banner.id}>
                         <TableCell>
-                          {banner.profiles.full_name || 'Unknown'}
+                          {banner.profiles?.full_name || 'Unknown'}
                         </TableCell>
                         <TableCell className="font-medium">
                           {banner.title}
