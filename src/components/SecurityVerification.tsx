@@ -11,7 +11,7 @@ import { Shield, ArrowLeft } from 'lucide-react';
 
 export default function SecurityVerification() {
   const navigate = useNavigate();
-  const { verifySecurityAnswer, requiresSecurityVerification, signOut } = useAuth();
+  const { verifySecurityAnswer, requiresSecurityVerification, signOut, pendingUserEmail, pendingUserPassword } = useAuth();
   const { toast } = useToast();
   
   const [securityQuestion, setSecurityQuestion] = useState<string>('');
@@ -31,22 +31,57 @@ export default function SecurityVerification() {
   }, [requiresSecurityVerification, navigate]);
 
   const loadSecurityQuestion = async () => {
-    try {
-      // We need to get the question for the pending user
-      // For now, we'll get a random question - in production, you'd want to 
-      // store which specific question the user needs to answer
-      const { data: questions } = await supabase
-        .from('security_questions')
-        .select('*')
-        .limit(3);
+    if (!requiresSecurityVerification) return;
 
-      if (questions && questions.length > 0) {
-        // Get a random question for demo purposes
-        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-        setSecurityQuestion(randomQuestion.question);
+    try {
+      // We need to get the user's specific security question
+      // Since we can't access user data without being signed in, 
+      // we'll sign in temporarily to get the question
+      if (pendingUserEmail && pendingUserPassword) {
+        console.log('Loading security question for:', pendingUserEmail);
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: pendingUserEmail,
+          password: pendingUserPassword,
+        });
+
+        if (error) {
+          console.error('Error signing in to get question:', error);
+          setSecurityQuestion('What is your favorite color?'); // Fallback
+          setLoading(false);
+          return;
+        }
+
+        if (data.user) {
+          const { data: userAnswer, error: queryError } = await supabase
+            .from('user_security_answers')
+            .select(`
+              security_questions!inner(question)
+            `)
+            .eq('user_id', data.user.id)
+            .limit(1)
+            .single();
+
+          if (queryError) {
+            console.error('Error getting security question:', queryError);
+            setSecurityQuestion('What is your favorite color?'); // Fallback
+          } else if (userAnswer?.security_questions?.question) {
+            setSecurityQuestion(userAnswer.security_questions.question);
+            console.log('Security question loaded:', userAnswer.security_questions.question);
+          } else {
+            setSecurityQuestion('What is your favorite color?'); // Fallback
+          }
+
+          // Sign out after getting the question
+          await supabase.auth.signOut();
+        } else {
+          setSecurityQuestion('What is your favorite color?'); // Fallback
+        }
       } else {
+        console.log('No pending credentials, using fallback question');
         setSecurityQuestion('What is your favorite color?'); // Fallback
       }
+      
       setLoading(false);
     } catch (error) {
       console.error('Error loading security question:', error);

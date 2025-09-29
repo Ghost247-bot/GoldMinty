@@ -80,28 +80,33 @@ export default function Login() {
     setLoading(true);
     
     try {
+      console.log('Attempting sign in for:', email);
       const { error, requiresVerification } = await signIn(email, password);
       
       if (error) {
+        console.error('Sign in error:', error);
         toast({
           title: 'Error',
           description: error.message,
           variant: 'destructive',
         });
       } else if (requiresVerification) {
+        console.log('Security verification required');
         toast({
           title: 'Security Verification Required',
           description: 'Please complete security verification to access your dashboard',
         });
         navigate('/security-verification');
       } else {
+        console.log('Sign in successful');
         toast({
           title: 'Success',
           description: 'Logged in successfully',
         });
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (error) {
+      console.error('Unexpected sign in error:', error);
       toast({
         title: 'Error',
         description: 'An unexpected error occurred',
@@ -208,21 +213,48 @@ export default function Login() {
           description: error.message,
           variant: 'destructive',
         });
-      } else {
-        // Store security questions and answers
-        if (data?.user) {
-          await Promise.all([
-            supabase.from('user_security_answers').insert({
+      } else if (data?.user) {
+        // Wait a moment for the user session to be fully established
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Store security questions and answers with better error handling
+        try {
+          const securityAnswers = [
+            {
               user_id: data.user.id,
               question_id: selectedQuestion1,
               answer_hash: hashAnswer(answer1)
-            }),
-            supabase.from('user_security_answers').insert({
+            },
+            {
               user_id: data.user.id,
               question_id: selectedQuestion2,
               answer_hash: hashAnswer(answer2)
-            })
-          ]);
+            }
+          ];
+
+          // Insert security answers one by one to avoid batch issues
+          for (const answer of securityAnswers) {
+            const { error: answerError } = await supabase
+              .from('user_security_answers')
+              .insert(answer);
+
+            if (answerError) {
+              console.error('Error saving security answer:', answerError);
+              toast({
+                title: 'Warning',
+                description: 'Account created but security questions could not be saved. Please contact support.',
+                variant: 'destructive',
+              });
+              break;
+            }
+          }
+        } catch (answerError) {
+          console.error('Security answer error:', answerError);
+          toast({
+            title: 'Warning',
+            description: 'Account created but security questions could not be saved. Please contact support.',
+            variant: 'destructive',
+          });
         }
         
         toast({

@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   userRole: string | null;
   requiresSecurityVerification: boolean;
+  pendingUserEmail: string | null;
+  pendingUserPassword: string | null;
   signUp: (email: string, password: string, fullName: string, additionalData?: any) => Promise<{ error: any; data?: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any; requiresVerification?: boolean }>;
   signOut: () => Promise<void>;
@@ -92,22 +94,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    // First check if user has security questions before actual sign in
-    const { data: existingUser } = await supabase
-      .from('profiles')
-      .select('user_id')
-      .eq('email', email)
-      .single();
+    console.log('SignIn called for:', email);
+    
+    // Try to sign in first to get the user
+    const { error, data } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) {
+      console.error('Sign in failed:', error);
+      return { error };
+    }
 
-    if (existingUser) {
-      const { data: userAnswers } = await supabase
+    console.log('Sign in successful, checking for security questions...');
+
+    // Now check if this authenticated user has security questions
+    if (data.user) {
+      const { data: userAnswers, error: queryError } = await supabase
         .from('user_security_answers')
         .select('question_id')
-        .eq('user_id', existingUser.user_id)
+        .eq('user_id', data.user.id)
         .limit(1);
 
+      if (queryError) {
+        console.error('Error checking security questions:', queryError);
+      } else {
+        console.log('Security questions found:', userAnswers?.length || 0);
+      }
+
       if (userAnswers && userAnswers.length > 0) {
-        // User has security questions, store credentials and require verification
+        console.log('User has security questions, requiring verification');
+        // User has security questions, sign them out and require verification
+        await supabase.auth.signOut();
         setPendingUserEmail(email);
         setPendingUserPassword(password);
         setRequiresSecurityVerification(true);
@@ -115,65 +134,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // No security questions or user not found, proceed with normal login
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    return { error };
+    console.log('No security questions found, user signed in');
+    // No security questions, user is already signed in
+    return { error: null };
   };
 
   const verifySecurityAnswer = async (answer: string) => {
+    console.log('VerifySecurityAnswer called');
+    
     if (!pendingUserEmail || !pendingUserPassword) {
+      console.error('No pending verification credentials');
       return { error: new Error('No pending verification') };
     }
 
     try {
-      // First get the user ID from email
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .eq('email', pendingUserEmail)
-        .single();
+      console.log('Signing in to verify answer for:', pendingUserEmail);
+      
+      // First sign in to get the user ID
+      const { error: signInError, data } = await supabase.auth.signInWithPassword({
+        email: pendingUserEmail,
+        password: pendingUserPassword,
+      });
 
-      if (!profile) {
-        return { error: new Error('User not found') };
+      if (signInError || !data.user) {
+        console.error('Failed to sign in for verification:', signInError);
+        return { error: signInError || new Error('Failed to authenticate') };
       }
 
+      console.log('Getting security question for user:', data.user.id);
+
       // Get the user's security question and verify answer
-      const { data: userAnswer } = await supabase
+      const { data: userAnswer, error: queryError } = await supabase
         .from('user_security_answers')
         .select(`
           answer_hash,
           security_questions!inner(question)
         `)
-        .eq('user_id', profile.user_id)
+        .eq('user_id', data.user.id)
         .limit(1)
         .single();
 
-      if (!userAnswer) {
+      if (queryError) {
+        console.error('Error getting security answer:', queryError);
+        await supabase.auth.signOut();
         return { error: new Error('Security answer not found') };
       }
 
-      if (userAnswer.answer_hash === btoa(answer.toLowerCase().trim())) {
-        // Verification successful, complete the login
-        const { error } = await supabase.auth.signInWithPassword({
-          email: pendingUserEmail,
-          password: pendingUserPassword,
-        });
-        
-        if (!error) {
-          setRequiresSecurityVerification(false);
-          setPendingUserEmail(null);
-          setPendingUserPassword(null);
-        }
-        
-        return { error };
+      if (!userAnswer) {
+        console.error('No security answer found');
+        await supabase.auth.signOut();
+        return { error: new Error('Security answer not found') };
+      }
+
+      console.log('Verifying answer...');
+      const hashedAnswer = btoa(answer.toLowerCase().trim());
+      console.log('Expected hash:', userAnswer.answer_hash);
+      console.log('Provided hash:', hashedAnswer);
+
+      if (userAnswer.answer_hash === hashedAnswer) {
+        console.log('Security verification successful');
+        // Verification successful, user is already signed in
+        setRequiresSecurityVerification(false);
+        setPendingUserEmail(null);
+        setPendingUserPassword(null);
+        return { error: null };
       } else {
+        console.log('Security verification failed - wrong answer');
+        // Wrong answer, sign out the user
+        await supabase.auth.signOut();
         return { error: new Error('Incorrect security answer') };
       }
     } catch (error) {
+      console.error('Unexpected error during verification:', error);
+      // Make sure to sign out on any error
+      await supabase.auth.signOut();
       return { error };
     }
   };
@@ -190,6 +224,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     userRole,
     requiresSecurityVerification,
+    pendingUserEmail,
+    pendingUserPassword,
     signUp,
     signIn,
     signOut,
