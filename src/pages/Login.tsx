@@ -274,337 +274,496 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
-         style={{ background: 'var(--gradient-hero)' }}>
+         style={{ background: 'linear-gradient(135deg, hsl(var(--navy-deep)) 0%, hsl(var(--navy)) 50%, hsl(var(--gold-dark)) 100%)' }}>
       
-      {/* Animated background elements */}
+      {/* Enhanced animated background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-gold/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gold/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[100px] animate-pulse delay-500"></div>
+        <div className="absolute top-10 left-10 w-80 h-80 bg-gradient-to-r from-gold/20 to-gold-light/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-l from-gold/15 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gold/5 rounded-full blur-2xl animate-pulse delay-500"></div>
+        <div className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-gradient-to-br from-gold-light/10 to-transparent rounded-full blur-3xl animate-pulse delay-700"></div>
+        
+        {/* Floating particles */}
+        <div className="absolute top-20 right-1/4 w-2 h-2 bg-gold rounded-full animate-pulse delay-300"></div>
+        <div className="absolute bottom-32 left-1/3 w-1 h-1 bg-gold-light rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute top-1/3 right-20 w-1.5 h-1.5 bg-gold rounded-full animate-pulse delay-500"></div>
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-md px-6">
-        {/* Back to Home Button */}
+      {/* Content Container */}
+      <div className="relative z-10 w-full max-w-lg px-6">
+        {/* Enhanced Back to Home Button */}
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate("/")}
-          className="mb-6 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+          className="mb-8 text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 group backdrop-blur-sm border border-white/10 rounded-full px-4"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
           Back to Home
         </Button>
 
-        <Card className="shadow-luxury border-0 bg-card/95 backdrop-blur-md animate-scale-in">
-          <CardHeader className="text-center pb-8">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-gold-dark to-gold rounded-2xl flex items-center justify-center shadow-glow">
-                <Gem className="w-8 h-8 text-navy-deep" />
+        {/* Main Card with enhanced styling */}
+        <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-xl animate-scale-in relative overflow-hidden">
+          {/* Card glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-gold/5 opacity-50"></div>
+          
+          <CardHeader className="text-center pb-8 relative">
+            {/* Enhanced Logo */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-br from-gold-dark via-gold to-gold-light rounded-3xl flex items-center justify-center shadow-2xl relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                  <Gem className="w-10 h-10 text-navy-deep relative z-10" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-gold-dark to-gold-light rounded-3xl blur-xl opacity-50 scale-110"></div>
               </div>
             </div>
-            <CardTitle className="text-3xl font-display text-gradient-gold mb-2">GoldMint</CardTitle>
-            <CardDescription className="text-muted-foreground text-base">
-              Your trusted precious metals platform
+            
+            {/* Enhanced Title */}
+            <CardTitle className="text-4xl font-display bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent mb-3 tracking-wide">
+              GoldMint
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-lg font-medium">
+              Your gateway to precious metals investing
             </CardDescription>
+            
+            {/* Decorative line */}
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 rounded-full"></div>
           </CardHeader>
           
-          <CardContent className="pb-8">
+          <CardContent className="pb-8 px-8">
             <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-muted/50">
-                <TabsTrigger value="signin" className="text-sm font-medium data-[state=active]:bg-card data-[state=active]:text-foreground">
+              {/* Enhanced Tab List */}
+              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 bg-muted/30 backdrop-blur-sm rounded-2xl p-1">
+                <TabsTrigger 
+                  value="signin" 
+                  className="text-sm font-semibold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold-dark data-[state=active]:to-gold data-[state=active]:text-navy-deep data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
                   Sign In
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="text-sm font-medium data-[state=active]:bg-card data-[state=active]:text-foreground">
-                  Create Account
+                <TabsTrigger 
+                  value="signup" 
+                  className="text-sm font-semibold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold-dark data-[state=active]:to-gold data-[state=active]:text-navy-deep data-[state=active]:shadow-lg transition-all duration-300"
+                >
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Join Us
                 </TabsTrigger>
               </TabsList>
               
+              {/* Enhanced Sign In Form */}
               <TabsContent value="signin" className="animate-fade-in">
                 <form onSubmit={handleSignIn} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email" className="text-sm font-medium text-foreground">
+                  <div className="space-y-3">
+                    <Label htmlFor="signin-email" className="text-sm font-semibold text-foreground flex items-center">
+                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
                       Email Address
                     </Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      placeholder="Enter your email"
-                      required
-                    />
+                    <div className="relative group">
+                      <Input
+                        id="signin-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="h-14 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-xl pl-4 pr-4 text-base transition-all duration-300 group-hover:border-gold/50"
+                        placeholder="Enter your email address"
+                        required
+                      />
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                    </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password" className="text-sm font-medium text-foreground">
+                  <div className="space-y-3">
+                    <Label htmlFor="signin-password" className="text-sm font-semibold text-foreground flex items-center">
+                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
                       Password
                     </Label>
-                    <div className="relative">
+                    <div className="relative group">
                       <Input
                         id="signin-password"
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20 pr-12"
+                        className="h-14 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-xl pl-4 pr-14 text-base transition-all duration-300 group-hover:border-gold/50"
                         placeholder="Enter your password"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-gold transition-all duration-300 p-1 rounded-lg hover:bg-gold/10"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </div>
                   
+                  {/* Enhanced Submit Button */}
                   <Button 
                     type="submit" 
-                    className="w-full h-12 bg-gradient-to-r from-gold-dark to-gold hover:from-gold hover:to-gold-dark text-navy-deep font-semibold shadow-glow transition-all duration-300 hover-scale" 
+                    className="w-full h-14 bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold-light hover:via-gold hover:to-gold-dark text-navy-deep font-bold shadow-2xl transition-all duration-500 hover-scale rounded-xl relative overflow-hidden group text-base" 
                     disabled={loading}
                   >
-                    {loading ? 'Signing In...' : 'Sign In'}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <div className="relative z-10 flex items-center justify-center">
+                      {loading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-navy-deep/30 border-t-navy-deep rounded-full animate-spin mr-2"></div>
+                          Signing In...
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="w-5 h-5 mr-2" />
+                          Sign In Securely
+                        </>
+                      )}
+                    </div>
                   </Button>
+                  
+                  {/* Forgot Password Link */}
+                  <div className="text-center pt-2">
+                    <button
+                      type="button"
+                      className="text-sm text-muted-foreground hover:text-gold transition-colors duration-300 underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </button>
+                  </div>
                 </form>
               </TabsContent>
               
               <TabsContent value="signup" className="animate-fade-in">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-firstname" className="text-sm font-medium text-foreground">
-                        First Name
-                      </Label>
-                      <Input
-                        id="signup-firstname"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                        placeholder="First name"
-                        required
-                      />
-                    </div>
+                <form onSubmit={handleSignUp} className="space-y-5">
+                  {/* Personal Information Section */}
+                  <div className="bg-gradient-to-r from-muted/20 to-muted/10 rounded-xl p-4 border border-border/30">
+                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
+                      Personal Information
+                    </h3>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-lastname" className="text-sm font-medium text-foreground">
-                        Last Name
-                      </Label>
-                      <Input
-                        id="signup-lastname"
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                        placeholder="Last name"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">
-                      Email Address
-                    </Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      placeholder="Enter your email"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-phone" className="text-sm font-medium text-foreground">
-                      Phone Number
-                    </Label>
-                    <Input
-                      id="signup-phone"
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-dob" className="text-sm font-medium text-foreground">
-                      Date of Birth
-                    </Label>
-                    <Input
-                      id="signup-dob"
-                      type="date"
-                      value={dateOfBirth}
-                      onChange={(e) => setDateOfBirth(e.target.value)}
-                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password" className="text-sm font-medium text-foreground">
-                      Password
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20 pr-12"
-                        placeholder="Create a strong password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Address Section */}
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <Shield className="w-4 h-4" />
-                      Address Information (Optional)
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Address Line 1"
-                        value={addressLine1}
-                        onChange={(e) => setAddressLine1(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Address Line 2 (Optional)"
-                        value={addressLine2}
-                        onChange={(e) => setAddressLine2(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input
-                        placeholder="City"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      />
-                      <Input
-                        placeholder="State"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input
-                        placeholder="ZIP Code"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      />
-                      <Input
-                        placeholder="Country"
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Security Questions Section */}
-                  <div className="space-y-4 pt-4 border-t border-border/20">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <HelpCircle className="w-4 h-4" />
-                      Security Questions (Required)
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-firstname" className="text-xs font-medium text-muted-foreground">
+                          First Name
+                        </Label>
+                        <div className="relative group">
+                          <Input
+                            id="signup-firstname"
+                            type="text"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            placeholder="First name"
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-lastname" className="text-xs font-medium text-muted-foreground">
+                          Last Name
+                        </Label>
+                        <div className="relative group">
+                          <Input
+                            id="signup-lastname"
+                            type="text"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            placeholder="Last name"
+                            required
+                          />
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">
-                          Security Question 1
+                        <Label htmlFor="signup-email" className="text-xs font-medium text-muted-foreground">
+                          Email Address
                         </Label>
-                        <Select value={selectedQuestion1} onValueChange={setSelectedQuestion1}>
-                          <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:border-gold">
-                            <SelectValue placeholder="Select your first security question" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
-                            {securityQuestions.map((question) => (
-                              <SelectItem 
-                                key={question.id} 
-                                value={question.id}
-                                className="hover:bg-muted focus:bg-muted cursor-pointer"
-                              >
-                                {question.question}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          type="text"
-                          value={answer1}
-                          onChange={(e) => setAnswer1(e.target.value)}
-                          className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                          placeholder="Your answer"
-                          required
-                        />
+                        <div className="relative group">
+                          <Input
+                            id="signup-email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            placeholder="Enter your email address"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-phone" className="text-xs font-medium text-muted-foreground">
+                            Phone Number
+                          </Label>
+                          <div className="relative group">
+                            <Input
+                              id="signup-phone"
+                              type="tel"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              placeholder="(555) 123-4567"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-dob" className="text-xs font-medium text-muted-foreground">
+                            Date of Birth
+                          </Label>
+                          <div className="relative group">
+                            <Input
+                              id="signup-dob"
+                              type="date"
+                              value={dateOfBirth}
+                              onChange={(e) => setDateOfBirth(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            />
+                          </div>
+                        </div>
                       </div>
                       
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">
-                          Security Question 2
+                        <Label htmlFor="signup-password" className="text-xs font-medium text-muted-foreground">
+                          Password
                         </Label>
-                        <Select value={selectedQuestion2} onValueChange={setSelectedQuestion2}>
-                          <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:border-gold">
-                            <SelectValue placeholder="Select your second security question" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
-                            {securityQuestions
-                              .filter(q => q.id !== selectedQuestion1)
-                              .map((question) => (
-                                <SelectItem 
-                                  key={question.id} 
-                                  value={question.id}
-                                  className="hover:bg-muted focus:bg-muted cursor-pointer"
-                                >
+                        <div className="relative group">
+                          <Input
+                            id="signup-password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg pr-12 transition-all duration-300 group-hover:border-gold/50"
+                            placeholder="Create a secure password"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-gold transition-all duration-300 p-1 rounded-lg hover:bg-gold/10"
+                          >
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Address Information Section */}
+                  <div className="bg-gradient-to-r from-muted/20 to-muted/10 rounded-xl p-4 border border-border/30">
+                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
+                      Address Information (Optional)
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-address1" className="text-xs font-medium text-muted-foreground">
+                          Address Line 1
+                        </Label>
+                        <div className="relative group">
+                          <Input
+                            id="signup-address1"
+                            type="text"
+                            value={addressLine1}
+                            onChange={(e) => setAddressLine1(e.target.value)}
+                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            placeholder="Street address"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="signup-address2" className="text-xs font-medium text-muted-foreground">
+                          Address Line 2 (Optional)
+                        </Label>
+                        <div className="relative group">
+                          <Input
+                            id="signup-address2"
+                            type="text"
+                            value={addressLine2}
+                            onChange={(e) => setAddressLine2(e.target.value)}
+                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            placeholder="Apartment, suite, etc."
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-city" className="text-xs font-medium text-muted-foreground">
+                            City
+                          </Label>
+                          <div className="relative group">
+                            <Input
+                              id="signup-city"
+                              type="text"
+                              value={city}
+                              onChange={(e) => setCity(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              placeholder="City"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-state" className="text-xs font-medium text-muted-foreground">
+                            State
+                          </Label>
+                          <div className="relative group">
+                            <Input
+                              id="signup-state"
+                              type="text"
+                              value={state}
+                              onChange={(e) => setState(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              placeholder="State"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-zip" className="text-xs font-medium text-muted-foreground">
+                            ZIP Code
+                          </Label>
+                          <div className="relative group">
+                            <Input
+                              id="signup-zip"
+                              type="text"
+                              value={zipCode}
+                              onChange={(e) => setZipCode(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              placeholder="ZIP"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-country" className="text-xs font-medium text-muted-foreground">
+                            Country
+                          </Label>
+                          <div className="relative group">
+                            <Select value={country} onValueChange={setCountry}>
+                              <SelectTrigger className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50">
+                                <SelectValue placeholder="Select country" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                                <SelectItem value="United States">United States</SelectItem>
+                                <SelectItem value="Canada">Canada</SelectItem>
+                                <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                                <SelectItem value="Australia">Australia</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Security Questions Section */}
+                  <div className="bg-gradient-to-r from-gold/5 to-gold-light/5 rounded-xl p-4 border border-gold/20">
+                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-gold" />
+                      Security Questions
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                          Security Question 1
+                        </Label>
+                        <div className="relative group">
+                          <Select value={selectedQuestion1} onValueChange={setSelectedQuestion1}>
+                            <SelectTrigger className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50">
+                              <SelectValue placeholder="Choose your first security question" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 max-h-48">
+                              {securityQuestions.map((question) => (
+                                <SelectItem key={question.id} value={question.id}>
                                   {question.question}
                                 </SelectItem>
                               ))}
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          type="text"
-                          value={answer2}
-                          onChange={(e) => setAnswer2(e.target.value)}
-                          className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/20"
-                          placeholder="Your answer"
-                          required
-                        />
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        {selectedQuestion1 && (
+                          <div className="relative group animate-fade-in">
+                            <Input
+                              type="text"
+                              value={answer1}
+                              onChange={(e) => setAnswer1(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              placeholder="Your answer"
+                              required
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">
+                          Security Question 2
+                        </Label>
+                        <div className="relative group">
+                          <Select value={selectedQuestion2} onValueChange={setSelectedQuestion2}>
+                            <SelectTrigger className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50">
+                              <SelectValue placeholder="Choose your second security question" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 max-h-48">
+                              {securityQuestions.filter(q => q.id !== selectedQuestion1).map((question) => (
+                                <SelectItem key={question.id} value={question.id}>
+                                  {question.question}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        {selectedQuestion2 && (
+                          <div className="relative group animate-fade-in">
+                            <Input
+                              type="text"
+                              value={answer2}
+                              onChange={(e) => setAnswer2(e.target.value)}
+                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              placeholder="Your answer"
+                              required
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                   
+                  {/* Enhanced Submit Button */}
                   <Button 
                     type="submit" 
-                    className="w-full h-12 bg-gradient-to-r from-gold-dark to-gold hover:from-gold hover:to-gold-dark text-navy-deep font-semibold shadow-glow transition-all duration-300 hover-scale" 
+                    className="w-full h-14 bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold-light hover:via-gold hover:to-gold-dark text-navy-deep font-bold shadow-2xl transition-all duration-500 hover-scale rounded-xl relative overflow-hidden group text-base mt-6" 
                     disabled={loading}
                   >
-                    {loading ? 'Creating Account...' : 'Create Account'}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <div className="relative z-10 flex items-center justify-center">
+                      {loading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-navy-deep/30 border-t-navy-deep rounded-full animate-spin mr-2"></div>
+                          Creating Account...
+                        </>
+                      ) : (
+                        <>
+                          <TrendingUp className="w-5 h-5 mr-2" />
+                          Create My Account
+                        </>
+                      )}
+                    </div>
                   </Button>
                 </form>
               </TabsContent>
