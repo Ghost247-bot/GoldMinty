@@ -48,6 +48,24 @@ export default function AdminDashboard() {
   const [isInsightDialogOpen, setIsInsightDialogOpen] = useState(false);
   const [isBulkUploadDialogOpen, setIsBulkUploadDialogOpen] = useState(false);
   const [isBulkProductUploadDialogOpen, setIsBulkProductUploadDialogOpen] = useState(false);
+  const [isEditProductDialogOpen, setIsEditProductDialogOpen] = useState(false);
+  
+  // Products management states
+  const [products, setProducts] = useState<any[]>([]);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [productFormData, setProductFormData] = useState({
+    name: '',
+    description: '',
+    price_usd: '0.00',
+    weight: '',
+    metal_type: 'gold',
+    brand: '',
+    purity: '',
+    category: 'bar',
+    image_url: '',
+    product_url: '',
+    is_active: true
+  });
   
   // Editing states
   const [editingAccount, setEditingAccount] = useState<any>(null);
@@ -131,6 +149,7 @@ export default function AdminDashboard() {
     fetchStats();
     fetchInvestmentAccounts();
     fetchUserBanners();
+    fetchProducts();
   }, []);
   
   useEffect(() => {
@@ -837,6 +856,137 @@ export default function AdminDashboard() {
         description: "Action permissions saved successfully"
       });
     }
+  };
+
+  // Products management functions
+  const fetchProducts = async () => {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (data) {
+      setProducts(data);
+    } else if (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const handleEditProduct = (product: any) => {
+    setEditingProduct(product);
+    setProductFormData({
+      name: product.name || '',
+      description: product.description || '',
+      price_usd: product.price_usd?.toString() || '0.00',
+      weight: product.weight || '',
+      metal_type: product.metal_type || 'gold',
+      brand: product.brand || '',
+      purity: product.purity || '',
+      category: product.category || 'bar',
+      image_url: product.image_url || '',
+      product_url: product.product_url || '',
+      is_active: product.is_active ?? true
+    });
+    setIsEditProductDialogOpen(true);
+  };
+
+  const handleUpdateProduct = async () => {
+    if (!editingProduct || !user?.id) return;
+
+    const { error } = await supabase
+      .from('products')
+      .update({
+        name: productFormData.name,
+        description: productFormData.description,
+        price_usd: parseFloat(productFormData.price_usd),
+        weight: productFormData.weight,
+        metal_type: productFormData.metal_type,
+        brand: productFormData.brand,
+        purity: productFormData.purity,
+        category: productFormData.category,
+        image_url: productFormData.image_url,
+        product_url: productFormData.product_url,
+        is_active: productFormData.is_active,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingProduct.id);
+
+    if (!error) {
+      setIsEditProductDialogOpen(false);
+      setEditingProduct(null);
+      resetProductForm();
+      fetchProducts();
+      toast({
+        title: "Success",
+        description: "Product updated successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to update product",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', productId);
+
+    if (!error) {
+      fetchProducts();
+      toast({
+        title: "Success",
+        description: "Product deleted successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleToggleProductStatus = async (productId: string, currentStatus: boolean) => {
+    const { error } = await supabase
+      .from('products')
+      .update({ is_active: !currentStatus })
+      .eq('id', productId);
+
+    if (!error) {
+      fetchProducts();
+      toast({
+        title: "Success",
+        description: `Product ${currentStatus ? 'deactivated' : 'activated'} successfully`
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to update product status",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const resetProductForm = () => {
+    setProductFormData({
+      name: '',
+      description: '',
+      price_usd: '0.00',
+      weight: '',
+      metal_type: 'gold',
+      brand: '',
+      purity: '',
+      category: 'bar',
+      image_url: '',
+      product_url: '',
+      is_active: true
+    });
   };
 
   return (
@@ -2306,26 +2456,116 @@ export default function AdminDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
+                    <Database className="h-5 w-5" />
                     Product Management
                   </CardTitle>
                   <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
                     <Upload className="h-4 w-4 mr-2" />
-                    Bulk Upload Products
+                    Bulk Upload
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Product Management</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Upload products in bulk using CSV files. Supports multiple formats including the new gold-3.csv and gold-4.csv formats.
-                  </p>
-                  <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Products
-                  </Button>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Manage all products in your catalog. You can edit, deactivate, or delete products.
+                    </p>
+                    <Badge variant="outline">
+                      {products.length} Products
+                    </Badge>
+                  </div>
+                  
+                  {products.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No Products Found</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Start by uploading products using the bulk upload feature.
+                      </p>
+                      <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Products
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Product</TableHead>
+                            <TableHead>Metal Type</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>Weight</TableHead>
+                            <TableHead>Brand</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {products.map((product) => (
+                            <TableRow key={product.id}>
+                              <TableCell>
+                                <div className="flex items-center gap-3">
+                                  {product.image_url && (
+                                    <img 
+                                      src={product.image_url} 
+                                      alt={product.name}
+                                      className="w-10 h-10 rounded object-cover"
+                                    />
+                                  )}
+                                  <div>
+                                    <div className="font-medium">{product.name}</div>
+                                    <div className="text-sm text-muted-foreground">
+                                      {product.category} • {product.purity}
+                                    </div>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline">
+                                  {product.metal_type || 'Gold'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>${product.price_usd?.toFixed(2) || '0.00'}</TableCell>
+                              <TableCell>{product.weight || 'N/A'}</TableCell>
+                              <TableCell>{product.brand || 'Unknown'}</TableCell>
+                              <TableCell>
+                                <Badge variant={product.is_active ? 'default' : 'secondary'}>
+                                  {product.is_active ? 'Active' : 'Inactive'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleEditProduct(product)}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleToggleProductStatus(product.id, product.is_active)}
+                                  >
+                                    {product.is_active ? 'Deactivate' : 'Activate'}
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDeleteProduct(product.id)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -2597,6 +2837,152 @@ export default function AdminDashboard() {
               <DialogTitle>Bulk Product Upload</DialogTitle>
             </DialogHeader>
             <BulkProductUpload />
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Product Dialog */}
+        <Dialog open={isEditProductDialogOpen} onOpenChange={setIsEditProductDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Product</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="product-name">Product Name *</Label>
+                  <Input
+                    id="product-name"
+                    value={productFormData.name}
+                    onChange={(e) => setProductFormData({...productFormData, name: e.target.value})}
+                    placeholder="Enter product name..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-price">Price (USD) *</Label>
+                  <Input
+                    id="product-price"
+                    type="number"
+                    step="0.01"
+                    value={productFormData.price_usd}
+                    onChange={(e) => setProductFormData({...productFormData, price_usd: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="product-description">Description</Label>
+                <Textarea
+                  id="product-description"
+                  value={productFormData.description}
+                  onChange={(e) => setProductFormData({...productFormData, description: e.target.value})}
+                  placeholder="Enter product description..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="product-metal-type">Metal Type</Label>
+                  <Select value={productFormData.metal_type} onValueChange={(value) => setProductFormData({...productFormData, metal_type: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gold">Gold</SelectItem>
+                      <SelectItem value="silver">Silver</SelectItem>
+                      <SelectItem value="platinum">Platinum</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="product-category">Category</Label>
+                  <Select value={productFormData.category} onValueChange={(value) => setProductFormData({...productFormData, category: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bar">Bar</SelectItem>
+                      <SelectItem value="coin">Coin</SelectItem>
+                      <SelectItem value="round">Round</SelectItem>
+                      <SelectItem value="jewelry">Jewelry</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="product-weight">Weight</Label>
+                  <Input
+                    id="product-weight"
+                    value={productFormData.weight}
+                    onChange={(e) => setProductFormData({...productFormData, weight: e.target.value})}
+                    placeholder="e.g., 1 oz, 10g"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="product-brand">Brand</Label>
+                  <Input
+                    id="product-brand"
+                    value={productFormData.brand}
+                    onChange={(e) => setProductFormData({...productFormData, brand: e.target.value})}
+                    placeholder="Enter brand name..."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="product-purity">Purity</Label>
+                  <Input
+                    id="product-purity"
+                    value={productFormData.purity}
+                    onChange={(e) => setProductFormData({...productFormData, purity: e.target.value})}
+                    placeholder="e.g., .999, 24k"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="product-image-url">Image URL</Label>
+                <Input
+                  id="product-image-url"
+                  value={productFormData.image_url}
+                  onChange={(e) => setProductFormData({...productFormData, image_url: e.target.value})}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="product-url">Product URL</Label>
+                <Input
+                  id="product-url"
+                  value={productFormData.product_url}
+                  onChange={(e) => setProductFormData({...productFormData, product_url: e.target.value})}
+                  placeholder="https://example.com/product"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="product-active"
+                  checked={productFormData.is_active}
+                  onCheckedChange={(checked) => setProductFormData({...productFormData, is_active: checked})}
+                />
+                <Label htmlFor="product-active">Product is active</Label>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => {
+                  setIsEditProductDialogOpen(false);
+                  setEditingProduct(null);
+                  resetProductForm();
+                }}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateProduct} disabled={!productFormData.name || !productFormData.price_usd}>
+                  Update Product
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
 
