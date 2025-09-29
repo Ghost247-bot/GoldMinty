@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Upload, CheckCircle, XCircle, Clock, Database } from 'lucide-react';
@@ -11,14 +12,20 @@ export default function BulkProductUpload() {
   const [isUploadingDB, setIsUploadingDB] = useState(false);
   const [stripeResults, setStripeResults] = useState<any>(null);
   const [dbResults, setDbResults] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<string>('gold-products.csv');
+
+  const csvFiles = [
+    { value: 'gold-products.csv', label: 'Original Gold Products' },
+    { value: 'gold-2.csv', label: 'New Gold Products (gold-2.csv)' }
+  ];
 
   const handleStripeUpload = async () => {
     setIsUploadingStripe(true);
     setStripeResults(null);
 
     try {
-      // Read the CSV file from the public directory
-      const response = await fetch('/data/gold-products.csv');
+      // Read the selected CSV file
+      const response = await fetch(`/data/${selectedFile}`);
       const csvData = await response.text();
 
       // Call the bulk upload function
@@ -52,8 +59,8 @@ export default function BulkProductUpload() {
     setDbResults(null);
 
     try {
-      // Read the CSV file from the public directory
-      const response = await fetch('/data/gold-products.csv');
+      // Read the selected CSV file
+      const response = await fetch(`/data/${selectedFile}`);
       const csvData = await response.text();
 
       // Call the database import function
@@ -163,45 +170,33 @@ export default function BulkProductUpload() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <p className="text-muted-foreground">
-          Upload all gold products from your CSV data to either Stripe's product catalog or your Supabase database.
-        </p>
-
-        <Tabs defaultValue="stripe" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="stripe">Stripe Products</TabsTrigger>
-            <TabsTrigger value="database">Database Import</TabsTrigger>
-          </TabsList>
+        <div className="space-y-4">
+          <p className="text-muted-foreground">
+            Upload all gold products from your CSV data to either Stripe's product catalog or your Supabase database.
+          </p>
           
-          <TabsContent value="stripe" className="space-y-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    This will create products and prices in your Stripe account for payment processing.
-                  </p>
-                  <Button 
-                    onClick={handleStripeUpload} 
-                    disabled={isUploadingStripe}
-                    className="w-full"
-                  >
-                    {isUploadingStripe ? (
-                      <>
-                        <Clock className="mr-2 h-4 w-4 animate-spin" />
-                        Uploading to Stripe...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload to Stripe
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            {renderResults(stripeResults, "Stripe Upload Results")}
-          </TabsContent>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Select CSV File:</label>
+            <Select value={selectedFile} onValueChange={setSelectedFile}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {csvFiles.map((file) => (
+                  <SelectItem key={file.value} value={file.value}>
+                    {file.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <Tabs defaultValue="database" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="database">Database Import</TabsTrigger>
+            <TabsTrigger value="stripe">Stripe Products</TabsTrigger>
+          </TabsList>
           
           <TabsContent value="database" className="space-y-4">
             <Card>
@@ -231,6 +226,36 @@ export default function BulkProductUpload() {
               </CardContent>
             </Card>
             {renderResults(dbResults, "Database Import Results")}
+          </TabsContent>
+          
+          <TabsContent value="stripe" className="space-y-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    This will create products and prices in your Stripe account for payment processing.
+                  </p>
+                  <Button 
+                    onClick={handleStripeUpload} 
+                    disabled={isUploadingStripe}
+                    className="w-full"
+                  >
+                    {isUploadingStripe ? (
+                      <>
+                        <Clock className="mr-2 h-4 w-4 animate-spin" />
+                        Uploading to Stripe...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload to Stripe
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            {renderResults(stripeResults, "Stripe Upload Results")}
           </TabsContent>
         </Tabs>
       </CardContent>
