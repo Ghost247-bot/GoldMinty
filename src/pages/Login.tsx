@@ -214,10 +214,9 @@ export default function Login() {
           variant: 'destructive',
         });
       } else if (data?.user) {
-        // Wait a moment for the user session to be fully established
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log('User created, storing security questions for user:', data.user.id);
         
-        // Store security questions and answers with better error handling
+        // Store security questions and answers using edge function
         try {
           const securityAnswers = [
             {
@@ -232,21 +231,25 @@ export default function Login() {
             }
           ];
 
-          // Insert security answers one by one to avoid batch issues
-          for (const answer of securityAnswers) {
-            const { error: answerError } = await supabase
-              .from('user_security_answers')
-              .insert(answer);
+          console.log('Saving security answers for user:', data.user.id);
 
-            if (answerError) {
-              console.error('Error saving security answer:', answerError);
-              toast({
-                title: 'Warning',
-                description: 'Account created but security questions could not be saved. Please contact support.',
-                variant: 'destructive',
-              });
-              break;
+          // Call edge function to save security answers
+          const { error: functionError } = await supabase.functions.invoke('save-security-answers', {
+            body: {
+              user_id: data.user.id,
+              security_answers: securityAnswers
             }
+          });
+
+          if (functionError) {
+            console.error('Error calling save-security-answers function:', functionError);
+            toast({
+              title: 'Warning',
+              description: 'Account created but security questions could not be saved. Please contact support.',
+              variant: 'destructive',
+            });
+          } else {
+            console.log('Security answers saved successfully via edge function');
           }
         } catch (answerError) {
           console.error('Security answer error:', answerError);
