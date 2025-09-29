@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
+import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -95,20 +96,23 @@ const Checkout = () => {
     setIsProcessing(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast({
-        title: "Order Confirmed!",
-        description: "Your precious metals order has been successfully placed.",
+      // Create Stripe checkout session
+      const { data: sessionData, error } = await supabase.functions.invoke('create-payment', {
+        body: { items: cartState.items }
       });
-      
-      clearCart();
-      navigate('/dashboard');
+
+      if (error) throw error;
+
+      if (sessionData?.url) {
+        // Redirect to Stripe Checkout
+        window.open(sessionData.url, '_blank');
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error) {
       toast({
         title: "Payment Failed",
-        description: "There was an error processing your payment. Please try again.",
+        description: "There was an error creating the checkout session. Please try again.",
         variant: "destructive",
       });
     } finally {
