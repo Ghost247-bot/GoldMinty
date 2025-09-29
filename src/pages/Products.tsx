@@ -11,6 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCurrency } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -343,11 +344,11 @@ const Products = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="text-sm md:text-lg font-bold text-gold">
-                          ${product.price.toFixed(2)}
+                          ${formatCurrency(product.price)}
                         </span>
                         {product.originalPrice && (
                           <span className="text-xs text-muted-foreground line-through">
-                            ${product.originalPrice.toFixed(2)}
+                            ${formatCurrency(product.originalPrice)}
                           </span>
                         )}
                       </div>

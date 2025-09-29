@@ -18,6 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
 import { BulkTransactionUpload } from '@/components/BulkTransactionUpload';
 import BulkProductUpload from '@/components/BulkProductUpload';
+import { formatCurrency, formatOz } from '@/lib/utils';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -1328,11 +1329,11 @@ export default function AdminDashboard() {
                             {account.account_type}
                           </Badge>
                         </TableCell>
-                        <TableCell>${Number(account.balance).toFixed(2)}</TableCell>
+                        <TableCell>${formatCurrency(account.balance)}</TableCell>
                         <TableCell className="text-xs">
-                          <div>G: {Number(account.gold_holdings).toFixed(4)}oz</div>
-                          <div>S: {Number(account.silver_holdings).toFixed(4)}oz</div>
-                          <div>P: {Number(account.platinum_holdings).toFixed(4)}oz</div>
+                          <div>G: {formatOz(account.gold_holdings)}oz</div>
+                          <div>S: {formatOz(account.silver_holdings)}oz</div>
+                          <div>P: {formatOz(account.platinum_holdings)}oz</div>
                         </TableCell>
                         <TableCell>
                           <Badge variant={account.status === 'active' ? 'default' : 'secondary'}>
@@ -1617,7 +1618,7 @@ export default function AdminDashboard() {
                                       <div className="flex items-center justify-between">
                                         <div>
                                           <p className="text-sm text-muted-foreground">Gold Holdings</p>
-                                          <p className="text-2xl font-bold">{account ? Number(account.gold_holdings).toFixed(4) : '0.0000'} oz</p>
+                                          <p className="text-2xl font-bold">{account ? formatOz(account.gold_holdings) : '0.0000'} oz</p>
                                         </div>
                                         <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
                                           <Settings className="h-4 w-4" />
@@ -1628,7 +1629,7 @@ export default function AdminDashboard() {
                                       <div className="flex items-center justify-between">
                                         <div>
                                           <p className="text-sm text-muted-foreground">Silver Holdings</p>
-                                          <p className="text-2xl font-bold">{account ? Number(account.silver_holdings).toFixed(4) : '0.0000'} oz</p>
+                                          <p className="text-2xl font-bold">{account ? formatOz(account.silver_holdings) : '0.0000'} oz</p>
                                         </div>
                                         <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
                                           <Settings className="h-4 w-4" />
@@ -1639,7 +1640,7 @@ export default function AdminDashboard() {
                                       <div className="flex items-center justify-between">
                                         <div>
                                           <p className="text-sm text-muted-foreground">Portfolio Value</p>
-                                          <p className="text-2xl font-bold">${account ? Number(account.balance).toFixed(2) : '0.00'}</p>
+                                          <p className="text-2xl font-bold">${account ? formatCurrency(account.balance) : '0.00'}</p>
                                         </div>
                                         <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
                                           <Settings className="h-4 w-4" />
@@ -1757,9 +1758,9 @@ export default function AdminDashboard() {
                                     </Badge>
                                   </TableCell>
                                   <TableCell className="capitalize">{transaction.metal_type}</TableCell>
-                                  <TableCell>{Number(transaction.amount).toFixed(4)} oz</TableCell>
-                                  <TableCell>${Number(transaction.price_per_oz).toFixed(2)}</TableCell>
-                                  <TableCell>${Number(transaction.total_value).toFixed(2)}</TableCell>
+                                  <TableCell>{formatOz(transaction.amount)} oz</TableCell>
+                                  <TableCell>${formatCurrency(transaction.price_per_oz)}</TableCell>
+                                  <TableCell>${formatCurrency(transaction.total_value)}</TableCell>
                                   <TableCell>
                                     <Badge variant={transaction.status === 'completed' ? 'default' : 
                                       transaction.status === 'pending' ? 'secondary' : 'destructive'}>
@@ -2643,7 +2644,7 @@ export default function AdminDashboard() {
                                   {product.metal_type || 'Gold'}
                                 </Badge>
                               </TableCell>
-                              <TableCell>${product.price_usd?.toFixed(2) || '0.00'}</TableCell>
+                              <TableCell>${product.price_usd ? formatCurrency(product.price_usd) : '0.00'}</TableCell>
                               <TableCell>{product.weight || 'N/A'}</TableCell>
                               <TableCell>{product.brand || 'Unknown'}</TableCell>
                               <TableCell>

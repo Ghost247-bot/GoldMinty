@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { formatCurrency, formatOz } from '@/lib/utils';
 import { 
   User, 
   Settings, 
@@ -225,11 +226,11 @@ export default function UserDashboard() {
     Period: ${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toLocaleDateString()} - ${new Date().toLocaleDateString()}
     
     Holdings Summary:
-    Gold: ${totalGoldHoldings.toFixed(4)} oz
-    Silver: ${totalSilverHoldings.toFixed(4)} oz
-    Platinum: ${totalPlatinumHoldings.toFixed(4)} oz
+    Gold: ${formatOz(totalGoldHoldings)} oz
+    Silver: ${formatOz(totalSilverHoldings)} oz
+    Platinum: ${formatOz(totalPlatinumHoldings)} oz
     
-    Total Balance: $${totalBalance.toFixed(2)}`;
+    Total Balance: $${formatCurrency(totalBalance)}`;
     
     const blob = new Blob([pdfData], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
@@ -283,9 +284,9 @@ export default function UserDashboard() {
   // Enhanced feature handlers
   const handlePortfolioRebalance = async () => {
     const currentAllocation = {
-      gold: (totalGoldHoldings * 2456.80 / totalBalance * 100).toFixed(1),
-      silver: (totalSilverHoldings * 31.24 / totalBalance * 100).toFixed(1),
-      platinum: (totalPlatinumHoldings * 952.10 / totalBalance * 100).toFixed(1)
+      gold: formatOz((totalGoldHoldings * 2456.80 / totalBalance * 100), 1),
+      silver: formatOz((totalSilverHoldings * 31.24 / totalBalance * 100), 1),
+      platinum: formatOz((totalPlatinumHoldings * 952.10 / totalBalance * 100), 1)
     };
     
     toast({
@@ -304,7 +305,7 @@ export default function UserDashboard() {
     const futureValue = initial * Math.pow(1 + returnRate, years) + 
                        monthly * (Math.pow(1 + returnRate, years) - 1) / returnRate * 12;
     
-    return futureValue.toFixed(2);
+    return formatCurrency(futureValue);
   };
 
   const getRiskLevel = () => {
@@ -482,7 +483,7 @@ export default function UserDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${totalBalance.toFixed(2)}</div>
+              <div className="text-2xl font-bold">${formatCurrency(totalBalance)}</div>
               <p className="text-xs text-muted-foreground">
                 {investmentAccounts.length > 0 ? `${investmentAccounts.length} account(s)` : 'No investment accounts'}
               </p>
@@ -495,9 +496,9 @@ export default function UserDashboard() {
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalGoldHoldings.toFixed(4)} oz</div>
+              <div className="text-2xl font-bold">{formatOz(totalGoldHoldings)} oz</div>
               <p className="text-xs text-muted-foreground">
-                Silver: {totalSilverHoldings.toFixed(4)} oz | Platinum: {totalPlatinumHoldings.toFixed(4)} oz
+                Silver: {formatOz(totalSilverHoldings)} oz | Platinum: {formatOz(totalPlatinumHoldings)} oz
               </p>
             </CardContent>
           </Card>
@@ -557,7 +558,7 @@ export default function UserDashboard() {
                             </Badge>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold">${Number(account.balance).toFixed(2)}</div>
+                            <div className="text-2xl font-bold">${formatCurrency(account.balance)}</div>
                             <div className="text-sm text-muted-foreground capitalize">{account.account_type} Account</div>
                           </div>
                         </div>
@@ -569,7 +570,7 @@ export default function UserDashboard() {
                               <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
                               <span className="text-sm font-medium text-muted-foreground">Gold</span>
                             </div>
-                            <div className="text-xl font-bold">{Number(account.gold_holdings).toFixed(4)} oz</div>
+                            <div className="text-xl font-bold">{formatOz(account.gold_holdings)} oz</div>
                             <div className="text-xs text-green-600">+2.3% this week</div>
                           </div>
                           <div className="text-center">
@@ -577,7 +578,7 @@ export default function UserDashboard() {
                               <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
                               <span className="text-sm font-medium text-muted-foreground">Silver</span>
                             </div>
-                            <div className="text-xl font-bold">{Number(account.silver_holdings).toFixed(4)} oz</div>
+                            <div className="text-xl font-bold">{formatOz(account.silver_holdings)} oz</div>
                             <div className="text-xs text-red-600">-0.8% this week</div>
                           </div>
                           <div className="text-center">
@@ -585,7 +586,7 @@ export default function UserDashboard() {
                               <div className="w-3 h-3 bg-gray-600 rounded-full mr-2"></div>
                               <span className="text-sm font-medium text-muted-foreground">Platinum</span>
                             </div>
-                            <div className="text-xl font-bold">{Number(account.platinum_holdings).toFixed(4)} oz</div>
+                            <div className="text-xl font-bold">{formatOz(account.platinum_holdings)} oz</div>
                             <div className="text-xs text-green-600">+1.5% this week</div>
                           </div>
                         </div>
@@ -756,21 +757,21 @@ export default function UserDashboard() {
                             <div>
                               <div className="flex justify-between text-sm mb-2">
                                 <span>Gold Target: 100 oz</span>
-                                <span>{totalGoldHoldings.toFixed(1)}/100 oz</span>
+                                <span>{formatOz(totalGoldHoldings, 1)}/100 oz</span>
                               </div>
                               <Progress value={(totalGoldHoldings / 100) * 100} className="h-2" />
                             </div>
                             <div>
                               <div className="flex justify-between text-sm mb-2">
                                 <span>Portfolio Target: $15M</span>
-                                <span>${(totalBalance / 1000000).toFixed(1)}M/15M</span>
+                                <span>${formatOz(totalBalance / 1000000, 1)}M/15M</span>
                               </div>
                               <Progress value={(totalBalance / 15000000) * 100} className="h-2" />
                             </div>
                             <div>
                               <div className="flex justify-between text-sm mb-2">
                                 <span>Silver Target: 500 oz</span>
-                                <span>{totalSilverHoldings.toFixed(0)}/500 oz</span>
+                                <span>{formatOz(totalSilverHoldings, 0)}/500 oz</span>
                               </div>
                               <Progress value={(totalSilverHoldings / 500) * 100} className="h-2" />
                             </div>
@@ -833,21 +834,21 @@ export default function UserDashboard() {
                               <div>
                                 <div className="flex justify-between text-sm mb-2">
                                   <span>Gold Allocation</span>
-                                  <span>{((totalGoldHoldings * 2456.80 / totalBalance) * 100).toFixed(1)}%</span>
+                                  <span>{formatOz((totalGoldHoldings * 2456.80 / totalBalance) * 100, 1)}%</span>
                                 </div>
                                 <Progress value={((totalGoldHoldings * 2456.80 / totalBalance) * 100)} className="h-2" />
                               </div>
                               <div>
                                 <div className="flex justify-between text-sm mb-2">
                                   <span>Silver Allocation</span>
-                                  <span>{((totalSilverHoldings * 31.24 / totalBalance) * 100).toFixed(1)}%</span>
+                                  <span>{formatOz((totalSilverHoldings * 31.24 / totalBalance) * 100, 1)}%</span>
                                 </div>
                                 <Progress value={((totalSilverHoldings * 31.24 / totalBalance) * 100)} className="h-2" />
                               </div>
                               <div>
                                 <div className="flex justify-between text-sm mb-2">
                                   <span>Platinum Allocation</span>
-                                  <span>{((totalPlatinumHoldings * 952.10 / totalBalance) * 100).toFixed(1)}%</span>
+                                  <span>{formatOz((totalPlatinumHoldings * 952.10 / totalBalance) * 100, 1)}%</span>
                                 </div>
                                 <Progress value={((totalPlatinumHoldings * 952.10 / totalBalance) * 100)} className="h-2" />
                               </div>
@@ -1297,7 +1298,7 @@ export default function UserDashboard() {
                               <div className="space-y-4">
                                 <div className="p-3 bg-muted rounded-lg">
                                   <p className="text-sm text-muted-foreground">
-                                    Available Balance: <span className="font-semibold">${totalBalance.toFixed(2)}</span>
+                                    Available Balance: <span className="font-semibold">${formatCurrency(totalBalance)}</span>
                                   </p>
                                 </div>
                                 <div>

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { formatCurrency } from "@/lib/utils";
 
 const Prices = () => {
   const navigate = useNavigate();
@@ -192,10 +193,10 @@ const Prices = () => {
                       <TableCell>{item.weight}</TableCell>
                       <TableCell>{item.mint}</TableCell>
                       <TableCell className="text-right font-mono">
-                        ${item.buyPrice.toFixed(2)}
+                        ${formatCurrency(item.buyPrice)}
                       </TableCell>
                       <TableCell className="text-right font-mono">
-                        ${item.sellPrice.toFixed(2)}
+                        ${formatCurrency(item.sellPrice)}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className={`flex items-center justify-end gap-1 ${
@@ -207,7 +208,7 @@ const Prices = () => {
                             <TrendingDown className="w-3 h-3" />
                           )}
                           <span className="font-mono">
-                            {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}
+                            {item.change >= 0 ? '+' : ''}{formatCurrency(item.change)}
                           </span>
                         </div>
                       </TableCell>

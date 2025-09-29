@@ -18,6 +18,7 @@ import {
   Minus
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatCurrency } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { parseGoldProductsCSV } from "@/utils/csvParser";
@@ -274,11 +275,11 @@ const ProductDetail = () => {
 
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-4 md:mb-6">
                   <span className="text-3xl md:text-4xl font-bold text-gold">
-                    ${displayProduct.price.toFixed(2)}
+                    ${formatCurrency(displayProduct.price)}
                   </span>
                   {displayProduct.originalPrice && (
                     <span className="text-lg md:text-xl text-muted-foreground line-through">
-                      ${displayProduct.originalPrice.toFixed(2)}
+                      ${formatCurrency(displayProduct.originalPrice)}
                     </span>
                   )}
                 </div>
@@ -322,7 +323,7 @@ const ProductDetail = () => {
                     onClick={handleAddToCart}
                   >
                     <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add to Cart - ${(displayProduct.price * quantity).toFixed(2)}
+                    Add to Cart - ${formatCurrency(displayProduct.price * quantity)}
                   </Button>
                   <Button 
                     size="lg" 

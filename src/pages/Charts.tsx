@@ -7,6 +7,7 @@ import { TrendingUp, TrendingDown, BarChart3, LineChart, Activity } from "lucide
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { formatCurrency } from "@/lib/utils";
 
 const Charts = () => {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ const Charts = () => {
               <CardContent>
                 <div className="space-y-2">
                   <div className={`text-2xl font-bold ${metal.color}`}>
-                    ${metal.price.toFixed(2)}
+                    ${formatCurrency(metal.price)}
                   </div>
                   <div className="flex items-center gap-2">
                     {metal.change >= 0 ? (
@@ -98,13 +99,13 @@ const Charts = () => {
                       <TrendingDown className="w-4 h-4 text-red-600" />
                     )}
                     <span className={metal.change >= 0 ? "text-green-600" : "text-red-600"}>
-                      {metal.change >= 0 ? "+" : ""}{metal.change.toFixed(2)} 
-                      ({metal.changePercent >= 0 ? "+" : ""}{metal.changePercent.toFixed(2)}%)
+                      {metal.change >= 0 ? "+" : ""}{formatCurrency(metal.change)} 
+                      ({metal.changePercent >= 0 ? "+" : ""}{formatCurrency(metal.changePercent)}%)
                     </span>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    <div>H: ${metal.high.toFixed(2)}</div>
-                    <div>L: ${metal.low.toFixed(2)}</div>
+                    <div>H: ${formatCurrency(metal.high)}</div>
+                    <div>L: ${formatCurrency(metal.low)}</div>
                   </div>
                 </div>
               </CardContent>

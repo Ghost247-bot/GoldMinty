@@ -17,6 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import { CreditCard, Shield, Truck, Lock, ArrowLeft } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { formatCurrency } from '@/lib/utils';
 
 const checkoutSchema = z.object({
   // Billing Information
@@ -471,18 +472,18 @@ const Checkout = () => {
                         <Truck className="h-4 w-4" />
                         Shipping
                       </span>
-                      <span>${shipping.toFixed(2)}</span>
+                      <span>${formatCurrency(shipping)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="flex items-center gap-1">
                         <Shield className="h-4 w-4" />
                         Insurance
                       </span>
-                      <span>${insurance.toFixed(2)}</span>
+                      <span>${formatCurrency(insurance)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Tax</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span>${formatCurrency(tax)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">

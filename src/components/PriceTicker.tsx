@@ -1,4 +1,5 @@
 import { TrendingUp } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 interface PriceData {
   metal: string;

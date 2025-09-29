@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCart, CartItem } from "@/contexts/CartContext";
+import { formatCurrency } from "@/lib/utils";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -156,10 +157,10 @@ const Cart = () => {
                         
                         <div className="text-center sm:text-right">
                           <p className="text-lg font-bold text-gold">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ${formatCurrency(item.price * item.quantity)}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            ${item.price.toFixed(2)} each
+                            ${formatCurrency(item.price)} each
                           </p>
                         </div>
                       </div>
@@ -179,31 +180,31 @@ const Cart = () => {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>${formatCurrency(subtotal)}</span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   <span className={shipping === 0 ? "text-green-600" : ""}>
-                    {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                    {shipping === 0 ? "FREE" : `$${formatCurrency(shipping)}`}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span>Insurance</span>
-                  <span>${insurance.toFixed(2)}</span>
+                  <span>${formatCurrency(insurance)}</span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>${formatCurrency(tax)}</span>
                 </div>
                 
                 <Separator />
                 
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span className="text-gold">${total.toFixed(2)}</span>
+                  <span className="text-gold">${formatCurrency(total)}</span>
                 </div>
               </CardContent>
             </Card>
