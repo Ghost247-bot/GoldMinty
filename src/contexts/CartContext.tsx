@@ -117,27 +117,37 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
   }
 };
 
-const initialState: CartState = {
-  items: [],
-  totalItems: 0,
-  totalAmount: 0
+// Function to load initial cart state from localStorage
+const loadCartFromStorage = (): CartState => {
+  try {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      const cartItems = JSON.parse(savedCart);
+      if (Array.isArray(cartItems)) {
+        return {
+          items: cartItems,
+          totalItems: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+          totalAmount: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+    // Clear corrupted data
+    localStorage.removeItem('cart');
+  }
+  
+  return {
+    items: [],
+    totalItems: 0,
+    totalAmount: 0
+  };
 };
+
+const initialState: CartState = loadCartFromStorage();
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const cartItems = JSON.parse(savedCart);
-        dispatch({ type: 'LOAD_CART', payload: cartItems });
-      } catch (error) {
-        console.error('Error loading cart from localStorage:', error);
-      }
-    }
-  }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
