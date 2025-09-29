@@ -50,6 +50,7 @@ export default {
         gold: {
           DEFAULT: "hsl(var(--gold))",
           dark: "hsl(var(--gold-dark))",
+          light: "hsl(48 100% 67%)",
         },
         navy: {
           deep: "hsl(var(--navy-deep))",
@@ -124,6 +125,16 @@ export default {
             opacity: "1",
           },
         },
+        "float": {
+          "0%, 100%": {
+            transform: "translateY(0px) scale(1)",
+            opacity: "0.6",
+          },
+          "50%": {
+            transform: "translateY(-15px) scale(1.05)",
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -131,6 +142,7 @@ export default {
         "fade-in": "fade-in 0.6s ease-out forwards",
         "scale-in": "scale-in 0.4s ease-out forwards",
         "slide-up": "slide-up 0.5s ease-out forwards",
+        "float": "float 6s ease-in-out infinite",
       },
     },
   },

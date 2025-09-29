@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Shield, Gem, TrendingUp, ArrowLeft, HelpCircle } from 'lucide-react';
+import { Eye, EyeOff, Shield, Gem, TrendingUp, ArrowLeft, HelpCircle, Star, Award, CheckCircle, Lock, Users, Globe, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Login() {
@@ -273,150 +273,236 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden"
-         style={{ background: 'linear-gradient(135deg, hsl(var(--navy-deep)) 0%, hsl(var(--navy)) 50%, hsl(var(--gold-dark)) 100%)' }}>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-navy-deep to-slate-800">
       
-      {/* Enhanced animated background with patterns */}
+      {/* Professional grid pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute inset-0"
+             style={{
+               backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
+               backgroundSize: '50px 50px'
+             }}
+        ></div>
+      </div>
+      
+      {/* Sophisticated animated background */}
       <div className="absolute inset-0">
-        {/* Geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-full h-full"
-               style={{
-                 backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-                 backgroundSize: '50px 50px'
-               }}
-          ></div>
-        </div>
+        {/* Primary ambient lighting */}
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-gold/8 via-gold/4 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-gold-light/6 via-gold/3 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
         
-        {/* Enhanced floating orbs */}
-        <div className="absolute top-10 left-10 w-80 h-80 bg-gradient-to-r from-gold/20 to-gold-light/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-l from-gold/15 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gold/5 rounded-full blur-2xl animate-pulse delay-500"></div>
-        <div className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-gradient-to-br from-gold-light/10 to-transparent rounded-full blur-3xl animate-pulse delay-700"></div>
+        {/* Secondary accent lighting */}
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-gradient-radial from-gold/5 to-transparent rounded-full blur-2xl animate-pulse delay-500"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-[500px] h-[500px] bg-gradient-radial from-gold-light/4 to-transparent rounded-full blur-3xl animate-pulse delay-700"></div>
         
-        {/* Floating particles */}
-        <div className="absolute top-20 right-1/4 w-2 h-2 bg-gold rounded-full animate-pulse delay-300"></div>
-        <div className="absolute bottom-32 left-1/3 w-1 h-1 bg-gold-light rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/3 right-20 w-1.5 h-1.5 bg-gold rounded-full animate-pulse delay-500"></div>
-        <div className="absolute top-1/4 left-20 w-1 h-1 bg-gold/80 rounded-full animate-pulse delay-800"></div>
-        <div className="absolute bottom-1/3 right-1/3 w-2 h-2 bg-gold-light/60 rounded-full animate-pulse delay-1200"></div>
+        {/* Floating elements for depth */}
+        <div className="absolute top-20 right-1/4 w-2 h-2 bg-gold/60 rounded-full animate-float delay-300"></div>
+        <div className="absolute bottom-32 left-1/3 w-1.5 h-1.5 bg-gold-light/40 rounded-full animate-float delay-1000"></div>
+        <div className="absolute top-1/3 right-20 w-1 h-1 bg-gold/80 rounded-full animate-float delay-500"></div>
+        <div className="absolute top-1/4 left-20 w-2.5 h-2.5 bg-gold-light/30 rounded-full animate-float delay-800"></div>
+        <div className="absolute bottom-1/3 right-1/3 w-1.5 h-1.5 bg-gold/50 rounded-full animate-float delay-1200"></div>
       </div>
 
-      {/* Side decorative panels */}
-      <div className="absolute inset-y-0 left-0 w-1/4 hidden lg:block">
-        <div className="h-full flex flex-col justify-center items-center space-y-8 p-8">
-          {/* Left side brand elements */}
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-gold-dark to-gold-light rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
-              <Gem className="w-8 h-8 text-navy-deep" />
+      {/* Professional side branding panels */}
+      <div className="absolute inset-y-0 left-0 w-1/4 hidden xl:block">
+        <div className="h-full flex flex-col justify-center items-start space-y-12 px-12">
+          {/* Company credentials */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold-light rounded-xl flex items-center justify-center shadow-xl">
+                <Award className="w-6 h-6 text-navy-deep" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">SEC Registered</h3>
+                <p className="text-white/60 text-sm">Fully compliant investment platform</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold text-white">Secure Trading</h3>
-              <p className="text-white/70 text-sm">Advanced security protocols protect your investments</p>
+            
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold-light rounded-xl flex items-center justify-center shadow-xl">
+                <Shield className="w-6 h-6 text-navy-deep" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Bank-Grade Security</h3>
+                <p className="text-white/60 text-sm">256-bit encryption & multi-factor auth</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold-light rounded-xl flex items-center justify-center shadow-xl">
+                <CheckCircle className="w-6 h-6 text-navy-deep" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Insured Holdings</h3>
+                <p className="text-white/60 text-sm">$500M coverage through Lloyd's of London</p>
+              </div>
             </div>
           </div>
           
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-gold-dark to-gold-light rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
-              <TrendingUp className="w-8 h-8 text-navy-deep" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold text-white">Market Insights</h3>
-              <p className="text-white/70 text-sm">Real-time precious metals market analysis</p>
+          {/* Awards section */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium text-white/80 uppercase tracking-wider">Recognition</h4>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Star className="w-4 h-4 text-gold fill-gold" />
+                <span className="text-white/70 text-sm">Best Precious Metals Platform 2024</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Star className="w-4 h-4 text-gold fill-gold" />
+                <span className="text-white/70 text-sm">FinTech Innovation Award</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Star className="w-4 h-4 text-gold fill-gold" />
+                <span className="text-white/70 text-sm">A+ Better Business Bureau</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="absolute inset-y-0 right-0 w-1/4 hidden lg:block">
-        <div className="h-full flex flex-col justify-center items-center space-y-8 p-8">
-          {/* Right side statistics */}
-          <div className="text-center space-y-4">
-            <div className="text-3xl font-bold text-gold">$2.5B+</div>
-            <p className="text-white/70 text-sm">Assets Under Management</p>
+      {/* Enhanced statistics panel */}
+      <div className="absolute inset-y-0 right-0 w-1/4 hidden xl:block">
+        <div className="h-full flex flex-col justify-center items-end space-y-12 px-12">
+          {/* Key metrics */}
+          <div className="text-right space-y-8">
+            <div className="space-y-2">
+              <div className="text-4xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+                $2.5B+
+              </div>
+              <p className="text-white/60 text-sm font-medium">Assets Under Management</p>
+              <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-gold-light ml-auto"></div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="text-4xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+                50,000+
+              </div>
+              <p className="text-white/60 text-sm font-medium">Global Investors</p>
+              <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-gold-light ml-auto"></div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="text-4xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+                99.9%
+              </div>
+              <p className="text-white/60 text-sm font-medium">Platform Uptime</p>
+              <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-gold-light ml-auto"></div>
+            </div>
           </div>
           
-          <div className="text-center space-y-4">
-            <div className="text-3xl font-bold text-gold">50K+</div>
-            <p className="text-white/70 text-sm">Active Investors</p>
-          </div>
-          
-          <div className="text-center space-y-4">
-            <div className="text-3xl font-bold text-gold">15+</div>
-            <p className="text-white/70 text-sm">Years of Excellence</p>
+          {/* Trust indicators */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-medium text-white/80 uppercase tracking-wider text-right">Global Presence</h4>
+            <div className="space-y-3 text-right">
+              <div className="flex items-center justify-end space-x-2">
+                <span className="text-white/70 text-sm">Available in 50+ countries</span>
+                <Globe className="w-4 h-4 text-gold" />
+              </div>
+              <div className="flex items-center justify-end space-x-2">
+                <span className="text-white/70 text-sm">24/7 customer support</span>
+                <Users className="w-4 h-4 text-gold" />
+              </div>
+              <div className="flex items-center justify-end space-x-2">
+                <span className="text-white/70 text-sm">Instant settlements</span>
+                <Zap className="w-4 h-4 text-gold" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main content area */}
+      {/* Main content container */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
-        <div className="w-full max-w-lg">
-          {/* Enhanced Back to Home Button */}
+        <div className="w-full max-w-xl">
+          {/* Professional back button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate("/")}
-            className="mb-8 text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 group backdrop-blur-sm border border-white/10 rounded-full px-4"
+            className="mb-10 text-white/90 hover:text-white hover:bg-white/5 transition-all duration-300 group backdrop-blur-sm border border-white/10 rounded-full px-6 h-10"
           >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+            <span className="font-medium">Return to Homepage</span>
           </Button>
 
-          {/* Main Card with enhanced styling */}
-          <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-xl animate-scale-in relative overflow-hidden">
-            {/* Card glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-gold/5 opacity-50"></div>
-          
-          <CardHeader className="text-center pb-8 relative">
-            {/* Enhanced Logo */}
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-gold-dark via-gold to-gold-light rounded-3xl flex items-center justify-center shadow-2xl relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                  <Gem className="w-10 h-10 text-navy-deep relative z-10" />
+          {/* Premium main card */}
+          <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-2xl relative overflow-hidden">
+            {/* Subtle card accent */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gold-dark via-gold to-gold-light"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.02] via-transparent to-gold-light/[0.02]"></div>
+            
+            <CardHeader className="text-center pb-10 pt-12 relative">
+              {/* Premium logo design */}
+              <div className="flex justify-center mb-8">
+                <div className="relative group">
+                  {/* Main logo container */}
+                  <div className="w-24 h-24 bg-gradient-to-br from-gold-dark via-gold to-gold-light rounded-[20px] flex items-center justify-center shadow-2xl relative overflow-hidden border border-gold/20">
+                    {/* Animated background */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <Gem className="w-12 h-12 text-navy-deep relative z-10" />
+                  </div>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-gold-dark to-gold-light rounded-[20px] blur-xl opacity-30 scale-110 -z-10"></div>
+                  {/* Pulse ring */}
+                  <div className="absolute inset-0 rounded-[20px] border-2 border-gold/30 scale-110 animate-pulse"></div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-gold-dark to-gold-light rounded-3xl blur-xl opacity-50 scale-110"></div>
               </div>
-            </div>
-            
-            {/* Enhanced Title */}
-            <CardTitle className="text-4xl font-display bg-gradient-to-r from-gold-light via-gold to-gold-dark bg-clip-text text-transparent mb-3 tracking-wide">
-              GoldMint
-            </CardTitle>
-            <CardDescription className="text-muted-foreground text-lg font-medium">
-              Your gateway to precious metals investing
-            </CardDescription>
-            
-            {/* Decorative line */}
-            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 rounded-full"></div>
-          </CardHeader>
+              
+              {/* Enhanced branding */}
+              <div className="space-y-4">
+                <CardTitle className="text-5xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent tracking-tight">
+                  GoldMint
+                </CardTitle>
+                <div className="w-32 h-1 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto rounded-full"></div>
+                <CardDescription className="text-slate-600 text-lg font-medium leading-relaxed max-w-sm mx-auto">
+                  Premium precious metals investment platform trusted by institutions worldwide
+                </CardDescription>
+              </div>
+              
+              {/* Trust badges */}
+              <div className="flex justify-center items-center space-x-6 mt-8">
+                <div className="flex items-center space-x-2 text-slate-500">
+                  <Lock className="w-4 h-4" />
+                  <span className="text-xs font-medium">SEC Registered</span>
+                </div>
+                <div className="w-1 h-4 bg-slate-300"></div>
+                <div className="flex items-center space-x-2 text-slate-500">
+                  <Shield className="w-4 h-4" />
+                  <span className="text-xs font-medium">FDIC Insured</span>
+                </div>
+              </div>
+            </CardHeader>
           
-          <CardContent className="pb-8 px-8">
+          <CardContent className="pb-12 px-12">
             <Tabs defaultValue="signin" className="w-full">
-              {/* Enhanced Tab List */}
-              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 bg-muted/30 backdrop-blur-sm rounded-2xl p-1">
+              {/* Professional tab navigation */}
+              <TabsList className="grid w-full grid-cols-2 mb-12 h-16 bg-slate-50 backdrop-blur-sm rounded-2xl p-1.5 border border-slate-200">
                 <TabsTrigger 
                   value="signin" 
-                  className="text-sm font-semibold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold-dark data-[state=active]:to-gold data-[state=active]:text-navy-deep data-[state=active]:shadow-lg transition-all duration-300"
+                  className="text-sm font-semibold rounded-xl h-12 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-lg transition-all duration-300 data-[state=active]:shadow-slate-200/50"
                 >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Sign In
+                  <div className="flex items-center space-x-2">
+                    <Lock className="w-4 h-4" />
+                    <span>Member Access</span>
+                  </div>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="signup" 
-                  className="text-sm font-semibold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold-dark data-[state=active]:to-gold data-[state=active]:text-navy-deep data-[state=active]:shadow-lg transition-all duration-300"
+                  className="text-sm font-semibold rounded-xl h-12 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-lg transition-all duration-300 data-[state=active]:shadow-slate-200/50"
                 >
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Join Us
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4" />
+                    <span>Join Platform</span>
+                  </div>
                 </TabsTrigger>
               </TabsList>
               
-              {/* Enhanced Sign In Form */}
+              {/* Professional Sign In Form */}
               <TabsContent value="signin" className="animate-fade-in">
-                <form onSubmit={handleSignIn} className="space-y-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="signin-email" className="text-sm font-semibold text-foreground flex items-center">
-                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
+                <form onSubmit={handleSignIn} className="space-y-8">
+                  <div className="space-y-4">
+                    <Label htmlFor="signin-email" className="text-sm font-semibold text-slate-700 flex items-center">
                       Email Address
                     </Label>
                     <div className="relative group">
@@ -425,7 +511,7 @@ export default function Login() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-14 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-xl pl-4 pr-4 text-base transition-all duration-300 group-hover:border-gold/50"
+                        className="h-16 bg-white border-2 border-slate-200 focus:border-gold focus:ring-4 focus:ring-gold/10 rounded-xl px-6 text-base transition-all duration-300 group-hover:border-slate-300 shadow-sm"
                         placeholder="Enter your email address"
                         required
                       />
@@ -433,9 +519,8 @@ export default function Login() {
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <Label htmlFor="signin-password" className="text-sm font-semibold text-foreground flex items-center">
-                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
+                  <div className="space-y-4">
+                    <Label htmlFor="signin-password" className="text-sm font-semibold text-slate-700 flex items-center">
                       Password
                     </Label>
                     <div className="relative group">
@@ -444,14 +529,14 @@ export default function Login() {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="h-14 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-xl pl-4 pr-14 text-base transition-all duration-300 group-hover:border-gold/50"
+                        className="h-16 bg-white border-2 border-slate-200 focus:border-gold focus:ring-4 focus:ring-gold/10 rounded-xl px-6 pr-16 text-base transition-all duration-300 group-hover:border-slate-300 shadow-sm"
                         placeholder="Enter your password"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-gold transition-all duration-300 p-1 rounded-lg hover:bg-gold/10"
+                        className="absolute right-5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-gold transition-all duration-300 p-2 rounded-lg hover:bg-gold/5"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
@@ -459,33 +544,33 @@ export default function Login() {
                     </div>
                   </div>
                   
-                  {/* Enhanced Submit Button */}
+                  {/* Professional Submit Button */}
                   <Button 
                     type="submit" 
-                    className="w-full h-14 bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold-light hover:via-gold hover:to-gold-dark text-navy-deep font-bold shadow-2xl transition-all duration-500 hover-scale rounded-xl relative overflow-hidden group text-base" 
+                    className="w-full h-16 bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold-light hover:via-gold hover:to-gold-dark text-white font-bold shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] rounded-xl relative overflow-hidden group text-base mt-8" 
                     disabled={loading}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <div className="relative z-10 flex items-center justify-center">
                       {loading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-navy-deep/30 border-t-navy-deep rounded-full animate-spin mr-2"></div>
-                          Signing In...
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
+                          <span>Authenticating...</span>
                         </>
                       ) : (
                         <>
-                          <Shield className="w-5 h-5 mr-2" />
-                          Sign In Securely
+                          <Lock className="w-5 h-5 mr-3" />
+                          <span>Access My Account</span>
                         </>
                       )}
                     </div>
                   </Button>
                   
-                  {/* Forgot Password Link */}
-                  <div className="text-center pt-2">
+                  {/* Professional forgot password link */}
+                  <div className="text-center pt-4">
                     <button
                       type="button"
-                      className="text-sm text-muted-foreground hover:text-gold transition-colors duration-300 underline-offset-4 hover:underline"
+                      className="text-sm text-slate-500 hover:text-gold transition-colors duration-300 font-medium underline-offset-4 hover:underline"
                     >
                       Forgot your password?
                     </button>
