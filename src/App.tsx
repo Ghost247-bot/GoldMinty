@@ -32,6 +32,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import LegalNotice from "./pages/LegalNotice";
 import NotFound from "./pages/NotFound";
+import Checkout from "./pages/Checkout";
 
 const App = () => (
   <AuthProvider>
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/products/:category" element={<Layout><Products /></Layout>} />
           <Route path="/product/:id" element={<Layout><ProductDetail /></Layout>} />
           <Route path="/cart" element={<Layout><Cart /></Layout>} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/charts" element={<Layout><Charts /></Layout>} />
           <Route path="/prices" element={<Layout><Prices /></Layout>} />
           <Route path="/resources" element={<Layout><Resources /></Layout>} />
