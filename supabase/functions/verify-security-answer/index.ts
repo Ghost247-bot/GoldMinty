@@ -65,12 +65,14 @@ serve(async (req) => {
       )
     }
 
-    // Hash the provided answer and compare
-    const hashedAnswer = btoa(answer.toLowerCase().trim())
-    console.log('Expected hash:', userAnswer.answer_hash)
-    console.log('Provided hash:', hashedAnswer)
+    // Compare the provided answer directly with stored answer (case-insensitive)
+    const providedAnswer = answer.toLowerCase().trim()
+    const storedAnswer = userAnswer.answer_hash.toLowerCase().trim()
+    
+    console.log('Expected answer:', storedAnswer)
+    console.log('Provided answer:', providedAnswer)
 
-    const isValid = userAnswer.answer_hash === hashedAnswer
+    const isValid = storedAnswer === providedAnswer
 
     return new Response(
       JSON.stringify({ 
