@@ -51,14 +51,7 @@ const Cart = () => {
   const total = subtotal + shipping + insurance + tax;
 
   const proceedToCheckout = () => {
-    toast({
-      title: "Proceeding to checkout",
-      description: "Redirecting to secure checkout...",
-    });
-    // In a real app, this would navigate to a checkout page
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+    navigate("/checkout");
   };
 
   if (state.items.length === 0) {
