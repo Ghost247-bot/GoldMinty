@@ -273,11 +273,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
+    <div className="min-h-screen relative overflow-hidden"
          style={{ background: 'linear-gradient(135deg, hsl(var(--navy-deep)) 0%, hsl(var(--navy)) 50%, hsl(var(--gold-dark)) 100%)' }}>
       
-      {/* Enhanced animated background elements */}
+      {/* Enhanced animated background with patterns */}
       <div className="absolute inset-0">
+        {/* Geometric pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 left-0 w-full h-full"
+               style={{
+                 backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+                 backgroundSize: '50px 50px'
+               }}
+          ></div>
+        </div>
+        
+        {/* Enhanced floating orbs */}
         <div className="absolute top-10 left-10 w-80 h-80 bg-gradient-to-r from-gold/20 to-gold-light/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-l from-gold/15 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gold/5 rounded-full blur-2xl animate-pulse delay-500"></div>
@@ -287,25 +298,74 @@ export default function Login() {
         <div className="absolute top-20 right-1/4 w-2 h-2 bg-gold rounded-full animate-pulse delay-300"></div>
         <div className="absolute bottom-32 left-1/3 w-1 h-1 bg-gold-light rounded-full animate-pulse delay-1000"></div>
         <div className="absolute top-1/3 right-20 w-1.5 h-1.5 bg-gold rounded-full animate-pulse delay-500"></div>
+        <div className="absolute top-1/4 left-20 w-1 h-1 bg-gold/80 rounded-full animate-pulse delay-800"></div>
+        <div className="absolute bottom-1/3 right-1/3 w-2 h-2 bg-gold-light/60 rounded-full animate-pulse delay-1200"></div>
       </div>
 
-      {/* Content Container */}
-      <div className="relative z-10 w-full max-w-lg px-6">
-        {/* Enhanced Back to Home Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/")}
-          className="mb-8 text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 group backdrop-blur-sm border border-white/10 rounded-full px-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
-          Back to Home
-        </Button>
+      {/* Side decorative panels */}
+      <div className="absolute inset-y-0 left-0 w-1/4 hidden lg:block">
+        <div className="h-full flex flex-col justify-center items-center space-y-8 p-8">
+          {/* Left side brand elements */}
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-gold-dark to-gold-light rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
+              <Gem className="w-8 h-8 text-navy-deep" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-white">Secure Trading</h3>
+              <p className="text-white/70 text-sm">Advanced security protocols protect your investments</p>
+            </div>
+          </div>
+          
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-gold-dark to-gold-light rounded-2xl flex items-center justify-center mx-auto shadow-2xl">
+              <TrendingUp className="w-8 h-8 text-navy-deep" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-white">Market Insights</h3>
+              <p className="text-white/70 text-sm">Real-time precious metals market analysis</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {/* Main Card with enhanced styling */}
-        <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-xl animate-scale-in relative overflow-hidden">
-          {/* Card glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-gold/5 opacity-50"></div>
+      <div className="absolute inset-y-0 right-0 w-1/4 hidden lg:block">
+        <div className="h-full flex flex-col justify-center items-center space-y-8 p-8">
+          {/* Right side statistics */}
+          <div className="text-center space-y-4">
+            <div className="text-3xl font-bold text-gold">$2.5B+</div>
+            <p className="text-white/70 text-sm">Assets Under Management</p>
+          </div>
+          
+          <div className="text-center space-y-4">
+            <div className="text-3xl font-bold text-gold">50K+</div>
+            <p className="text-white/70 text-sm">Active Investors</p>
+          </div>
+          
+          <div className="text-center space-y-4">
+            <div className="text-3xl font-bold text-gold">15+</div>
+            <p className="text-white/70 text-sm">Years of Excellence</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content area */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
+        <div className="w-full max-w-lg">
+          {/* Enhanced Back to Home Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="mb-8 text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 group backdrop-blur-sm border border-white/10 rounded-full px-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
+            Back to Home
+          </Button>
+
+          {/* Main Card with enhanced styling */}
+          <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-xl animate-scale-in relative overflow-hidden">
+            {/* Card glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-gold/5 opacity-50"></div>
           
           <CardHeader className="text-center pb-8 relative">
             {/* Enhanced Logo */}
@@ -847,10 +907,59 @@ export default function Login() {
           </CardContent>
         </Card>
         
-        {/* Footer text */}
-        <p className="text-center text-sm text-muted-foreground/80 mt-6">
-          By continuing, you agree to our terms of service and privacy policy
-        </p>
+        {/* Enhanced Footer Section */}
+        <div className="mt-8 space-y-6">
+          {/* Features row */}
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="group">
+              <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold-light/10 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                <Shield className="w-5 h-5 text-gold" />
+              </div>
+              <p className="text-xs text-white/70">Bank-Level Security</p>
+            </div>
+            <div className="group">
+              <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold-light/10 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-5 h-5 text-gold" />
+              </div>
+              <p className="text-xs text-white/70">Real-Time Pricing</p>
+            </div>
+            <div className="group">
+              <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold-light/10 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                <Gem className="w-5 h-5 text-gold" />
+              </div>
+              <p className="text-xs text-white/70">Premium Assets</p>
+            </div>
+          </div>
+          
+          {/* Footer text */}
+          <p className="text-center text-sm text-muted-foreground/80">
+            By continuing, you agree to our terms of service and privacy policy
+          </p>
+        </div>
+
+        {/* Bottom decorative elements */}
+        <div className="fixed bottom-0 left-0 right-0 pointer-events-none">
+          <div className="h-32 bg-gradient-to-t from-navy-deep/20 to-transparent"></div>
+        </div>
+        </div>
+      </div>
+      
+      {/* Mobile-responsive decorative elements */}
+      <div className="lg:hidden absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="flex space-x-8 text-center">
+          <div>
+            <div className="text-xl font-bold text-gold">$2.5B+</div>
+            <p className="text-white/60 text-xs">Assets</p>
+          </div>
+          <div>
+            <div className="text-xl font-bold text-gold">50K+</div>
+            <p className="text-white/60 text-xs">Investors</p>
+          </div>
+          <div>
+            <div className="text-xl font-bold text-gold">15+</div>
+            <p className="text-white/60 text-xs">Years</p>
+          </div>
+        </div>
       </div>
     </div>
   );
