@@ -1951,11 +1951,14 @@ export default function AdminDashboard() {
                         <div className="space-y-6">
                           <div className="grid gap-4 md:grid-cols-2">
                             <Card className="p-4">
-                              <h4 className="font-semibold mb-3">Risk Metrics</h4>
+                              <h4 className="font-semibold mb-3">Risk Profile</h4>
                               <div className="space-y-3">
                                 <div>
-                                  <Label>Portfolio Risk Level</Label>
-                                  <Select>
+                                  <Label>Risk Tolerance</Label>
+                                  <Select 
+                                    value={userRiskProfile?.risk_tolerance || riskFormData.riskTolerance}
+                                    onValueChange={(value) => setRiskFormData({...riskFormData, riskTolerance: value})}
+                                  >
                                     <SelectTrigger>
                                       <SelectValue placeholder="Select risk level" />
                                     </SelectTrigger>
@@ -1967,71 +1970,82 @@ export default function AdminDashboard() {
                                   </Select>
                                 </div>
                                 <div>
-                                  <Label>Volatility (30 day) %</Label>
-                                  <Input type="number" step="0.1" placeholder="12.3" />
+                                  <Label>Volatility Comfort (0-10)</Label>
+                                  <Input 
+                                    type="number" 
+                                    step="0.1" 
+                                    value={userRiskProfile?.volatility_comfort || riskFormData.volatilityComfort}
+                                    onChange={(e) => setRiskFormData({...riskFormData, volatilityComfort: e.target.value})}
+                                    placeholder="5.0" 
+                                  />
                                 </div>
                                 <div>
-                                  <Label>Value at Risk (1%) %</Label>
-                                  <Input type="number" step="0.1" placeholder="8.7" />
+                                  <Label>Diversification Score (0-100)</Label>
+                                  <Input 
+                                    type="number" 
+                                    value={userRiskProfile?.diversification_score || riskFormData.diversificationScore}
+                                    onChange={(e) => setRiskFormData({...riskFormData, diversificationScore: e.target.value})}
+                                    placeholder="75" 
+                                  />
                                 </div>
                                 <div>
-                                  <Label>Correlation to S&P 500</Label>
-                                  <Input type="number" step="0.01" min="-1" max="1" placeholder="0.45" />
+                                  <Label>Market Correlation (-1 to 1)</Label>
+                                  <Input 
+                                    type="number" 
+                                    step="0.01" 
+                                    min="-1" 
+                                    max="1"
+                                    value={userRiskProfile?.market_correlation || riskFormData.marketCorrelation}
+                                    onChange={(e) => setRiskFormData({...riskFormData, marketCorrelation: e.target.value})}
+                                    placeholder="0.65" 
+                                  />
                                 </div>
                               </div>
                             </Card>
 
                             <Card className="p-4">
-                              <h4 className="font-semibold mb-3">Risk Parameters</h4>
+                              <h4 className="font-semibold mb-3">Risk Notes</h4>
                               <div className="space-y-3">
                                 <div>
-                                  <Label>Sharpe Ratio</Label>
-                                  <Input type="number" step="0.01" placeholder="1.24" />
-                                </div>
-                                <div>
-                                  <Label>Beta</Label>
-                                  <Input type="number" step="0.01" placeholder="0.68" />
-                                </div>
-                                <div>
-                                  <Label>Max Drawdown %</Label>
-                                  <Input type="number" step="0.1" placeholder="5.8" />
-                                </div>
-                                <div>
-                                  <Label>Alpha %</Label>
-                                  <Input type="number" step="0.01" placeholder="2.3" />
+                                  <Label>Additional Notes</Label>
+                                  <Textarea 
+                                    value={userRiskProfile?.notes || riskFormData.notes}
+                                    onChange={(e) => setRiskFormData({...riskFormData, notes: e.target.value})}
+                                    placeholder="Add any additional risk assessment notes..."
+                                    rows={10}
+                                  />
                                 </div>
                               </div>
                             </Card>
                           </div>
 
-                          <Card className="p-4">
-                            <h4 className="font-semibold mb-3">Risk Warnings & Alerts</h4>
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between p-3 border rounded">
-                                <div>
-                                  <span className="font-medium">High Concentration Warning</span>
-                                  <p className="text-sm text-muted-foreground">Alert when single metal exceeds 80% allocation</p>
+                          <Button onClick={handleSaveRiskProfile} className="w-full">
+                            Save Risk Profile
+                          </Button>
+                          
+                          {userRiskProfile && (
+                            <Card className="p-4">
+                              <h4 className="font-semibold mb-3">Current Risk Profile Summary</h4>
+                              <div className="grid gap-4 md:grid-cols-4">
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">Risk Tolerance</p>
+                                  <p className="text-lg font-bold capitalize">{userRiskProfile.risk_tolerance}</p>
                                 </div>
-                                <Switch />
-                              </div>
-                              <div className="flex items-center justify-between p-3 border rounded">
-                                <div>
-                                  <span className="font-medium">Volatility Alert</span>
-                                  <p className="text-sm text-muted-foreground">Notify when volatility exceeds threshold</p>
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">Volatility Comfort</p>
+                                  <p className="text-lg font-bold">{userRiskProfile.volatility_comfort}/10</p>
                                 </div>
-                                <Switch defaultChecked />
-                              </div>
-                              <div className="flex items-center justify-between p-3 border rounded">
-                                <div>
-                                  <span className="font-medium">Drawdown Alert</span>
-                                  <p className="text-sm text-muted-foreground">Alert when portfolio drawdown is significant</p>
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">Diversification</p>
+                                  <p className="text-lg font-bold">{userRiskProfile.diversification_score}/100</p>
                                 </div>
-                                <Switch defaultChecked />
+                                <div className="text-center">
+                                  <p className="text-sm text-muted-foreground">Market Correlation</p>
+                                  <p className="text-lg font-bold">{userRiskProfile.market_correlation}</p>
+                                </div>
                               </div>
-                            </div>
-                          </Card>
-
-                          <Button className="w-full">Save Risk Configuration</Button>
+                            </Card>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -2041,8 +2055,8 @@ export default function AdminDashboard() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center justify-between">
-                          <span>AI Insights Management</span>
-                          <Button>
+                          <span>AI Insights Management for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</span>
+                          <Button onClick={() => setIsInsightDialogOpen(true)}>
                             <Plus className="h-4 w-4 mr-2" />
                             Create Insight
                           </Button>
@@ -2168,39 +2182,72 @@ export default function AdminDashboard() {
                           </div>
 
                           <Card className="p-4">
-                            <h4 className="font-semibold mb-3">Active Recommendations</h4>
+                            <h4 className="font-semibold mb-3">Active AI Insights</h4>
                             <Table>
                               <TableHeader>
                                 <TableRow>
                                   <TableHead>Type</TableHead>
-                                  <TableHead>Title</TableHead>
+                                  <TableHead>Metal Focus</TableHead>
+                                  <TableHead>Recommendation</TableHead>
+                                  <TableHead>Confidence</TableHead>
                                   <TableHead>Priority</TableHead>
-                                  <TableHead>Created</TableHead>
+                                  <TableHead>Status</TableHead>
                                   <TableHead>Actions</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                <TableRow>
-                                  <TableCell>
-                                    <Badge variant="outline">Diversification</Badge>
-                                  </TableCell>
-                                  <TableCell>Consider increasing silver allocation</TableCell>
-                                  <TableCell>
-                                    <Badge variant="default">Medium</Badge>
-                                  </TableCell>
-                                  <TableCell>Oct 15, 2024</TableCell>
-                                  <TableCell>
-                                    <div className="flex gap-1">
-                                      <Button size="sm" variant="ghost">Edit</Button>
-                                      <Button size="sm" variant="ghost">Delete</Button>
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
+                                {userAIInsights.length > 0 ? userAIInsights.map((insight) => (
+                                  <TableRow key={insight.id}>
+                                    <TableCell>
+                                      <Badge variant="outline" className="capitalize">
+                                        {insight.insight_type.replace('_', ' ')}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell className="capitalize">{insight.metal_focus || 'All'}</TableCell>
+                                    <TableCell className="max-w-xs truncate">{insight.recommendation}</TableCell>
+                                    <TableCell>{insight.confidence_score}%</TableCell>
+                                    <TableCell>
+                                      <Badge variant={insight.priority === 1 ? 'destructive' : insight.priority === 2 ? 'default' : 'secondary'}>
+                                        {insight.priority === 1 ? 'High' : insight.priority === 2 ? 'Medium' : 'Low'}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Badge variant={insight.is_active ? 'default' : 'secondary'}>
+                                        {insight.is_active ? 'Active' : 'Inactive'}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex gap-1">
+                                        <Button 
+                                          size="sm" 
+                                          variant="outline"
+                                          onClick={() => handleToggleAIInsight(insight.id, insight.is_active)}
+                                        >
+                                          {insight.is_active ? 'Deactivate' : 'Activate'}
+                                        </Button>
+                                        <Button 
+                                          size="sm" 
+                                          variant="destructive"
+                                          onClick={() => handleDeleteAIInsight(insight.id)}
+                                        >
+                                          Delete
+                                        </Button>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                )) : (
+                                  <TableRow>
+                                    <TableCell colSpan={7} className="text-center py-8">
+                                      <p className="text-muted-foreground">No AI insights found for this user.</p>
+                                      <Button onClick={() => setIsInsightDialogOpen(true)} className="mt-2">
+                                        Create First Insight
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                )}
                               </TableBody>
                             </Table>
                           </Card>
-
-                          <Button className="w-full">Save AI Insights Configuration</Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -2219,19 +2266,40 @@ export default function AdminDashboard() {
                               <div className="space-y-3">
                                 <div>
                                   <Label>Default Expected Return (%)</Label>
-                                  <Input type="number" step="0.1" placeholder="8.0" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.1"
+                                    value={userToolSettings?.calculator_expected_return || '8.0'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, calculator_expected_return: e.target.value})}
+                                    placeholder="8.0" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Default Time Horizon (years)</Label>
-                                  <Input type="number" placeholder="10" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.calculator_time_horizon || '10'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, calculator_time_horizon: e.target.value})}
+                                    placeholder="10" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Minimum Investment ($)</Label>
-                                  <Input type="number" placeholder="1000" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.minimum_investment || '1000'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, minimum_investment: e.target.value})}
+                                    placeholder="1000" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Maximum Investment ($)</Label>
-                                  <Input type="number" placeholder="10000000" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.maximum_investment || '10000000'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, maximum_investment: e.target.value})}
+                                    placeholder="10000000" 
+                                  />
                                 </div>
                               </div>
                             </Card>
@@ -2241,19 +2309,39 @@ export default function AdminDashboard() {
                               <div className="space-y-3">
                                 <div>
                                   <Label>Default Gold Target (%)</Label>
-                                  <Input type="number" placeholder="60" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.gold_target_percentage || '60'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, gold_target_percentage: e.target.value})}
+                                    placeholder="60" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Default Silver Target (%)</Label>
-                                  <Input type="number" placeholder="25" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.silver_target_percentage || '25'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, silver_target_percentage: e.target.value})}
+                                    placeholder="25" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Default Platinum Target (%)</Label>
-                                  <Input type="number" placeholder="15" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.platinum_target_percentage || '15'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, platinum_target_percentage: e.target.value})}
+                                    placeholder="15" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Rebalance Threshold (%)</Label>
-                                  <Input type="number" placeholder="5" />
+                                  <Input 
+                                    type="number"
+                                    value={userToolSettings?.rebalance_threshold || '5'}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, rebalance_threshold: e.target.value})}
+                                    placeholder="5" 
+                                  />
                                 </div>
                               </div>
                             </Card>
@@ -2265,69 +2353,57 @@ export default function AdminDashboard() {
                               <div className="grid gap-4 md:grid-cols-3">
                                 <div>
                                   <Label>Gold Price Alert ($)</Label>
-                                  <Input type="number" step="0.01" placeholder="2500.00" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01"
+                                    value={userToolSettings?.gold_price_alert || ''}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, gold_price_alert: e.target.value})}
+                                    placeholder="2500.00" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Silver Price Alert ($)</Label>
-                                  <Input type="number" step="0.01" placeholder="35.00" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01"
+                                    value={userToolSettings?.silver_price_alert || ''}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, silver_price_alert: e.target.value})}
+                                    placeholder="35.00" 
+                                  />
                                 </div>
                                 <div>
                                   <Label>Platinum Price Alert ($)</Label>
-                                  <Input type="number" step="0.01" placeholder="1000.00" />
+                                  <Input 
+                                    type="number" 
+                                    step="0.01"
+                                    value={userToolSettings?.platinum_price_alert || ''}
+                                    onChange={(e) => setUserToolSettings({...userToolSettings, platinum_price_alert: e.target.value})}
+                                    placeholder="1000.00" 
+                                  />
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">
                                 <div className="flex items-center space-x-2">
-                                  <Switch />
+                                  <Switch 
+                                    checked={userToolSettings?.email_alerts_enabled ?? true}
+                                    onCheckedChange={(checked) => setUserToolSettings({...userToolSettings, email_alerts_enabled: checked})}
+                                  />
                                   <Label>Enable email alerts</Label>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                  <Switch />
+                                  <Switch 
+                                    checked={userToolSettings?.push_notifications_enabled ?? true}
+                                    onCheckedChange={(checked) => setUserToolSettings({...userToolSettings, push_notifications_enabled: checked})}
+                                  />
                                   <Label>Enable push notifications</Label>
                                 </div>
                               </div>
                             </div>
                           </Card>
 
-                          <Card className="p-4">
-                            <h4 className="font-semibold mb-3">Educational Resources</h4>
-                            <div className="space-y-3">
-                              <div className="flex gap-2">
-                                <Button size="sm">
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  Add Resource
-                                </Button>
-                                <Button size="sm" variant="outline">
-                                  <BookOpen className="h-4 w-4 mr-1" />
-                                  Manage Library
-                                </Button>
-                              </div>
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  <TableRow>
-                                    <TableCell>Precious Metals Investment Guide</TableCell>
-                                    <TableCell>PDF</TableCell>
-                                    <TableCell>
-                                      <Badge variant="default">Active</Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                      <Button size="sm" variant="ghost">Edit</Button>
-                                    </TableCell>
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </Card>
-
-                          <Button className="w-full">Save Tools Configuration</Button>
+                          <Button onClick={handleSaveToolSettings} className="w-full">
+                            Save Tools Configuration
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -2346,19 +2422,33 @@ export default function AdminDashboard() {
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <span>Allow Deposit Requests</span>
-                                  <Switch defaultChecked />
+                                  <Switch 
+                                    checked={userActionPermissions?.allow_deposit_requests ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, allow_deposit_requests: checked})}
+                                  />
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span>Allow Withdrawal Requests</span>
-                                  <Switch defaultChecked />
+                                  <Switch 
+                                    checked={userActionPermissions?.allow_withdrawal_requests ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, allow_withdrawal_requests: checked})}
+                                  />
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span>Auto-approve Small Deposits</span>
-                                  <Switch />
+                                  <Switch 
+                                    checked={userActionPermissions?.auto_approve_deposits ?? false}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, auto_approve_deposits: checked})}
+                                  />
                                 </div>
                                 <div>
                                   <Label>Auto-approve Limit ($)</Label>
-                                  <Input type="number" placeholder="10000" />
+                                  <Input 
+                                    type="number"
+                                    value={userActionPermissions?.auto_approve_limit || '10000'}
+                                    onChange={(e) => setUserActionPermissions({...userActionPermissions, auto_approve_limit: e.target.value})}
+                                    placeholder="10000" 
+                                  />
                                 </div>
                               </div>
                             </Card>
@@ -2368,19 +2458,31 @@ export default function AdminDashboard() {
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <span>Monthly Reports</span>
-                                  <Switch defaultChecked />
+                                  <Switch 
+                                    checked={userActionPermissions?.monthly_reports_access ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, monthly_reports_access: checked})}
+                                  />
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span>Tax Reports</span>
-                                  <Switch defaultChecked />
+                                  <Switch 
+                                    checked={userActionPermissions?.tax_reports_access ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, tax_reports_access: checked})}
+                                  />
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span>Holdings Analysis</span>
-                                  <Switch defaultChecked />
+                                  <Switch 
+                                    checked={userActionPermissions?.holdings_analysis_access ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, holdings_analysis_access: checked})}
+                                  />
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span>Performance Reports</span>
-                                  <Switch defaultChecked />
+                                  <Switch 
+                                    checked={userActionPermissions?.performance_reports_access ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, performance_reports_access: checked})}
+                                  />
                                 </div>
                               </div>
                             </Card>
@@ -2390,31 +2492,19 @@ export default function AdminDashboard() {
                             <h4 className="font-semibold mb-3">Notification Settings</h4>
                             <div className="space-y-4">
                               <div className="grid gap-4 md:grid-cols-2">
-                                <div>
-                                  <Label>Default Price Alerts</Label>
-                                  <Select>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select default" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="enabled">Enabled</SelectItem>
-                                      <SelectItem value="disabled">Disabled</SelectItem>
-                                      <SelectItem value="user-choice">User Choice</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                <div className="flex items-center justify-between">
+                                  <span>Price Alerts Enabled</span>
+                                  <Switch 
+                                    checked={userActionPermissions?.price_alerts_enabled ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, price_alerts_enabled: checked})}
+                                  />
                                 </div>
-                                <div>
-                                  <Label>Market News Notifications</Label>
-                                  <Select>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select default" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="enabled">Enabled</SelectItem>
-                                      <SelectItem value="disabled">Disabled</SelectItem>
-                                      <SelectItem value="user-choice">User Choice</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                <div className="flex items-center justify-between">
+                                  <span>Market News Notifications</span>
+                                  <Switch 
+                                    checked={userActionPermissions?.market_news_notifications ?? true}
+                                    onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, market_news_notifications: checked})}
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -2425,57 +2515,38 @@ export default function AdminDashboard() {
                             <div className="space-y-3">
                               <div className="flex items-center justify-between">
                                 <span>Live Chat Support</span>
-                                <Switch defaultChecked />
+                                <Switch 
+                                  checked={userActionPermissions?.live_chat_support ?? true}
+                                  onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, live_chat_support: checked})}
+                                />
                               </div>
                               <div className="flex items-center justify-between">
                                 <span>Phone Support</span>
-                                <Switch defaultChecked />
+                                <Switch 
+                                  checked={userActionPermissions?.phone_support ?? true}
+                                  onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, phone_support: checked})}
+                                />
                               </div>
                               <div className="flex items-center justify-between">
                                 <span>Account Settings Access</span>
-                                <Switch defaultChecked />
+                                <Switch 
+                                  checked={userActionPermissions?.account_settings_access ?? true}
+                                  onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, account_settings_access: checked})}
+                                />
                               </div>
                               <div className="flex items-center justify-between">
                                 <span>Goal Setting Access</span>
-                                <Switch defaultChecked />
+                                <Switch 
+                                  checked={userActionPermissions?.goal_setting_access ?? true}
+                                  onCheckedChange={(checked) => setUserActionPermissions({...userActionPermissions, goal_setting_access: checked})}
+                                />
                               </div>
                             </div>
                           </Card>
 
-                          <Card className="p-4">
-                            <h4 className="font-semibold mb-3">Pending User Actions</h4>
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead>User</TableHead>
-                                  <TableHead>Action Type</TableHead>
-                                  <TableHead>Amount</TableHead>
-                                  <TableHead>Status</TableHead>
-                                  <TableHead>Date</TableHead>
-                                  <TableHead>Actions</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                <TableRow>
-                                  <TableCell>Roger Beaudry</TableCell>
-                                  <TableCell>Deposit Request</TableCell>
-                                  <TableCell>$50,000</TableCell>
-                                  <TableCell>
-                                    <Badge variant="secondary">Pending</Badge>
-                                  </TableCell>
-                                  <TableCell>Oct 15, 2024</TableCell>
-                                  <TableCell>
-                                    <div className="flex gap-1">
-                                      <Button size="sm" variant="default">Approve</Button>
-                                      <Button size="sm" variant="destructive">Reject</Button>
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
-                              </TableBody>
-                            </Table>
-                          </Card>
-
-                          <Button className="w-full">Save Action Settings</Button>
+                          <Button onClick={handleSaveActionPermissions} className="w-full">
+                            Save Action Permissions
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
