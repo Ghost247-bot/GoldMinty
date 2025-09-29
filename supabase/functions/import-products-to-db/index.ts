@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 // Helper function to parse CSV data
-function parseCSV(csvText: string): any[] {
+function parseCSV(csvText: string, metalType: string = 'gold'): any[] {
   const lines = csvText.split('\n');
   const products = [];
 
@@ -45,10 +45,10 @@ function parseCSV(csvText: string): any[] {
         const price = parseFloat(priceMatch[0].replace(/,/g, ''));
         
         // Extract weight and brand information from name
-        const weightMatch = name.match(/(\d+(?:\.\d+)?)\s*(gram|g|ounce|oz)/i);
+        const weightMatch = name.match(/(\d+(?:\.\d+)?)\s*(gram|g|ounce|oz|kg|kilogram)/i);
         const weight = weightMatch ? `${weightMatch[1]} ${weightMatch[2]}` : null;
         
-        const brandMatch = name.match(/(PAMP Suisse|Valcambi|Credit Suisse|Perth Mint|Canadian Maple|American Eagle)/i);
+        const brandMatch = name.match(/(PAMP Suisse|Valcambi|Credit Suisse|Perth Mint|Canadian Maple|American Eagle|Royal Canadian Mint|Heraeus|Argor|Random Mint)/i);
         const brand = brandMatch ? brandMatch[1] : 'PAMP Suisse'; // Default brand
         
         const purityMatch = name.match(/(999\.?9|99\.99|24k|22k)/i);
@@ -59,18 +59,18 @@ function parseCSV(csvText: string): any[] {
 
         products.push({
           name: name.replace(/"/g, ''),
-          description: `Premium gold investment product - ${name.replace(/"/g, '')}`,
+          description: `Premium ${metalType} investment product - ${name.replace(/"/g, '')}`,
           image_url: imageUrl,
           product_url: productUrl,
           price_usd: price,
           weight: weight,
-          metal_type: 'gold',
+          metal_type: metalType,
           brand: brand,
           purity: purity,
           category: category,
           metadata: {
             original_price_currency: 'EUR',
-            source: 'gold-products-csv',
+            source: `${metalType}-products-csv`,
             imported_at: new Date().toISOString()
           }
         });
@@ -96,15 +96,15 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Read CSV data from the request body
-    const { csvData } = await req.json();
+    // Read CSV data and metal type from the request body
+    const { csvData, metalType = 'gold' } = await req.json();
     
     if (!csvData) {
       throw new Error("No CSV data provided");
     }
 
-    console.log("Parsing CSV data...");
-    const products = parseCSV(csvData);
+    console.log(`Parsing CSV data for ${metalType} products...`);
+    const products = parseCSV(csvData, metalType);
     console.log(`Found ${products.length} products to import`);
 
     const results: {

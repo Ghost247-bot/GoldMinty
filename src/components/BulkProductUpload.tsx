@@ -16,6 +16,7 @@ export default function BulkProductUpload() {
   const [uploadMode, setUploadMode] = useState<'predefined' | 'local'>('predefined');
   const [localFile, setLocalFile] = useState<File | null>(null);
   const [localFileContent, setLocalFileContent] = useState<string>('');
+  const [metalType, setMetalType] = useState<'gold' | 'silver' | 'platinum' | 'palladium'>('gold');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const csvFiles = [
@@ -102,9 +103,9 @@ export default function BulkProductUpload() {
     try {
       const csvData = await getCSVData();
 
-      // Call the database import function
+      // Call the database import function with metal type
       const { data, error } = await supabase.functions.invoke('import-products-to-db', {
-        body: { csvData }
+        body: { csvData, metalType }
       });
 
       if (error) throw error;
@@ -205,14 +206,33 @@ export default function BulkProductUpload() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          Bulk Upload Gold Products
+          Bulk Upload Products
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
           <p className="text-muted-foreground">
-            Upload all gold products from your CSV data to either Stripe's product catalog or your Supabase database.
+            Upload products from your CSV data to either Stripe's product catalog or your Supabase database.
           </p>
+
+          {/* Metal Type Selection */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Product Metal Type:</label>
+            <Select value={metalType} onValueChange={(value: any) => setMetalType(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gold">Gold</SelectItem>
+                <SelectItem value="silver">Silver</SelectItem>
+                <SelectItem value="platinum">Platinum</SelectItem>
+                <SelectItem value="palladium">Palladium</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              All products in the selected CSV will be tagged as {metalType} products
+            </p>
+          </div>
           
           {/* Upload Mode Selection */}
           <div className="space-y-4">
