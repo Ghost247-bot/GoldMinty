@@ -22,7 +22,8 @@ export default function BulkProductUpload() {
     { value: 'gold-products.csv', label: 'Original Gold Products' },
     { value: 'gold-2.csv', label: 'New Gold Products (gold-2.csv)' },
     { value: 'gold-3.csv', label: 'Gold Products Set 3 (gold-3.csv)' },
-    { value: 'gold-4.csv', label: 'Gold Products Set 4 (gold-4.csv)' }
+    { value: 'gold-4.csv', label: 'Gold Products Set 4 (gold-4.csv)' },
+    { value: 'silver.csv', label: 'Silver Products' }
   ];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
