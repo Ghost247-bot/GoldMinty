@@ -77,7 +77,9 @@ export default function AdminDashboard() {
   // Form data states
   const [formData, setFormData] = useState({
     userId: undefined as string | undefined,
+    accountNumber: '',
     accountType: 'standard',
+    accountStatus: 'active',
     balance: '0.00',
     goldHoldings: '0.0000',
     silverHoldings: '0.0000',
@@ -281,7 +283,9 @@ export default function AdminDashboard() {
       setIsDialogOpen(false);
       setFormData({
         userId: undefined,
+        accountNumber: '',
         accountType: 'standard',
+        accountStatus: 'active',
         balance: '0.00',
         goldHoldings: '0.0000',
         silverHoldings: '0.0000',
@@ -470,7 +474,9 @@ export default function AdminDashboard() {
     setEditingAccount(account);
     setFormData({
       userId: account.user_id,
+      accountNumber: account.account_number,
       accountType: account.account_type,
+      accountStatus: account.status,
       balance: account.balance.toString(),
       goldHoldings: account.gold_holdings.toString(),
       silverHoldings: account.silver_holdings.toString(),
@@ -487,7 +493,9 @@ export default function AdminDashboard() {
       .from('investment_accounts')
       .update({
         user_id: formData.userId,
+        account_number: formData.accountNumber,
         account_type: formData.accountType,
+        status: formData.accountStatus,
         balance: parseFloat(formData.balance),
         gold_holdings: parseFloat(formData.goldHoldings),
         silver_holdings: parseFloat(formData.silverHoldings),
@@ -502,7 +510,9 @@ export default function AdminDashboard() {
       setEditingAccount(null);
       setFormData({
         userId: undefined,
+        accountNumber: '',
         accountType: 'standard',
+        accountStatus: 'active',
         balance: '0.00',
         goldHoldings: '0.0000',
         silverHoldings: '0.0000',
@@ -1605,109 +1615,132 @@ export default function AdminDashboard() {
                     <TabsContent value="overview-admin" className="space-y-6 mt-6">
                       <Card>
                         <CardHeader>
-                          <CardTitle>Portfolio Overview for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</CardTitle>
+                          <CardTitle>Account Overview for {allUsers.find(u => u.user_id === selectedUserId)?.full_name}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-6">
-                            <div className="grid gap-4 md:grid-cols-3">
-                              {(() => {
-                                const account = investmentAccounts.find(acc => acc.user_id === selectedUserId);
-                                return (
-                                  <>
-                                    <Card className="p-4">
-                                      <div className="flex items-center justify-between">
-                                        <div>
-                                          <p className="text-sm text-muted-foreground">Gold Holdings</p>
-                                          <p className="text-2xl font-bold">{account ? formatOz(account.gold_holdings) : '0.0000'} oz</p>
-                                        </div>
-                                        <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
-                                          <Settings className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </Card>
-                                    <Card className="p-4">
-                                      <div className="flex items-center justify-between">
-                                        <div>
-                                          <p className="text-sm text-muted-foreground">Silver Holdings</p>
-                                          <p className="text-2xl font-bold">{account ? formatOz(account.silver_holdings) : '0.0000'} oz</p>
-                                        </div>
-                                        <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
-                                          <Settings className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </Card>
-                                    <Card className="p-4">
-                                      <div className="flex items-center justify-between">
-                                        <div>
-                                          <p className="text-sm text-muted-foreground">Portfolio Value</p>
-                                          <p className="text-2xl font-bold">${account ? formatCurrency(account.balance) : '0.00'}</p>
-                                        </div>
-                                        <Button size="sm" variant="ghost" onClick={() => handleEditAccount(account)} disabled={!account}>
-                                          <Settings className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </Card>
-                                  </>
-                                );
-                              })()}
-                            </div>
+                          {(() => {
+                            const account = investmentAccounts.find(acc => acc.user_id === selectedUserId);
+                            if (!account) {
+                              return (
+                                <div className="text-center py-8 text-muted-foreground">
+                                  No investment account found for this user.
+                                </div>
+                              );
+                            }
+                            return (
+                              <div className="space-y-6">
+                                {/* Account Header */}
+                                <div className="flex items-center justify-between pb-4 border-b">
+                                  <div className="flex items-center gap-4">
+                                    <div>
+                                      <p className="text-lg font-semibold">{account.account_number}</p>
+                                      <Badge variant={account.status === 'active' ? 'default' : 'secondary'}>
+                                        {account.status}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-3xl font-bold">${formatCurrency(account.balance)}</p>
+                                    <p className="text-sm text-muted-foreground capitalize">{account.account_type} Account</p>
+                                  </div>
+                                  <Button size="sm" variant="outline" onClick={() => handleEditAccount(account)}>
+                                    <Settings className="h-4 w-4 mr-2" />
+                                    Edit Account
+                                  </Button>
+                                </div>
 
-                            <Card>
-                              <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                  <span>Portfolio Allocation Settings</span>
-                                  {!investmentAccounts.find(acc => acc.user_id === selectedUserId) && (
-                                    <Button size="sm" onClick={() => {
-                                      setFormData({...formData, userId: selectedUserId});
-                                      setIsDialogOpen(true);
-                                    }}>
-                                      <Plus className="h-4 w-4 mr-1" />
-                                      Create Account
-                                    </Button>
-                                  )}
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                {userToolSettings ? (
-                                  <div className="grid gap-4 md:grid-cols-3">
+                                {/* Holdings Cards */}
+                                <div className="grid gap-4 md:grid-cols-3">
+                                  <Card className="p-4">
                                     <div className="space-y-2">
-                                      <Label>Gold Target (%)</Label>
-                                      <Input 
-                                        type="number" 
-                                        value={userToolSettings.gold_target_percentage || 60}
-                                        onChange={(e) => setUserToolSettings({...userToolSettings, gold_target_percentage: parseInt(e.target.value)})}
-                                      />
-                                      <Progress value={userToolSettings.gold_target_percentage || 60} className="h-2" />
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        <p className="text-sm font-medium text-muted-foreground">Gold</p>
+                                      </div>
+                                      <p className="text-2xl font-bold">{formatOz(account.gold_holdings)} oz</p>
+                                      <p className="text-xs text-green-600">+2.3% this week</p>
                                     </div>
+                                  </Card>
+                                  <Card className="p-4">
                                     <div className="space-y-2">
-                                      <Label>Silver Target (%)</Label>
-                                      <Input 
-                                        type="number" 
-                                        value={userToolSettings.silver_target_percentage || 25}
-                                        onChange={(e) => setUserToolSettings({...userToolSettings, silver_target_percentage: parseInt(e.target.value)})}
-                                      />
-                                      <Progress value={userToolSettings.silver_target_percentage || 25} className="h-2" />
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                                        <p className="text-sm font-medium text-muted-foreground">Silver</p>
+                                      </div>
+                                      <p className="text-2xl font-bold">{formatOz(account.silver_holdings)} oz</p>
+                                      <p className="text-xs text-red-600">-0.6% this week</p>
                                     </div>
+                                  </Card>
+                                  <Card className="p-4">
                                     <div className="space-y-2">
-                                      <Label>Platinum Target (%)</Label>
-                                      <Input 
-                                        type="number" 
-                                        value={userToolSettings.platinum_target_percentage || 15}
-                                        onChange={(e) => setUserToolSettings({...userToolSettings, platinum_target_percentage: parseInt(e.target.value)})}
-                                      />
-                                      <Progress value={userToolSettings.platinum_target_percentage || 15} className="h-2" />
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full bg-slate-600"></div>
+                                        <p className="text-sm font-medium text-muted-foreground">Platinum</p>
+                                      </div>
+                                      <p className="text-2xl font-bold">{formatOz(account.platinum_holdings)} oz</p>
+                                      <p className="text-xs text-green-600">+1.5% this week</p>
                                     </div>
-                                  </div>
-                                ) : (
-                                  <div className="text-center py-8">
-                                    <p className="text-muted-foreground mb-4">No tool settings found for this user.</p>
-                                    <Button onClick={handleSaveToolSettings}>Create Default Settings</Button>
-                                  </div>
-                                )}
-                                <Button className="mt-4" onClick={handleSaveToolSettings}>Save Allocation Settings</Button>
-                              </CardContent>
-                            </Card>
-                          </div>
+                                  </Card>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span>Portfolio Allocation Settings</span>
+                            {!investmentAccounts.find(acc => acc.user_id === selectedUserId) && (
+                              <Button size="sm" onClick={() => {
+                                setFormData({...formData, userId: selectedUserId});
+                                setIsDialogOpen(true);
+                              }}>
+                                <Plus className="h-4 w-4 mr-1" />
+                                Create Account
+                              </Button>
+                            )}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          {userToolSettings ? (
+                            <div className="grid gap-4 md:grid-cols-3">
+                              <div className="space-y-2">
+                                <Label>Gold Target (%)</Label>
+                                <Input 
+                                  type="number" 
+                                  value={userToolSettings.gold_target_percentage || 60}
+                                  onChange={(e) => setUserToolSettings({...userToolSettings, gold_target_percentage: parseInt(e.target.value)})}
+                                />
+                                <Progress value={userToolSettings.gold_target_percentage || 60} className="h-2" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Silver Target (%)</Label>
+                                <Input 
+                                  type="number" 
+                                  value={userToolSettings.silver_target_percentage || 25}
+                                  onChange={(e) => setUserToolSettings({...userToolSettings, silver_target_percentage: parseInt(e.target.value)})}
+                                />
+                                <Progress value={userToolSettings.silver_target_percentage || 25} className="h-2" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Platinum Target (%)</Label>
+                                <Input 
+                                  type="number" 
+                                  value={userToolSettings.platinum_target_percentage || 15}
+                                  onChange={(e) => setUserToolSettings({...userToolSettings, platinum_target_percentage: parseInt(e.target.value)})}
+                                />
+                                <Progress value={userToolSettings.platinum_target_percentage || 15} className="h-2" />
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-8">
+                              <p className="text-muted-foreground mb-4">No tool settings found for this user.</p>
+                              <Button onClick={handleSaveToolSettings}>Create Default Settings</Button>
+                            </div>
+                          )}
+                          <Button className="mt-4" onClick={handleSaveToolSettings}>Save Allocation Settings</Button>
                         </CardContent>
                       </Card>
                     </TabsContent>
@@ -2733,6 +2766,32 @@ export default function AdminDashboard() {
                     )}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-account-number">Account Number</Label>
+                  <Input
+                    id="edit-account-number"
+                    value={formData.accountNumber}
+                    onChange={(e) => setFormData({...formData, accountNumber: e.target.value})}
+                    placeholder="e.g., INV-2025-123-4567"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-status">Status</Label>
+                  <Select value={formData.accountStatus} onValueChange={(value) => setFormData({...formData, accountStatus: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="suspended">Suspended</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
               <div>
