@@ -161,37 +161,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: signInError || new Error('Failed to authenticate') };
       }
 
-      console.log('Getting security question for user:', data.user.id);
+      console.log('Verifying security answer using edge function for user:', data.user.id);
 
-      // Get the user's security question and verify answer
-      const { data: userAnswer, error: queryError } = await supabase
-        .from('user_security_answers')
-        .select(`
-          answer_hash,
-          security_questions!inner(question)
-        `)
-        .eq('user_id', data.user.id)
-        .limit(1)
-        .single();
+      // Use edge function to verify the security answer
+      const { data: verificationResult, error: functionError } = await supabase.functions.invoke('verify-security-answer', {
+        body: {
+          user_id: data.user.id,
+          answer: answer
+        }
+      });
 
-      if (queryError) {
-        console.error('Error getting security answer:', queryError);
+      if (functionError) {
+        console.error('Error calling verify-security-answer function:', functionError);
         await supabase.auth.signOut();
-        return { error: new Error('Security answer not found') };
+        return { error: new Error('Verification failed') };
       }
 
-      if (!userAnswer) {
-        console.error('No security answer found');
-        await supabase.auth.signOut();
-        return { error: new Error('Security answer not found') };
-      }
+      console.log('Verification result:', verificationResult);
 
-      console.log('Verifying answer...');
-      const hashedAnswer = btoa(answer.toLowerCase().trim());
-      console.log('Expected hash:', userAnswer.answer_hash);
-      console.log('Provided hash:', hashedAnswer);
-
-      if (userAnswer.answer_hash === hashedAnswer) {
+      if (verificationResult?.isValid) {
         console.log('Security verification successful');
         // Verification successful, user is already signed in
         setRequiresSecurityVerification(false);
