@@ -34,6 +34,7 @@ import LegalNotice from "./pages/LegalNotice";
 import NotFound from "./pages/NotFound";
 import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import BulkProductUpload from "./components/BulkProductUpload";
 
 const App = () => (
   <AuthProvider>
@@ -51,6 +52,7 @@ const App = () => (
           <Route path="/cart" element={<Layout><Cart /></Layout>} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/bulk-upload" element={<BulkProductUpload />} />
           <Route path="/charts" element={<Layout><Charts /></Layout>} />
           <Route path="/prices" element={<Layout><Prices /></Layout>} />
           <Route path="/resources" element={<Layout><Resources /></Layout>} />
