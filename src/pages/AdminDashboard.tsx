@@ -17,6 +17,7 @@ import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
 import { BulkTransactionUpload } from '@/components/BulkTransactionUpload';
+import BulkProductUpload from '@/components/BulkProductUpload';
 
 export default function AdminDashboard() {
   const { user, signOut } = useAuth();
@@ -46,6 +47,7 @@ export default function AdminDashboard() {
   const [isRiskDialogOpen, setIsRiskDialogOpen] = useState(false);
   const [isInsightDialogOpen, setIsInsightDialogOpen] = useState(false);
   const [isBulkUploadDialogOpen, setIsBulkUploadDialogOpen] = useState(false);
+  const [isBulkProductUploadDialogOpen, setIsBulkProductUploadDialogOpen] = useState(false);
   
   // Editing states
   const [editingAccount, setEditingAccount] = useState<any>(null);
@@ -914,11 +916,12 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="accounts">Investment Accounts</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio Management</TabsTrigger>
             <TabsTrigger value="banners">User Banners</TabsTrigger>
+            <TabsTrigger value="products">Product Management</TabsTrigger>
           </TabsList>
           
           <TabsContent value="users">
@@ -2297,6 +2300,36 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="products">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Upload className="h-5 w-5" />
+                    Product Management
+                  </CardTitle>
+                  <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Bulk Upload Products
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Product Management</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Upload products in bulk using CSV files. Supports multiple formats including the new gold-3.csv and gold-4.csv formats.
+                  </p>
+                  <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Products
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* Edit Investment Account Dialog */}
@@ -2556,6 +2589,16 @@ export default function AdminDashboard() {
           onSuccess={fetchUserTransactions}
           currentUser={user}
         />
+
+        {/* Bulk Product Upload Dialog */}
+        <Dialog open={isBulkProductUploadDialogOpen} onOpenChange={setIsBulkProductUploadDialogOpen}>
+          <DialogContent className="max-w-5xl">
+            <DialogHeader>
+              <DialogTitle>Bulk Product Upload</DialogTitle>
+            </DialogHeader>
+            <BulkProductUpload />
+          </DialogContent>
+        </Dialog>
 
         {/* Transaction Dialog */}
         <TransactionDialog
