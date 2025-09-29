@@ -43,6 +43,7 @@ export default function AdminDashboard() {
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isEditBannerDialogOpen, setIsEditBannerDialogOpen] = useState(false);
+  const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
   const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
   const [isPerformanceDialogOpen, setIsPerformanceDialogOpen] = useState(false);
   const [isRiskDialogOpen, setIsRiskDialogOpen] = useState(false);
@@ -73,6 +74,7 @@ export default function AdminDashboard() {
   const [editingAccount, setEditingAccount] = useState<any>(null);
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<any>(null);
   
   // Form data states
   const [formData, setFormData] = useState({
@@ -139,6 +141,21 @@ export default function AdminDashboard() {
     isActive: true,
     priority: '1',
     expiresAt: ''
+  });
+  
+  const [userFormData, setUserFormData] = useState({
+    fullName: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: 'United States'
   });
   
   const [stats, setStats] = useState({
@@ -296,6 +313,80 @@ export default function AdminDashboard() {
       fetchStats();
     }
   };
+
+  const handleEditUser = (user: any) => {
+    setEditingUser(user);
+    setUserFormData({
+      fullName: user.full_name || '',
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      dateOfBirth: user.date_of_birth || '',
+      addressLine1: user.address_line1 || '',
+      addressLine2: user.address_line2 || '',
+      city: user.city || '',
+      state: user.state || '',
+      zipCode: user.zip_code || '',
+      country: user.country || 'United States'
+    });
+    setIsEditUserDialogOpen(true);
+  };
+
+  const handleUpdateUser = async () => {
+    if (!editingUser || !user?.id) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: userFormData.fullName,
+        first_name: userFormData.firstName,
+        last_name: userFormData.lastName,
+        email: userFormData.email,
+        phone: userFormData.phone,
+        date_of_birth: userFormData.dateOfBirth || null,
+        address_line1: userFormData.addressLine1,
+        address_line2: userFormData.addressLine2,
+        city: userFormData.city,
+        state: userFormData.state,
+        zip_code: userFormData.zipCode,
+        country: userFormData.country,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', editingUser.user_id);
+
+    if (!error) {
+      setIsEditUserDialogOpen(false);
+      setEditingUser(null);
+      setUserFormData({
+        fullName: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        dateOfBirth: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: 'United States'
+      });
+      fetchUsers();
+      fetchAllUsers();
+      toast({
+        title: "Success",
+        description: "User profile updated successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to update user profile",
+        variant: "destructive"
+      });
+    }
+  };
+
 
   const handleCreateInvestmentAccount = async () => {
     if (!formData.userId || !user?.id) return;
@@ -585,6 +676,32 @@ export default function AdminDashboard() {
       });
     }
   };
+
+  const handleDeleteAccount = async (accountId: string) => {
+    if (!confirm('Are you sure you want to delete this investment account? This action cannot be undone.')) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('investment_accounts')
+      .delete()
+      .eq('id', accountId);
+
+    if (!error) {
+      fetchInvestmentAccounts();
+      toast({
+        title: "Success",
+        description: "Investment account deleted successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to delete investment account",
+        variant: "destructive"
+      });
+    }
+  };
+  
 
   const handleEditBanner = (banner: any) => {
     setEditingBanner(banner);
@@ -1210,7 +1327,14 @@ export default function AdminDashboard() {
                         <TableCell>
                           {new Date(user.created_at).toLocaleDateString()}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            Edit
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
@@ -1419,6 +1543,13 @@ export default function AdminDashboard() {
                             onClick={() => handleEditAccount(account)}
                           >
                             Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteAccount(account.id)}
+                          >
+                            <X className="h-3 w-3" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -2930,6 +3061,137 @@ export default function AdminDashboard() {
                 </Button>
                 <Button onClick={handleUpdateAccount} disabled={!formData.userId}>
                   Update Account
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit User Profile Dialog */}
+        <Dialog open={isEditUserDialogOpen} onOpenChange={setIsEditUserDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit User Profile</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-user-firstName">First Name</Label>
+                  <Input
+                    id="edit-user-firstName"
+                    value={userFormData.firstName}
+                    onChange={(e) => setUserFormData({...userFormData, firstName: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-user-lastName">Last Name</Label>
+                  <Input
+                    id="edit-user-lastName"
+                    value={userFormData.lastName}
+                    onChange={(e) => setUserFormData({...userFormData, lastName: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-user-fullName">Full Name</Label>
+                <Input
+                  id="edit-user-fullName"
+                  value={userFormData.fullName}
+                  onChange={(e) => setUserFormData({...userFormData, fullName: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-user-email">Email</Label>
+                  <Input
+                    id="edit-user-email"
+                    type="email"
+                    value={userFormData.email}
+                    onChange={(e) => setUserFormData({...userFormData, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-user-phone">Phone</Label>
+                  <Input
+                    id="edit-user-phone"
+                    value={userFormData.phone}
+                    onChange={(e) => setUserFormData({...userFormData, phone: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-user-dob">Date of Birth</Label>
+                <Input
+                  id="edit-user-dob"
+                  type="date"
+                  value={userFormData.dateOfBirth}
+                  onChange={(e) => setUserFormData({...userFormData, dateOfBirth: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="edit-user-address1">Address Line 1</Label>
+                <Input
+                  id="edit-user-address1"
+                  value={userFormData.addressLine1}
+                  onChange={(e) => setUserFormData({...userFormData, addressLine1: e.target.value})}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="edit-user-address2">Address Line 2</Label>
+                <Input
+                  id="edit-user-address2"
+                  value={userFormData.addressLine2}
+                  onChange={(e) => setUserFormData({...userFormData, addressLine2: e.target.value})}
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="edit-user-city">City</Label>
+                  <Input
+                    id="edit-user-city"
+                    value={userFormData.city}
+                    onChange={(e) => setUserFormData({...userFormData, city: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-user-state">State</Label>
+                  <Input
+                    id="edit-user-state"
+                    value={userFormData.state}
+                    onChange={(e) => setUserFormData({...userFormData, state: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-user-zipCode">ZIP Code</Label>
+                  <Input
+                    id="edit-user-zipCode"
+                    value={userFormData.zipCode}
+                    onChange={(e) => setUserFormData({...userFormData, zipCode: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-user-country">Country</Label>
+                <Input
+                  id="edit-user-country"
+                  value={userFormData.country}
+                  onChange={(e) => setUserFormData({...userFormData, country: e.target.value})}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditUserDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateUser}>
+                  Update Profile
                 </Button>
               </div>
             </div>
