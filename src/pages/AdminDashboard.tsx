@@ -53,6 +53,7 @@ export default function AdminDashboard() {
   // Products management states
   const [products, setProducts] = useState<any[]>([]);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [deletingAllProducts, setDeletingAllProducts] = useState(false);
   const [productFormData, setProductFormData] = useState({
     name: '',
     description: '',
@@ -987,6 +988,40 @@ export default function AdminDashboard() {
       product_url: '',
       is_active: true
     });
+  };
+
+  const handleDeleteAllStripeProducts = async () => {
+    if (!confirm('⚠️ WARNING: This will delete ALL products from your Stripe catalog. This action cannot be undone. Are you sure you want to continue?')) {
+      return;
+    }
+
+    setDeletingAllProducts(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-all-stripe-products', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Deletion Complete",
+        description: `Deleted ${data.deleted} products. ${data.failed > 0 ? `Failed: ${data.failed}` : ''}`,
+      });
+
+      if (data.errors && data.errors.length > 0) {
+        console.error('Deletion errors:', data.errors);
+      }
+    } catch (error: any) {
+      console.error('Error deleting Stripe products:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete Stripe products",
+        variant: "destructive"
+      });
+    } finally {
+      setDeletingAllProducts(false);
+    }
   };
 
   return (
@@ -2459,10 +2494,20 @@ export default function AdminDashboard() {
                     <Database className="h-5 w-5" />
                     Product Management
                   </CardTitle>
-                  <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    Bulk Upload
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button onClick={() => setIsBulkProductUploadDialogOpen(true)}>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Bulk Upload
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={handleDeleteAllStripeProducts}
+                      disabled={deletingAllProducts}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      {deletingAllProducts ? 'Deleting...' : 'Delete All Stripe Products'}
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
