@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Upload, CheckCircle, XCircle, Clock, Database } from 'lucide-react';
+import { Upload, CheckCircle, XCircle, Clock, Database, FileText, FolderOpen } from 'lucide-react';
 
 export default function BulkProductUpload() {
   const [isUploadingStripe, setIsUploadingStripe] = useState(false);
@@ -13,6 +13,10 @@ export default function BulkProductUpload() {
   const [stripeResults, setStripeResults] = useState<any>(null);
   const [dbResults, setDbResults] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<string>('gold-products.csv');
+  const [uploadMode, setUploadMode] = useState<'predefined' | 'local'>('predefined');
+  const [localFile, setLocalFile] = useState<File | null>(null);
+  const [localFileContent, setLocalFileContent] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const csvFiles = [
     { value: 'gold-products.csv', label: 'Original Gold Products' },
@@ -21,14 +25,48 @@ export default function BulkProductUpload() {
     { value: 'gold-4.csv', label: 'Gold Products Set 4 (gold-4.csv)' }
   ];
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please select a CSV file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLocalFile(file);
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      setLocalFileContent(content);
+    };
+    reader.readAsText(file);
+  };
+
+  const getCSVData = async (): Promise<string> => {
+    if (uploadMode === 'local') {
+      if (!localFileContent) {
+        throw new Error('No local file content available');
+      }
+      return localFileContent;
+    } else {
+      // Read the selected predefined CSV file
+      const response = await fetch(`/data/${selectedFile}`);
+      return await response.text();
+    }
+  };
+
   const handleStripeUpload = async () => {
     setIsUploadingStripe(true);
     setStripeResults(null);
 
     try {
-      // Read the selected CSV file
-      const response = await fetch(`/data/${selectedFile}`);
-      const csvData = await response.text();
+      const csvData = await getCSVData();
 
       // Call the bulk upload function
       const { data, error } = await supabase.functions.invoke('bulk-upload-products', {
@@ -61,9 +99,7 @@ export default function BulkProductUpload() {
     setDbResults(null);
 
     try {
-      // Read the selected CSV file
-      const response = await fetch(`/data/${selectedFile}`);
-      const csvData = await response.text();
+      const csvData = await getCSVData();
 
       // Call the database import function
       const { data, error } = await supabase.functions.invoke('import-products-to-db', {
@@ -177,20 +213,88 @@ export default function BulkProductUpload() {
             Upload all gold products from your CSV data to either Stripe's product catalog or your Supabase database.
           </p>
           
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select CSV File:</label>
-            <Select value={selectedFile} onValueChange={setSelectedFile}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {csvFiles.map((file) => (
-                  <SelectItem key={file.value} value={file.value}>
-                    {file.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Upload Mode Selection */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium">Choose Upload Method:</label>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="uploadMode"
+                    value="predefined"
+                    checked={uploadMode === 'predefined'}
+                    onChange={(e) => setUploadMode(e.target.value as 'predefined' | 'local')}
+                    className="text-primary"
+                  />
+                  <FolderOpen className="h-4 w-4" />
+                  <span className="text-sm">Use Predefined Files</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="uploadMode"
+                    value="local"
+                    checked={uploadMode === 'local'}
+                    onChange={(e) => setUploadMode(e.target.value as 'predefined' | 'local')}
+                    className="text-primary"
+                  />
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm">Upload Local File</span>
+                </label>
+              </div>
+            </div>
+
+            {uploadMode === 'predefined' ? (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select CSV File:</label>
+                <Select value={selectedFile} onValueChange={setSelectedFile}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {csvFiles.map((file) => (
+                      <SelectItem key={file.value} value={file.value}>
+                        {file.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Upload CSV File:</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Choose CSV File
+                  </Button>
+                  {localFile && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      <span>{localFile.name}</span>
+                      <span>({(localFile.size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                  )}
+                </div>
+                {!localFile && (
+                  <p className="text-xs text-muted-foreground">
+                    Please select a CSV file to upload
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -209,7 +313,7 @@ export default function BulkProductUpload() {
                   </p>
                   <Button 
                     onClick={handleDatabaseUpload} 
-                    disabled={isUploadingDB}
+                    disabled={isUploadingDB || (!localFile && uploadMode === 'local')}
                     className="w-full"
                   >
                     {isUploadingDB ? (
@@ -239,7 +343,7 @@ export default function BulkProductUpload() {
                   </p>
                   <Button 
                     onClick={handleStripeUpload} 
-                    disabled={isUploadingStripe}
+                    disabled={isUploadingStripe || (!localFile && uploadMode === 'local')}
                     className="w-full"
                   >
                     {isUploadingStripe ? (
