@@ -187,4 +187,88 @@ All colors MUST be HSL.
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-gold/50 rounded-full hover:bg-gold;
   }
+
+  /* Mobile Optimization - Reduce containers and features by 50% */
+  @media (max-width: 768px) {
+    /* Container reductions */
+    .container {
+      @apply px-3;
+    }
+
+    /* Spacing reductions - 50% of default */
+    .py-8 { @apply py-4; }
+    .py-6 { @apply py-3; }
+    .py-4 { @apply py-2; }
+    .px-8 { @apply px-4; }
+    .px-6 { @apply px-3; }
+    .px-4 { @apply px-2; }
+    .p-8 { @apply p-4; }
+    .p-6 { @apply p-3; }
+    .p-4 { @apply p-2; }
+    
+    /* Gap reductions */
+    .gap-8 { @apply gap-4; }
+    .gap-6 { @apply gap-3; }
+    .gap-4 { @apply gap-2; }
+    
+    /* Margin reductions */
+    .my-8 { @apply my-4; }
+    .my-6 { @apply my-3; }
+    .my-4 { @apply my-2; }
+    .mx-8 { @apply mx-4; }
+    .mx-6 { @apply mx-3; }
+    .mx-4 { @apply mx-2; }
+    .m-8 { @apply m-4; }
+    .m-6 { @apply m-3; }
+    .m-4 { @apply m-2; }
+    
+    /* Text size reductions - 50% scale */
+    .text-6xl { @apply text-3xl; }
+    .text-5xl { @apply text-2xl; }
+    .text-4xl { @apply text-xl; }
+    .text-3xl { @apply text-lg; }
+    .text-2xl { @apply text-base; }
+    .text-xl { @apply text-sm; }
+    
+    /* Font weight adjustments for mobile */
+    h1, h2, h3 {
+      @apply font-semibold;
+    }
+    
+    /* Card and component size reductions */
+    .rounded-2xl { @apply rounded-lg; }
+    .rounded-xl { @apply rounded-lg; }
+    .rounded-lg { @apply rounded-md; }
+    
+    /* Button and input size reductions */
+    button, input, select, textarea {
+      @apply text-sm;
+    }
+    
+    /* Max width reductions for mobile */
+    .max-w-7xl { @apply max-w-full; }
+    .max-w-6xl { @apply max-w-full; }
+    .max-w-5xl { @apply max-w-full; }
+    .max-w-4xl { @apply max-w-full; }
+    .max-w-3xl { @apply max-w-full; }
+    .max-w-2xl { @apply max-w-full; }
+    .max-w-xl { @apply max-w-full; }
+    
+    /* Grid column reductions */
+    .grid-cols-4 { @apply grid-cols-2; }
+    .grid-cols-3 { @apply grid-cols-2; }
+    
+    /* Image and icon size reductions */
+    .w-16 { @apply w-8; }
+    .h-16 { @apply h-8; }
+    .w-12 { @apply w-6; }
+    .h-12 { @apply h-6; }
+    .w-10 { @apply w-5; }
+    .h-10 { @apply h-5; }
+    
+    /* Shadow reductions */
+    .shadow-2xl { @apply shadow-lg; }
+    .shadow-xl { @apply shadow-md; }
+    .shadow-lg { @apply shadow-sm; }
+  }
 }
