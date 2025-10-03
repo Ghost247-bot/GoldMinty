@@ -1,4 +1,4 @@
-import { Search, Phone, Globe, ShoppingCart, User, ChevronDown, Menu, LogOut, Settings } from "lucide-react";
+import { Search, Phone, Globe, ShoppingCart, User, ChevronDown, Menu, LogOut, Settings, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -218,8 +218,16 @@ const Header = () => {
             </div>
           </form>
 
-          {/* Cart and User */}
+          {/* Wishlist, Cart and User */}
           <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/wishlist")}
+              aria-label="Wishlist"
+            >
+              <Heart className="w-5 h-5" />
+            </Button>
             <div className="relative">
             <Button
               variant="ghost"
