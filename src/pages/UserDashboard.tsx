@@ -702,24 +702,6 @@ export default function UserDashboard() {
                               <PieChart className="h-4 w-4" />
                               Portfolio Allocation
                             </h5>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const allocation = portfolioAllocations.get(account.id);
-                                setEditingAllocation({
-                                  account_id: account.id,
-                                  account_number: account.account_number,
-                                  gold_percentage: allocation?.gold_percentage || 0,
-                                  silver_percentage: allocation?.silver_percentage || 0,
-                                  platinum_percentage: allocation?.platinum_percentage || 0,
-                                  cash_percentage: allocation?.cash_percentage || 0,
-                                });
-                                setEditAllocationDialogOpen(true);
-                              }}
-                            >
-                              Edit
-                            </Button>
                           </div>
                           <div className="space-y-3">
                             {(() => {
