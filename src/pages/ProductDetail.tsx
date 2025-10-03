@@ -71,6 +71,24 @@ const ProductDetail = () => {
     }
   }, [id, location.state]);
 
+  // Check wishlist status - MUST be before early returns to maintain hook order
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!user || !id) return;
+      
+      const { data } = await supabase
+        .from('wishlist')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', id)
+        .maybeSingle();
+      
+      setIsInWishlist(!!data);
+    };
+    
+    checkWishlist();
+  }, [user, id]);
+
   // Mock product data - fallback for non-CSV products
   const mockProduct = {
     id: id,
@@ -182,23 +200,6 @@ const ProductDetail = () => {
       description: `${quantity} x ${displayProduct.name} added to your cart.`,
     });
   };
-
-  useEffect(() => {
-    const checkWishlist = async () => {
-      if (!user || !id) return;
-      
-      const { data } = await supabase
-        .from('wishlist')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('product_id', id)
-        .maybeSingle();
-      
-      setIsInWishlist(!!data);
-    };
-    
-    checkWishlist();
-  }, [user, id]);
 
   const addToWishlist = async () => {
     if (!user) {
