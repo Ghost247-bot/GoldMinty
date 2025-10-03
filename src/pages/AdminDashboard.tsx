@@ -10,9 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload, ArrowDownLeft } from 'lucide-react';
+import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload, ArrowDownLeft, Menu } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
@@ -57,6 +58,8 @@ export default function AdminDashboard() {
   const [isEditProductDialogOpen, setIsEditProductDialogOpen] = useState(false);
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false);
   const [isEditWithdrawalDialogOpen, setIsEditWithdrawalDialogOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('users');
   
   // Products management states
   const [products, setProducts] = useState<any[]>([]);
@@ -1650,56 +1653,136 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <Tabs defaultValue="users" className="space-y-6">
-          <div className="border-b border-border bg-card rounded-lg p-2 shadow-sm">
-            <TabsList className="w-full h-auto flex flex-wrap md:flex-nowrap gap-1 bg-transparent p-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {/* Mobile Hamburger Menu */}
+          <div className="lg:hidden">
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="lg" className="w-full justify-start gap-2">
+                  <Menu className="h-5 w-5" />
+                  <span className="font-medium">Navigation Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] sm:w-[350px]">
+                <SheetHeader>
+                  <SheetTitle>Admin Navigation</SheetTitle>
+                </SheetHeader>
+                <nav className="mt-6 flex flex-col gap-2">
+                  <Button
+                    variant={activeTab === 'users' ? 'default' : 'ghost'}
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => {
+                      setActiveTab('users');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <Users className="h-5 w-5" />
+                    <span>User Management</span>
+                  </Button>
+                  <Button
+                    variant={activeTab === 'accounts' ? 'default' : 'ghost'}
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => {
+                      setActiveTab('accounts');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <Wallet className="h-5 w-5" />
+                    <span>Investment Accounts</span>
+                  </Button>
+                  <Button
+                    variant={activeTab === 'portfolio' ? 'default' : 'ghost'}
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => {
+                      setActiveTab('portfolio');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <TrendingUp className="h-5 w-5" />
+                    <span>Portfolio Management</span>
+                  </Button>
+                  <Button
+                    variant={activeTab === 'banners' ? 'default' : 'ghost'}
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => {
+                      setActiveTab('banners');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <MessageSquare className="h-5 w-5" />
+                    <span>User Banners</span>
+                  </Button>
+                  <Button
+                    variant={activeTab === 'withdrawals' ? 'default' : 'ghost'}
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => {
+                      setActiveTab('withdrawals');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <ArrowDownLeft className="h-5 w-5" />
+                    <span>Withdrawals</span>
+                  </Button>
+                  <Button
+                    variant={activeTab === 'products' ? 'default' : 'ghost'}
+                    className="w-full justify-start gap-3 h-12"
+                    onClick={() => {
+                      setActiveTab('products');
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <Database className="h-5 w-5" />
+                    <span>Product Management</span>
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop Tabs */}
+          <div className="hidden lg:block border-b border-border bg-card rounded-lg p-2 shadow-sm">
+            <TabsList className="w-full h-auto flex gap-1 bg-transparent p-0">
               <TabsTrigger 
                 value="users" 
-                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
               >
                 <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">User Management</span>
-                <span className="sm:hidden">Users</span>
+                <span>User Management</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="accounts" 
-                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
               >
                 <Wallet className="h-4 w-4" />
-                <span className="hidden sm:inline">Investment Accounts</span>
-                <span className="sm:hidden">Accounts</span>
+                <span>Investment Accounts</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="portfolio" 
-                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
               >
                 <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Portfolio Management</span>
-                <span className="sm:hidden">Portfolio</span>
+                <span>Portfolio Management</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="banners" 
-                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
               >
                 <MessageSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">User Banners</span>
-                <span className="sm:hidden">Banners</span>
+                <span>User Banners</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="withdrawals" 
-                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
               >
                 <ArrowDownLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Withdrawals</span>
-                <span className="sm:hidden">Withdrawals</span>
+                <span>Withdrawals</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="products" 
-                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
               >
                 <Database className="h-4 w-4" />
-                <span className="hidden sm:inline">Product Management</span>
-                <span className="sm:hidden">Products</span>
+                <span>Product Management</span>
               </TabsTrigger>
             </TabsList>
           </div>
