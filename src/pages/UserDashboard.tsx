@@ -709,12 +709,10 @@ export default function UserDashboard() {
                               Portfolio Allocation
                             </h5>
                           </div>
-                           <div className="space-y-3">
-                             {(() => {
-                               const allocation = portfolioAllocations.get(account.id);
-                               console.log('Account ID:', account.id, 'Allocation:', allocation, 'All allocations:', Array.from(portfolioAllocations.entries()));
-                               
-                               const goldPct = Number(allocation?.gold_percentage || 0);
+                            <div className="space-y-3">
+                              {(() => {
+                                const allocation = portfolioAllocations.get(account.id);
+                                const goldPct = Number(allocation?.gold_percentage || 0);
                                const cashPct = Number(allocation?.cash_percentage || 0);
                                const silverPct = Number(allocation?.silver_percentage || 0);
                                const platinumPct = Number(allocation?.platinum_percentage || 0);
