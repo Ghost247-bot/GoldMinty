@@ -1207,6 +1207,32 @@ export default function AdminDashboard() {
     fetchPortfolioAllocations();
   };
 
+  const handleDeleteAllocation = async (accountId: string) => {
+    if (!confirm('Are you sure you want to delete this portfolio allocation?')) return;
+    
+    const { error } = await supabase
+      .from('portfolio_allocations')
+      .delete()
+      .eq('account_id', accountId);
+    
+    if (error) {
+      console.error('Error deleting allocation:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to delete portfolio allocation", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    toast({ 
+      title: "Success", 
+      description: "Portfolio allocation deleted successfully" 
+    });
+    
+    fetchPortfolioAllocations();
+  };
+
   const handleDeleteProduct = async (productId: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
@@ -1978,21 +2004,32 @@ export default function AdminDashboard() {
                             </span>
                             {(() => {
                               const account = investmentAccounts.find(acc => acc.user_id === selectedUserId);
+                              const allocation = portfolioAllocations.get(account?.id);
                               return account && (
-                                <Button size="sm" onClick={() => {
-                                  const allocation = portfolioAllocations.get(account.id);
-                                  setEditingAllocation({
-                                    account_id: account.id,
-                                    account_number: account.account_number,
-                                    gold_percentage: allocation?.gold_percentage || 0,
-                                    silver_percentage: allocation?.silver_percentage || 0,
-                                    platinum_percentage: allocation?.platinum_percentage || 0,
-                                    cash_percentage: allocation?.cash_percentage || 0,
-                                  });
-                                  setEditAllocationDialogOpen(true);
-                                }}>
-                                  Edit Allocation
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button size="sm" variant="outline" onClick={() => {
+                                    setEditingAllocation({
+                                      account_id: account.id,
+                                      account_number: account.account_number,
+                                      gold_percentage: allocation?.gold_percentage || 0,
+                                      silver_percentage: allocation?.silver_percentage || 0,
+                                      platinum_percentage: allocation?.platinum_percentage || 0,
+                                      cash_percentage: allocation?.cash_percentage || 0,
+                                    });
+                                    setEditAllocationDialogOpen(true);
+                                  }}>
+                                    {allocation ? 'Edit' : 'Create'}
+                                  </Button>
+                                  {allocation && (
+                                    <Button 
+                                      size="sm" 
+                                      variant="destructive" 
+                                      onClick={() => handleDeleteAllocation(account.id)}
+                                    >
+                                      Delete
+                                    </Button>
+                                  )}
+                                </div>
                               );
                             })()}
                           </CardTitle>
