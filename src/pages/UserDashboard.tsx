@@ -90,6 +90,8 @@ export default function UserDashboard() {
   const [watchlistDialogOpen, setWatchlistDialogOpen] = useState(false);
   const [guidesDialogOpen, setGuidesDialogOpen] = useState(false);
   const [marketAnalysisDialogOpen, setMarketAnalysisDialogOpen] = useState(false);
+  const [withdrawalDetailsDialogOpen, setWithdrawalDetailsDialogOpen] = useState(false);
+  const [selectedWithdrawalRequest, setSelectedWithdrawalRequest] = useState<any>(null);
   
   // Form states
   const [depositForm, setDepositForm] = useState({
@@ -1302,7 +1304,14 @@ export default function UserDashboard() {
                                 </TableRow>
                               ) : (
                                 withdrawalRequests.map((request) => (
-                                  <TableRow key={request.id}>
+                                  <TableRow 
+                                    key={request.id} 
+                                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={() => {
+                                      setSelectedWithdrawalRequest(request);
+                                      setWithdrawalDetailsDialogOpen(true);
+                                    }}
+                                  >
                                     <TableCell className="font-medium">
                                       {new Date(request.created_at).toLocaleDateString()}
                                     </TableCell>
@@ -1335,11 +1344,8 @@ export default function UserDashboard() {
                                       }>
                                         {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                                       </Badge>
-                                      {request.rejection_reason && (
-                                        <p className="text-xs text-red-600 mt-1">{request.rejection_reason}</p>
-                                      )}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell onClick={(e) => e.stopPropagation()}>
                                       {request.tracking_number ? (
                                         <a 
                                           href={`https://freightease.online/track/${request.tracking_number}`} 
@@ -1363,6 +1369,164 @@ export default function UserDashboard() {
                       </Card>
                     </div>
                   </TabsContent>
+
+                  {/* Withdrawal Details Dialog */}
+                  <Dialog open={withdrawalDetailsDialogOpen} onOpenChange={setWithdrawalDetailsDialogOpen}>
+                    <DialogContent className="max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Withdrawal Request Details</DialogTitle>
+                      </DialogHeader>
+                      {selectedWithdrawalRequest && (
+                        <div className="space-y-6">
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <Label className="text-muted-foreground">Request ID</Label>
+                              <p className="font-mono text-sm">{selectedWithdrawalRequest.id.substring(0, 8)}</p>
+                            </div>
+                            <div>
+                              <Label className="text-muted-foreground">Date Submitted</Label>
+                              <p className="font-medium">{new Date(selectedWithdrawalRequest.created_at).toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <Label className="text-muted-foreground">Type</Label>
+                              <div className="flex items-center gap-2 mt-1">
+                                {selectedWithdrawalRequest.withdrawal_type === 'cash' ? (
+                                  <>
+                                    <DollarSign className="h-4 w-4 text-green-600" />
+                                    <span className="font-medium">Cash Withdrawal</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Clock className="h-4 w-4 text-blue-600" />
+                                    <span className="font-medium">Physical Shipment</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <Label className="text-muted-foreground">Status</Label>
+                              <div className="mt-1">
+                                <Badge variant={
+                                  selectedWithdrawalRequest.status === 'completed' ? 'default' : 
+                                  selectedWithdrawalRequest.status === 'shipped' ? 'default' :
+                                  selectedWithdrawalRequest.status === 'processing' ? 'secondary' :
+                                  selectedWithdrawalRequest.status === 'pending' ? 'secondary' : 
+                                  selectedWithdrawalRequest.status === 'rejected' ? 'destructive' :
+                                  'outline'
+                                }>
+                                  {selectedWithdrawalRequest.status.charAt(0).toUpperCase() + selectedWithdrawalRequest.status.slice(1)}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+
+                          <Separator />
+
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div>
+                              <Label className="text-muted-foreground">Metal Type</Label>
+                              <p className="font-medium capitalize text-lg">{selectedWithdrawalRequest.metal_type}</p>
+                            </div>
+                            <div>
+                              <Label className="text-muted-foreground">Amount</Label>
+                              <p className="font-medium text-lg">{formatOz(selectedWithdrawalRequest.amount_oz)} oz</p>
+                            </div>
+                            <div>
+                              <Label className="text-muted-foreground">Estimated Value</Label>
+                              <p className="font-medium text-lg text-green-600">
+                                ${formatCurrency(selectedWithdrawalRequest.estimated_value || 0)}
+                              </p>
+                            </div>
+                            {selectedWithdrawalRequest.processed_at && (
+                              <div>
+                                <Label className="text-muted-foreground">Processed Date</Label>
+                                <p className="font-medium">{new Date(selectedWithdrawalRequest.processed_at).toLocaleString()}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {selectedWithdrawalRequest.withdrawal_type === 'physical' && (
+                            <>
+                              <Separator />
+                              <div>
+                                <h4 className="font-semibold mb-3">Shipping Information</h4>
+                                <div className="space-y-3 bg-muted p-4 rounded-lg">
+                                  <div>
+                                    <Label className="text-muted-foreground text-xs">Address</Label>
+                                    <p className="font-medium">{selectedWithdrawalRequest.shipping_address}</p>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                      <Label className="text-muted-foreground text-xs">City</Label>
+                                      <p className="font-medium">{selectedWithdrawalRequest.shipping_city}</p>
+                                    </div>
+                                    <div>
+                                      <Label className="text-muted-foreground text-xs">State</Label>
+                                      <p className="font-medium">{selectedWithdrawalRequest.shipping_state}</p>
+                                    </div>
+                                    <div>
+                                      <Label className="text-muted-foreground text-xs">ZIP</Label>
+                                      <p className="font-medium">{selectedWithdrawalRequest.shipping_zip}</p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Label className="text-muted-foreground text-xs">Country</Label>
+                                    <p className="font-medium">{selectedWithdrawalRequest.shipping_country}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {selectedWithdrawalRequest.tracking_number && (
+                                <>
+                                  <Separator />
+                                  <div>
+                                    <h4 className="font-semibold mb-3">Tracking Information</h4>
+                                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                                      <div>
+                                        <Label className="text-muted-foreground text-xs">Carrier</Label>
+                                        <p className="font-semibold text-blue-900 dark:text-blue-100">FreightEase</p>
+                                        <Label className="text-muted-foreground text-xs mt-2">Tracking Number</Label>
+                                        <p className="font-mono text-sm">{selectedWithdrawalRequest.tracking_number}</p>
+                                      </div>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => window.open(`https://freightease.online/track/${selectedWithdrawalRequest.tracking_number}`, '_blank')}
+                                      >
+                                        Track Package
+                                        <ArrowUpRight className="h-3 w-3 ml-1" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          )}
+
+                          {selectedWithdrawalRequest.rejection_reason && (
+                            <>
+                              <Separator />
+                              <div className="p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                                <div className="flex items-start gap-2">
+                                  <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
+                                  <div>
+                                    <h4 className="font-semibold text-red-900 dark:text-red-100 mb-1">Rejection Reason</h4>
+                                    <p className="text-sm text-red-800 dark:text-red-200">{selectedWithdrawalRequest.rejection_reason}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          <div className="flex justify-end gap-2">
+                            <Button variant="outline" onClick={() => setWithdrawalDetailsDialogOpen(false)}>
+                              Close
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </DialogContent>
+                  </Dialog>
 
                   <TabsContent value="performance" className="mt-6">
                     <div className="grid gap-6 md:grid-cols-2">
