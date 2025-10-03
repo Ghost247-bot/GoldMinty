@@ -2575,57 +2575,55 @@ export default function AdminDashboard() {
                 
                 {selectedUserId && (
                   <Tabs defaultValue="overview-admin" className="w-full">
-                    <div className="border-b border-border bg-muted/30 rounded-lg p-2">
-                      <TabsList className="w-full h-auto flex flex-wrap gap-1 bg-transparent p-0">
+                    <div className="border-b border-border bg-muted/30 rounded-lg p-2 overflow-x-auto">
+                      <TabsList className="w-full h-auto inline-flex flex-nowrap gap-1 bg-transparent p-0 min-w-max">
                         <TabsTrigger 
                           value="overview-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <Activity className="h-3.5 w-3.5" />
+                          <Activity className="h-3.5 w-3.5 flex-shrink-0" />
                           <span>Overview</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="transactions-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <Calendar className="h-3.5 w-3.5" />
+                          <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
                           <span>Transactions</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="performance-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <TrendingUp className="h-3.5 w-3.5" />
+                          <TrendingUp className="h-3.5 w-3.5 flex-shrink-0" />
                           <span>Performance</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="risk-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <Shield className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">Risk Analysis</span>
-                          <span className="sm:hidden">Risk</span>
+                          <Shield className="h-3.5 w-3.5 flex-shrink-0" />
+                          <span>Risk Analysis</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="insights-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <BookOpen className="h-3.5 w-3.5" />
-                          <span className="hidden sm:inline">AI Insights</span>
-                          <span className="sm:hidden">Insights</span>
+                          <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
+                          <span>AI Insights</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="tools-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <Settings className="h-3.5 w-3.5" />
+                          <Settings className="h-3.5 w-3.5 flex-shrink-0" />
                           <span>Tools</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="actions-admin" 
-                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                          className="whitespace-nowrap flex items-center gap-2 px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
                         >
-                          <Download className="h-3.5 w-3.5" />
+                          <Download className="h-3.5 w-3.5 flex-shrink-0" />
                           <span>Actions</span>
                         </TabsTrigger>
                       </TabsList>
