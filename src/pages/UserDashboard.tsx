@@ -377,9 +377,17 @@ export default function UserDashboard() {
   };
 
   const handleWithdrawalRequest = async () => {
-    if (!user) return;
+    console.log('=== WITHDRAWAL REQUEST STARTED ===');
+    console.log('User:', user?.id);
+    console.log('Form data:', withdrawalForm);
+    
+    if (!user) {
+      console.log('No user found');
+      return;
+    }
     
     if (!withdrawalForm.amountOz || Number(withdrawalForm.amountOz) <= 0) {
+      console.log('Invalid amount:', withdrawalForm.amountOz);
       toast({ title: "Error", description: "Please enter a valid amount", variant: "destructive" });
       return;
     }
@@ -391,7 +399,11 @@ export default function UserDashboard() {
       platinum: totalPlatinumHoldings
     };
     
+    console.log('Metal holdings:', metalHoldings);
+    console.log('Requested amount:', withdrawalForm.amountOz, 'of', withdrawalForm.metalType);
+    
     if (Number(withdrawalForm.amountOz) > metalHoldings[withdrawalForm.metalType as keyof typeof metalHoldings]) {
+      console.log('Insufficient holdings');
       toast({ 
         title: "Error", 
         description: `Insufficient ${withdrawalForm.metalType} holdings. Available: ${formatOz(metalHoldings[withdrawalForm.metalType as keyof typeof metalHoldings])} oz`,
@@ -402,8 +414,10 @@ export default function UserDashboard() {
 
     // Validate shipping address if physical withdrawal
     if (withdrawalForm.withdrawalType === 'physical') {
+      console.log('Physical withdrawal - checking shipping address');
       if (!withdrawalForm.shippingAddress || !withdrawalForm.shippingCity || 
           !withdrawalForm.shippingState || !withdrawalForm.shippingZip) {
+        console.log('Missing shipping address fields');
         toast({ title: "Error", description: "Please complete all shipping address fields", variant: "destructive" });
         return;
       }
@@ -417,28 +431,42 @@ export default function UserDashboard() {
     };
     const estimatedValue = Number(withdrawalForm.amountOz) * metalPrices[withdrawalForm.metalType as keyof typeof metalPrices];
 
-    const { error } = await supabase
+    console.log('Estimated value:', estimatedValue);
+    console.log('Submitting to database...');
+
+    const insertData = {
+      user_id: user.id,
+      metal_type: withdrawalForm.metalType,
+      amount_oz: Number(withdrawalForm.amountOz),
+      withdrawal_type: withdrawalForm.withdrawalType,
+      shipping_address: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingAddress : null,
+      shipping_city: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingCity : null,
+      shipping_state: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingState : null,
+      shipping_zip: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingZip : null,
+      shipping_country: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingCountry : null,
+      estimated_value: estimatedValue,
+      created_by: user.id,
+      status: 'pending'
+    };
+
+    console.log('Insert data:', insertData);
+
+    const { data, error } = await supabase
       .from('withdrawal_requests')
-      .insert({
-        user_id: user.id,
-        metal_type: withdrawalForm.metalType,
-        amount_oz: Number(withdrawalForm.amountOz),
-        withdrawal_type: withdrawalForm.withdrawalType,
-        shipping_address: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingAddress : null,
-        shipping_city: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingCity : null,
-        shipping_state: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingState : null,
-        shipping_zip: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingZip : null,
-        shipping_country: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingCountry : null,
-        estimated_value: estimatedValue,
-        created_by: user.id,
-        status: 'pending'
-      });
+      .insert(insertData)
+      .select();
     
     if (error) {
-      toast({ title: "Error", description: "Failed to submit withdrawal request", variant: "destructive" });
-      console.error('Error submitting withdrawal request:', error);
+      console.error('Database error:', error);
+      toast({ 
+        title: "Error", 
+        description: `Failed to submit: ${error.message}`,
+        variant: "destructive" 
+      });
       return;
     }
+    
+    console.log('Success! Inserted data:', data);
     
     toast({
       title: "Withdrawal Request Submitted", 
