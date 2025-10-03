@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload } from 'lucide-react';
+import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload, ArrowDownLeft } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
@@ -28,6 +28,7 @@ export default function AdminDashboard() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
+  const [withdrawalRequests, setWithdrawalRequests] = useState<any[]>([]);
   
   // Portfolio management states
   const [selectedUserId, setSelectedUserId] = useState<string>('');
@@ -54,6 +55,8 @@ export default function AdminDashboard() {
   const [isBulkUploadDialogOpen, setIsBulkUploadDialogOpen] = useState(false);
   const [isBulkProductUploadDialogOpen, setIsBulkProductUploadDialogOpen] = useState(false);
   const [isEditProductDialogOpen, setIsEditProductDialogOpen] = useState(false);
+  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false);
+  const [isEditWithdrawalDialogOpen, setIsEditWithdrawalDialogOpen] = useState(false);
   
   // Products management states
   const [products, setProducts] = useState<any[]>([]);
@@ -78,6 +81,7 @@ export default function AdminDashboard() {
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingWithdrawal, setEditingWithdrawal] = useState<any>(null);
   
   // Form data states
   const [formData, setFormData] = useState({
@@ -160,6 +164,22 @@ export default function AdminDashboard() {
     zipCode: '',
     country: 'United States'
   });
+
+  const [withdrawalFormData, setWithdrawalFormData] = useState({
+    userId: undefined as string | undefined,
+    withdrawalType: 'physical',
+    metalType: 'gold',
+    amountOz: '0.0000',
+    estimatedValue: '0.00',
+    status: 'pending',
+    shippingAddress: '',
+    shippingCity: '',
+    shippingState: '',
+    shippingZip: '',
+    shippingCountry: 'United States',
+    trackingNumber: '',
+    rejectionReason: ''
+  });
   
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -174,6 +194,7 @@ export default function AdminDashboard() {
     fetchInvestmentAccounts();
     fetchUserBanners();
     fetchProducts();
+    fetchWithdrawalRequests();
   }, []);
   
   useEffect(() => {
@@ -466,6 +487,38 @@ export default function AdminDashboard() {
     }) || [];
     
     setUserBanners(bannersWithProfiles);
+  };
+
+  const fetchWithdrawalRequests = async () => {
+    const { data: withdrawalsData, error: withdrawalsError } = await supabase
+      .from('withdrawal_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (withdrawalsError) {
+      console.error('Error fetching withdrawal requests:', withdrawalsError);
+      return;
+    }
+
+    const { data: profilesData, error: profilesError } = await supabase
+      .from('profiles')
+      .select('user_id, full_name, email');
+    
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+      setWithdrawalRequests(withdrawalsData || []);
+      return;
+    }
+
+    const withdrawalsWithProfiles = withdrawalsData?.map(withdrawal => {
+      const profile = profilesData?.find(p => p.user_id === withdrawal.user_id);
+      return {
+        ...withdrawal,
+        profiles: profile || { full_name: 'Unknown User', user_id: withdrawal.user_id }
+      };
+    }) || [];
+    
+    setWithdrawalRequests(withdrawalsWithProfiles);
   };
   
   // Fetch user-specific portfolio data
@@ -770,6 +823,159 @@ export default function AdminDashboard() {
       toast({
         title: "Success",
         description: "Banner updated successfully"
+      });
+    }
+  };
+
+  // Withdrawal management functions
+  const handleCreateWithdrawal = async () => {
+    if (!withdrawalFormData.userId || !user?.id) return;
+
+    const { error } = await supabase
+      .from('withdrawal_requests')
+      .insert({
+        user_id: withdrawalFormData.userId,
+        withdrawal_type: withdrawalFormData.withdrawalType,
+        metal_type: withdrawalFormData.metalType,
+        amount_oz: parseFloat(withdrawalFormData.amountOz),
+        estimated_value: parseFloat(withdrawalFormData.estimatedValue),
+        status: withdrawalFormData.status,
+        shipping_address: withdrawalFormData.shippingAddress || null,
+        shipping_city: withdrawalFormData.shippingCity || null,
+        shipping_state: withdrawalFormData.shippingState || null,
+        shipping_zip: withdrawalFormData.shippingZip || null,
+        shipping_country: withdrawalFormData.shippingCountry,
+        tracking_number: withdrawalFormData.trackingNumber || null,
+        rejection_reason: withdrawalFormData.rejectionReason || null,
+        created_by: user.id
+      });
+
+    if (!error) {
+      setIsWithdrawalDialogOpen(false);
+      setWithdrawalFormData({
+        userId: undefined,
+        withdrawalType: 'physical',
+        metalType: 'gold',
+        amountOz: '0.0000',
+        estimatedValue: '0.00',
+        status: 'pending',
+        shippingAddress: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingZip: '',
+        shippingCountry: 'United States',
+        trackingNumber: '',
+        rejectionReason: ''
+      });
+      fetchWithdrawalRequests();
+      toast({
+        title: "Success",
+        description: "Withdrawal request created successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to create withdrawal request",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditWithdrawal = (withdrawal: any) => {
+    setEditingWithdrawal(withdrawal);
+    setWithdrawalFormData({
+      userId: withdrawal.user_id,
+      withdrawalType: withdrawal.withdrawal_type,
+      metalType: withdrawal.metal_type,
+      amountOz: withdrawal.amount_oz.toString(),
+      estimatedValue: withdrawal.estimated_value?.toString() || '0.00',
+      status: withdrawal.status,
+      shippingAddress: withdrawal.shipping_address || '',
+      shippingCity: withdrawal.shipping_city || '',
+      shippingState: withdrawal.shipping_state || '',
+      shippingZip: withdrawal.shipping_zip || '',
+      shippingCountry: withdrawal.shipping_country || 'United States',
+      trackingNumber: withdrawal.tracking_number || '',
+      rejectionReason: withdrawal.rejection_reason || ''
+    });
+    setIsEditWithdrawalDialogOpen(true);
+  };
+
+  const handleUpdateWithdrawal = async () => {
+    if (!editingWithdrawal || !user?.id) return;
+
+    const { error } = await supabase
+      .from('withdrawal_requests')
+      .update({
+        withdrawal_type: withdrawalFormData.withdrawalType,
+        metal_type: withdrawalFormData.metalType,
+        amount_oz: parseFloat(withdrawalFormData.amountOz),
+        estimated_value: parseFloat(withdrawalFormData.estimatedValue),
+        status: withdrawalFormData.status,
+        shipping_address: withdrawalFormData.shippingAddress || null,
+        shipping_city: withdrawalFormData.shippingCity || null,
+        shipping_state: withdrawalFormData.shippingState || null,
+        shipping_zip: withdrawalFormData.shippingZip || null,
+        shipping_country: withdrawalFormData.shippingCountry,
+        tracking_number: withdrawalFormData.trackingNumber || null,
+        rejection_reason: withdrawalFormData.rejectionReason || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingWithdrawal.id);
+
+    if (!error) {
+      setIsEditWithdrawalDialogOpen(false);
+      setEditingWithdrawal(null);
+      setWithdrawalFormData({
+        userId: undefined,
+        withdrawalType: 'physical',
+        metalType: 'gold',
+        amountOz: '0.0000',
+        estimatedValue: '0.00',
+        status: 'pending',
+        shippingAddress: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingZip: '',
+        shippingCountry: 'United States',
+        trackingNumber: '',
+        rejectionReason: ''
+      });
+      fetchWithdrawalRequests();
+      toast({
+        title: "Success",
+        description: "Withdrawal request updated successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to update withdrawal request",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteWithdrawal = async (withdrawalId: string) => {
+    if (!confirm('Are you sure you want to delete this withdrawal request? This action cannot be undone.')) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('withdrawal_requests')
+      .delete()
+      .eq('id', withdrawalId);
+
+    if (!error) {
+      fetchWithdrawalRequests();
+      toast({
+        title: "Success",
+        description: "Withdrawal request deleted successfully"
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to delete withdrawal request",
+        variant: "destructive"
       });
     }
   };
@@ -1404,11 +1610,12 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="accounts">Investment Accounts</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio Management</TabsTrigger>
             <TabsTrigger value="banners">User Banners</TabsTrigger>
+            <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
             <TabsTrigger value="products">Product Management</TabsTrigger>
           </TabsList>
           
@@ -1869,6 +2076,299 @@ export default function AdminDashboard() {
                             variant="destructive"
                             size="sm"
                             onClick={() => handleDeleteBanner(banner.id)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="withdrawals">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <ArrowDownLeft className="h-5 w-5" />
+                    Withdrawal Requests Management
+                  </CardTitle>
+                  <Dialog open={isWithdrawalDialogOpen} onOpenChange={(open) => {
+                    setIsWithdrawalDialogOpen(open);
+                    if (open) {
+                      fetchAllUsers();
+                    }
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Withdrawal
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Create Withdrawal Request</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="withdrawal-user-select">Select User</Label>
+                          <Select value={withdrawalFormData.userId} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, userId: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder={
+                                usersLoading ? "Loading users..." : 
+                                allUsers.length === 0 ? "No users found" : 
+                                "Select a user"
+                              } />
+                            </SelectTrigger>
+                            <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
+                              {usersLoading ? (
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
+                                  Loading users...
+                                </div>
+                              ) : allUsers.length === 0 ? (
+                                <div className="px-3 py-2 text-sm text-muted-foreground">
+                                  No users found
+                                </div>
+                              ) : (
+                                allUsers.map((user) => (
+                                  <SelectItem 
+                                    key={user.user_id} 
+                                    value={user.user_id}
+                                    className="hover:bg-muted focus:bg-muted cursor-pointer"
+                                  >
+                                    {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="withdrawal-type">Withdrawal Type</Label>
+                            <Select value={withdrawalFormData.withdrawalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, withdrawalType: value})}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="physical">Physical Delivery</SelectItem>
+                                <SelectItem value="cash">Cash Settlement</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="withdrawal-metal">Metal Type</Label>
+                            <Select value={withdrawalFormData.metalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, metalType: value})}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="gold">Gold</SelectItem>
+                                <SelectItem value="silver">Silver</SelectItem>
+                                <SelectItem value="platinum">Platinum</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="withdrawal-amount">Amount (oz)</Label>
+                            <Input
+                              id="withdrawal-amount"
+                              type="number"
+                              step="0.0001"
+                              value={withdrawalFormData.amountOz}
+                              onChange={(e) => setWithdrawalFormData({...withdrawalFormData, amountOz: e.target.value})}
+                              placeholder="0.0000"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="withdrawal-value">Estimated Value ($)</Label>
+                            <Input
+                              id="withdrawal-value"
+                              type="number"
+                              step="0.01"
+                              value={withdrawalFormData.estimatedValue}
+                              onChange={(e) => setWithdrawalFormData({...withdrawalFormData, estimatedValue: e.target.value})}
+                              placeholder="0.00"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="withdrawal-status">Status</Label>
+                          <Select value={withdrawalFormData.status} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, status: value})}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="approved">Approved</SelectItem>
+                              <SelectItem value="processing">Processing</SelectItem>
+                              <SelectItem value="shipped">Shipped</SelectItem>
+                              <SelectItem value="completed">Completed</SelectItem>
+                              <SelectItem value="rejected">Rejected</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {withdrawalFormData.withdrawalType === 'physical' && (
+                          <>
+                            <div>
+                              <Label htmlFor="withdrawal-address">Shipping Address</Label>
+                              <Input
+                                id="withdrawal-address"
+                                value={withdrawalFormData.shippingAddress}
+                                onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingAddress: e.target.value})}
+                                placeholder="Enter shipping address..."
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="withdrawal-city">City</Label>
+                                <Input
+                                  id="withdrawal-city"
+                                  value={withdrawalFormData.shippingCity}
+                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCity: e.target.value})}
+                                  placeholder="City"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="withdrawal-state">State</Label>
+                                <Input
+                                  id="withdrawal-state"
+                                  value={withdrawalFormData.shippingState}
+                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingState: e.target.value})}
+                                  placeholder="State"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="withdrawal-zip">ZIP Code</Label>
+                                <Input
+                                  id="withdrawal-zip"
+                                  value={withdrawalFormData.shippingZip}
+                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingZip: e.target.value})}
+                                  placeholder="ZIP Code"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="withdrawal-country">Country</Label>
+                                <Input
+                                  id="withdrawal-country"
+                                  value={withdrawalFormData.shippingCountry}
+                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCountry: e.target.value})}
+                                  placeholder="Country"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label htmlFor="withdrawal-tracking">Tracking Number (Optional)</Label>
+                              <Input
+                                id="withdrawal-tracking"
+                                value={withdrawalFormData.trackingNumber}
+                                onChange={(e) => setWithdrawalFormData({...withdrawalFormData, trackingNumber: e.target.value})}
+                                placeholder="Enter tracking number..."
+                              />
+                            </div>
+                          </>
+                        )}
+
+                        {withdrawalFormData.status === 'rejected' && (
+                          <div>
+                            <Label htmlFor="withdrawal-rejection">Rejection Reason</Label>
+                            <Textarea
+                              id="withdrawal-rejection"
+                              value={withdrawalFormData.rejectionReason}
+                              onChange={(e) => setWithdrawalFormData({...withdrawalFormData, rejectionReason: e.target.value})}
+                              placeholder="Enter rejection reason..."
+                              rows={3}
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setIsWithdrawalDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={handleCreateWithdrawal} 
+                            disabled={!withdrawalFormData.userId || !withdrawalFormData.amountOz}
+                          >
+                            Create Withdrawal
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Metal</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Value</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {withdrawalRequests.map((withdrawal) => (
+                      <TableRow key={withdrawal.id}>
+                        <TableCell>
+                          {withdrawal.profiles?.full_name || 'Unknown'}
+                        </TableCell>
+                        <TableCell className="capitalize">
+                          {withdrawal.withdrawal_type.replace('_', ' ')}
+                        </TableCell>
+                        <TableCell className="capitalize font-medium">
+                          {withdrawal.metal_type}
+                        </TableCell>
+                        <TableCell>
+                          {formatOz(withdrawal.amount_oz)}
+                        </TableCell>
+                        <TableCell>
+                          {formatCurrency(withdrawal.estimated_value)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            withdrawal.status === 'completed' ? 'default' :
+                            withdrawal.status === 'rejected' ? 'destructive' :
+                            withdrawal.status === 'approved' ? 'default' :
+                            'secondary'
+                          }>
+                            {withdrawal.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(withdrawal.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="space-x-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleEditWithdrawal(withdrawal)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteWithdrawal(withdrawal.id)}
                           >
                             <X className="h-3 w-3" />
                           </Button>
@@ -3520,6 +4020,205 @@ export default function AdminDashboard() {
                   disabled={!bannerFormData.userId || !bannerFormData.title || !bannerFormData.message}
                 >
                   Update Banner
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Withdrawal Dialog */}
+        <Dialog open={isEditWithdrawalDialogOpen} onOpenChange={(open) => {
+          setIsEditWithdrawalDialogOpen(open);
+          if (open) {
+            fetchAllUsers();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Withdrawal Request</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-withdrawal-user-select">User</Label>
+                <Select value={withdrawalFormData.userId} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, userId: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a user" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
+                    {allUsers.map((user) => (
+                      <SelectItem 
+                        key={user.user_id} 
+                        value={user.user_id}
+                        className="hover:bg-muted focus:bg-muted cursor-pointer"
+                      >
+                        {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-withdrawal-type">Withdrawal Type</Label>
+                  <Select value={withdrawalFormData.withdrawalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, withdrawalType: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="physical">Physical Delivery</SelectItem>
+                      <SelectItem value="cash">Cash Settlement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-withdrawal-metal">Metal Type</Label>
+                  <Select value={withdrawalFormData.metalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, metalType: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gold">Gold</SelectItem>
+                      <SelectItem value="silver">Silver</SelectItem>
+                      <SelectItem value="platinum">Platinum</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-withdrawal-amount">Amount (oz)</Label>
+                  <Input
+                    id="edit-withdrawal-amount"
+                    type="number"
+                    step="0.0001"
+                    value={withdrawalFormData.amountOz}
+                    onChange={(e) => setWithdrawalFormData({...withdrawalFormData, amountOz: e.target.value})}
+                    placeholder="0.0000"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-withdrawal-value">Estimated Value ($)</Label>
+                  <Input
+                    id="edit-withdrawal-value"
+                    type="number"
+                    step="0.01"
+                    value={withdrawalFormData.estimatedValue}
+                    onChange={(e) => setWithdrawalFormData({...withdrawalFormData, estimatedValue: e.target.value})}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-withdrawal-status">Status</Label>
+                <Select value={withdrawalFormData.status} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, status: value})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="processing">Processing</SelectItem>
+                    <SelectItem value="shipped">Shipped</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {withdrawalFormData.withdrawalType === 'physical' && (
+                <>
+                  <div>
+                    <Label htmlFor="edit-withdrawal-address">Shipping Address</Label>
+                    <Input
+                      id="edit-withdrawal-address"
+                      value={withdrawalFormData.shippingAddress}
+                      onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingAddress: e.target.value})}
+                      placeholder="Enter shipping address..."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-withdrawal-city">City</Label>
+                      <Input
+                        id="edit-withdrawal-city"
+                        value={withdrawalFormData.shippingCity}
+                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCity: e.target.value})}
+                        placeholder="City"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-withdrawal-state">State</Label>
+                      <Input
+                        id="edit-withdrawal-state"
+                        value={withdrawalFormData.shippingState}
+                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingState: e.target.value})}
+                        placeholder="State"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-withdrawal-zip">ZIP Code</Label>
+                      <Input
+                        id="edit-withdrawal-zip"
+                        value={withdrawalFormData.shippingZip}
+                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingZip: e.target.value})}
+                        placeholder="ZIP Code"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-withdrawal-country">Country</Label>
+                      <Input
+                        id="edit-withdrawal-country"
+                        value={withdrawalFormData.shippingCountry}
+                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCountry: e.target.value})}
+                        placeholder="Country"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-withdrawal-tracking">Tracking Number</Label>
+                    <Input
+                      id="edit-withdrawal-tracking"
+                      value={withdrawalFormData.trackingNumber}
+                      onChange={(e) => setWithdrawalFormData({...withdrawalFormData, trackingNumber: e.target.value})}
+                      placeholder="Enter tracking number..."
+                    />
+                  </div>
+                </>
+              )}
+
+              {withdrawalFormData.status === 'rejected' && (
+                <div>
+                  <Label htmlFor="edit-withdrawal-rejection">Rejection Reason</Label>
+                  <Textarea
+                    id="edit-withdrawal-rejection"
+                    value={withdrawalFormData.rejectionReason}
+                    onChange={(e) => setWithdrawalFormData({...withdrawalFormData, rejectionReason: e.target.value})}
+                    placeholder="Enter rejection reason..."
+                    rows={3}
+                  />
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => {
+                  setIsEditWithdrawalDialogOpen(false);
+                  setEditingWithdrawal(null);
+                }}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleUpdateWithdrawal} 
+                  disabled={!withdrawalFormData.userId || !withdrawalFormData.amountOz}
+                >
+                  Update Withdrawal
                 </Button>
               </div>
             </div>
