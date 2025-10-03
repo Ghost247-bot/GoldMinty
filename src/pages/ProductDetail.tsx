@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/utils";
 import { parseGoldProductsCSV } from "@/utils/csvParser";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -28,10 +30,12 @@ const ProductDetail = () => {
   const location = useLocation();
   const { toast } = useToast();
   const { addItem } = useCart();
+  const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
   useEffect(() => {
     // First try to get product from navigation state
@@ -179,11 +183,77 @@ const ProductDetail = () => {
     });
   };
 
-  const addToWishlist = () => {
-    toast({
-      title: "Added to wishlist",
-      description: "Product added to your wishlist.",
-    });
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!user || !id) return;
+      
+      const { data } = await supabase
+        .from('wishlist')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', id)
+        .maybeSingle();
+      
+      setIsInWishlist(!!data);
+    };
+    
+    checkWishlist();
+  }, [user, id]);
+
+  const addToWishlist = async () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to add items to your wishlist.",
+        variant: "destructive"
+      });
+      navigate("/login");
+      return;
+    }
+
+    if (!id) return;
+
+    try {
+      if (isInWishlist) {
+        // Remove from wishlist
+        const { error } = await supabase
+          .from('wishlist')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('product_id', id);
+
+        if (error) throw error;
+
+        setIsInWishlist(false);
+        toast({
+          title: "Removed from wishlist",
+          description: "Product removed from your wishlist.",
+        });
+      } else {
+        // Add to wishlist
+        const { error } = await supabase
+          .from('wishlist')
+          .insert({
+            user_id: user.id,
+            product_id: id
+          });
+
+        if (error) throw error;
+
+        setIsInWishlist(true);
+        toast({
+          title: "Added to wishlist",
+          description: "Product added to your wishlist.",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating wishlist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const updateQuantity = (newQuantity: number) => {
@@ -319,7 +389,7 @@ const ProductDetail = () => {
                     onClick={addToWishlist}
                     className="sm:w-auto"
                   >
-                    <Heart className="w-4 h-4" />
+                    <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-red-500 text-red-500' : ''}`} />
                   </Button>
                 </div>
               </div>

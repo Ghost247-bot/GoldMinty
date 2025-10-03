@@ -8,6 +8,7 @@ import { ShoppingCart, Heart, Star, Search, Filter, ChevronLeft, ChevronRight } 
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/utils";
 
@@ -32,10 +33,11 @@ const Products = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addItem } = useCart();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("featured");
-  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -194,18 +196,84 @@ const Products = () => {
     });
   };
 
-  const toggleWishlist = (productId: string) => {
-    setWishlist(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
-    );
+  // Load wishlist from database
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from('wishlist')
+        .select('product_id')
+        .eq('user_id', user.id);
+      
+      if (data) {
+        setWishlist(new Set(data.map(item => item.product_id)));
+      }
+    };
     
-    const isInWishlist = wishlist.includes(productId);
-    toast({
-      title: isInWishlist ? "Removed from wishlist" : "Added to wishlist",
-      description: isInWishlist ? "Product removed from your wishlist." : "Product added to your wishlist.",
-    });
+    fetchWishlist();
+  }, [user]);
+
+  const toggleWishlist = async (productId: string) => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to add items to your wishlist.",
+        variant: "destructive"
+      });
+      navigate("/login");
+      return;
+    }
+
+    const isInWishlist = wishlist.has(productId);
+    
+    try {
+      if (isInWishlist) {
+        // Remove from wishlist
+        const { error } = await supabase
+          .from('wishlist')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('product_id', productId);
+
+        if (error) throw error;
+
+        setWishlist(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(productId);
+          return newSet;
+        });
+        
+        toast({
+          title: "Removed from wishlist",
+          description: "Product removed from your wishlist.",
+        });
+      } else {
+        // Add to wishlist
+        const { error } = await supabase
+          .from('wishlist')
+          .insert({
+            user_id: user.id,
+            product_id: productId
+          });
+
+        if (error) throw error;
+
+        setWishlist(prev => new Set([...prev, productId]));
+        
+        toast({
+          title: "Added to wishlist",
+          description: "Product added to your wishlist.",
+        });
+      }
+    } catch (error) {
+      console.error('Error updating wishlist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const getCategoryTitle = () => {
@@ -302,7 +370,7 @@ const Products = () => {
                     >
                       <Heart 
                         className={`w-3 h-3 ${
-                          wishlist.includes(product.id) 
+                          wishlist.has(product.id) 
                             ? 'fill-red-500 text-red-500' 
                             : 'text-gray-600'
                         }`} 

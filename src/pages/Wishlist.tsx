@@ -125,8 +125,13 @@ const Wishlist = () => {
         id: product.id,
         name: product.name,
         price: parseFloat(product.price_usd.toString()),
-        quantity: 1,
         image: product.image_url || "",
+        metal: product.metal_type || "gold",
+        weight: product.weight || "N/A",
+        mint: product.brand || "N/A",
+        purity: product.purity || "N/A",
+        inStock: product.is_active,
+        description: product.description || product.name
       },
     });
     toast({
