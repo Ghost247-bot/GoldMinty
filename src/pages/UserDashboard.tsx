@@ -163,12 +163,18 @@ export default function UserDashboard() {
       .select('*')
       .in('account_id', accountIds);
     
-    if (!error && data) {
+    if (error) {
+      console.error('Error fetching portfolio allocations:', error);
+      return;
+    }
+    
+    if (data) {
       const allocationsMap = new Map();
       data.forEach(allocation => {
         allocationsMap.set(allocation.account_id, allocation);
       });
       setPortfolioAllocations(allocationsMap);
+      console.log('Portfolio allocations loaded:', data);
     }
   };
 
@@ -703,48 +709,58 @@ export default function UserDashboard() {
                               Portfolio Allocation
                             </h5>
                           </div>
-                          <div className="space-y-3">
-                            {(() => {
-                              const allocation = portfolioAllocations.get(account.id);
-                              const goldPct = Number(allocation?.gold_percentage || 0);
-                              const cashPct = Number(allocation?.cash_percentage || 0);
-                              const silverPct = Number(allocation?.silver_percentage || 0);
-                              const platinumPct = Number(allocation?.platinum_percentage || 0);
-                              
-                              return (
-                                <>
-                                  <div>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span>Gold</span>
-                                      <span>{goldPct}%</span>
-                                    </div>
-                                    <Progress value={goldPct} className="h-2" />
-                                  </div>
-                                  <div>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span>Cash</span>
-                                      <span>{cashPct}%</span>
-                                    </div>
-                                    <Progress value={cashPct} className="h-2" />
-                                  </div>
-                                  <div>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span>Silver</span>
-                                      <span>{silverPct}%</span>
-                                    </div>
-                                    <Progress value={silverPct} className="h-2" />
-                                  </div>
-                                  <div>
-                                    <div className="flex justify-between text-sm mb-1">
-                                      <span>Platinum</span>
-                                      <span>{platinumPct}%</span>
-                                    </div>
-                                    <Progress value={platinumPct} className="h-2" />
-                                  </div>
-                                </>
-                              );
-                            })()}
-                          </div>
+                           <div className="space-y-3">
+                             {(() => {
+                               const allocation = portfolioAllocations.get(account.id);
+                               const goldPct = Number(allocation?.gold_percentage || 0);
+                               const cashPct = Number(allocation?.cash_percentage || 0);
+                               const silverPct = Number(allocation?.silver_percentage || 0);
+                               const platinumPct = Number(allocation?.platinum_percentage || 0);
+                               
+                               const hasData = goldPct + cashPct + silverPct + platinumPct > 0;
+                               
+                               if (!hasData) {
+                                 return (
+                                   <div className="text-center py-4 text-muted-foreground text-sm">
+                                     No allocation data set. Contact your administrator.
+                                   </div>
+                                 );
+                               }
+                               
+                               return (
+                                 <>
+                                   <div>
+                                     <div className="flex justify-between text-sm mb-1">
+                                       <span>Gold</span>
+                                       <span>{goldPct}%</span>
+                                     </div>
+                                     <Progress value={goldPct} className="h-2" />
+                                   </div>
+                                   <div>
+                                     <div className="flex justify-between text-sm mb-1">
+                                       <span>Cash</span>
+                                       <span>{cashPct}%</span>
+                                     </div>
+                                     <Progress value={cashPct} className="h-2" />
+                                   </div>
+                                   <div>
+                                     <div className="flex justify-between text-sm mb-1">
+                                       <span>Silver</span>
+                                       <span>{silverPct}%</span>
+                                     </div>
+                                     <Progress value={silverPct} className="h-2" />
+                                   </div>
+                                   <div>
+                                     <div className="flex justify-between text-sm mb-1">
+                                       <span>Platinum</span>
+                                       <span>{platinumPct}%</span>
+                                     </div>
+                                     <Progress value={platinumPct} className="h-2" />
+                                   </div>
+                                 </>
+                               );
+                             })()}
+                           </div>
                         </div>
                         
                         {account.notes && (
