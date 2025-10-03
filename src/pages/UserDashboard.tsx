@@ -924,9 +924,10 @@ export default function UserDashboard() {
                 </div>
               ) : (
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-7">
+                  <TabsList className="grid w-full grid-cols-8">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                    <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
                     <TabsTrigger value="performance">Performance</TabsTrigger>
                     <TabsTrigger value="analysis">Risk Analysis</TabsTrigger>
                     <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
@@ -1253,95 +1254,113 @@ export default function UserDashboard() {
                           </PaginationContent>
                         </Pagination>
                       )}
+                    </div>
+                  </TabsContent>
 
-                      {/* Withdrawal Requests Section */}
-                      <div className="mt-8">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold">Withdrawal Requests</h3>
-                        </div>
-                        <Card>
-                          <CardContent className="p-0">
-                            <Table>
-                              <TableHeader>
+                  <TabsContent value="withdrawals" className="mt-6">
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">Withdrawal Requests</h3>
+                        <Button variant="outline" size="sm" onClick={() => setWithdrawalDialogOpen(true)}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          New Withdrawal
+                        </Button>
+                      </div>
+                      
+                      <Card>
+                        <CardContent className="p-0">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Type</TableHead>
+                                <TableHead>Metal</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Est. Value</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Tracking</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {withdrawalRequests.length === 0 ? (
                                 <TableRow>
-                                  <TableHead>Date</TableHead>
-                                  <TableHead>Type</TableHead>
-                                  <TableHead>Metal</TableHead>
-                                  <TableHead>Amount</TableHead>
-                                  <TableHead>Est. Value</TableHead>
-                                  <TableHead>Status</TableHead>
-                                  <TableHead>Tracking</TableHead>
+                                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                                    <div className="flex flex-col items-center gap-2">
+                                      <AlertCircle className="h-8 w-8 text-muted-foreground" />
+                                      <p>No withdrawal requests found</p>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => setWithdrawalDialogOpen(true)}
+                                        className="mt-2"
+                                      >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Create First Request
+                                      </Button>
+                                    </div>
+                                  </TableCell>
                                 </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {withdrawalRequests.length === 0 ? (
-                                  <TableRow>
-                                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                                      No withdrawal requests found
+                              ) : (
+                                withdrawalRequests.map((request) => (
+                                  <TableRow key={request.id}>
+                                    <TableCell className="font-medium">
+                                      {new Date(request.created_at).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center gap-2">
+                                        {request.withdrawal_type === 'cash' ? (
+                                          <>
+                                            <DollarSign className="h-4 w-4 text-green-600" />
+                                            <span>Cash</span>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Clock className="h-4 w-4 text-blue-600" />
+                                            <span>Physical</span>
+                                          </>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="capitalize">{request.metal_type}</TableCell>
+                                    <TableCell>{formatOz(request.amount_oz)} oz</TableCell>
+                                    <TableCell>${formatCurrency(request.estimated_value || 0)}</TableCell>
+                                    <TableCell>
+                                      <Badge variant={
+                                        request.status === 'completed' ? 'default' : 
+                                        request.status === 'shipped' ? 'default' :
+                                        request.status === 'processing' ? 'secondary' :
+                                        request.status === 'pending' ? 'secondary' : 
+                                        request.status === 'rejected' ? 'destructive' :
+                                        'outline'
+                                      }>
+                                        {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                                      </Badge>
+                                      {request.rejection_reason && (
+                                        <p className="text-xs text-red-600 mt-1">{request.rejection_reason}</p>
+                                      )}
+                                    </TableCell>
+                                    <TableCell>
+                                      {request.tracking_number ? (
+                                        <a 
+                                          href={`https://freightease.online/track/${request.tracking_number}`} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                                        >
+                                          {request.tracking_number}
+                                          <ArrowUpRight className="h-3 w-3" />
+                                        </a>
+                                      ) : (
+                                        <span className="text-muted-foreground text-sm">-</span>
+                                      )}
                                     </TableCell>
                                   </TableRow>
-                                ) : (
-                                  withdrawalRequests.map((request) => (
-                                    <TableRow key={request.id}>
-                                      <TableCell className="font-medium">
-                                        {new Date(request.created_at).toLocaleDateString()}
-                                      </TableCell>
-                                      <TableCell>
-                                        <div className="flex items-center gap-2">
-                                          {request.withdrawal_type === 'cash' ? (
-                                            <>
-                                              <DollarSign className="h-4 w-4 text-green-600" />
-                                              <span>Cash</span>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <Clock className="h-4 w-4 text-blue-600" />
-                                              <span>Physical</span>
-                                            </>
-                                          )}
-                                        </div>
-                                      </TableCell>
-                                      <TableCell className="capitalize">{request.metal_type}</TableCell>
-                                      <TableCell>{formatOz(request.amount_oz)} oz</TableCell>
-                                      <TableCell>${formatCurrency(request.estimated_value || 0)}</TableCell>
-                                      <TableCell>
-                                        <Badge variant={
-                                          request.status === 'completed' ? 'default' : 
-                                          request.status === 'shipped' ? 'default' :
-                                          request.status === 'processing' ? 'secondary' :
-                                          request.status === 'pending' ? 'secondary' : 
-                                          request.status === 'rejected' ? 'destructive' :
-                                          'outline'
-                                        }>
-                                          {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                                        </Badge>
-                                        {request.rejection_reason && (
-                                          <p className="text-xs text-red-600 mt-1">{request.rejection_reason}</p>
-                                        )}
-                                      </TableCell>
-                                      <TableCell>
-                                        {request.tracking_number ? (
-                                          <a 
-                                            href={`https://freightease.online/track/${request.tracking_number}`} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                                          >
-                                            {request.tracking_number}
-                                            <ArrowUpRight className="h-3 w-3" />
-                                          </a>
-                                        ) : (
-                                          <span className="text-muted-foreground text-sm">-</span>
-                                        )}
-                                      </TableCell>
-                                    </TableRow>
-                                  ))
-                                )}
-                              </TableBody>
-                            </Table>
-                          </CardContent>
-                        </Card>
-                      </div>
+                                ))
+                              )}
+                            </TableBody>
+                          </Table>
+                        </CardContent>
+                      </Card>
                     </div>
                   </TabsContent>
 
