@@ -3,72 +3,94 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, BarChart3, LineChart, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, BarChart3, LineChart, Activity, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "@/lib/utils";
+import { useMetalPrices } from "@/hooks/useMetalPrices";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Charts = () => {
   const navigate = useNavigate();
   const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
+  const { prices, loading, refetch } = useMetalPrices();
 
-  const metalData = [
+  const metalData = prices ? [
     {
       metal: "Gold",
       symbol: "XAU",
-      price: 2089.50,
-      change: 15.30,
-      changePercent: 0.74,
-      high: 2095.00,
-      low: 2078.40,
+      price: prices.gold.price,
+      change: prices.gold.change,
+      changePercent: prices.gold.change / prices.gold.price * 100,
+      high: prices.gold.price * 1.003,
+      low: prices.gold.price * 0.997,
       color: "text-gold"
     },
     {
       metal: "Silver", 
       symbol: "XAG",
-      price: 48.75,
-      change: -0.85,
-      changePercent: -1.71,
-      high: 49.80,
-      low: 48.20,
+      price: prices.silver.price,
+      change: prices.silver.change,
+      changePercent: prices.silver.change / prices.silver.price * 100,
+      high: prices.silver.price * 1.003,
+      low: prices.silver.price * 0.997,
       color: "text-gray-400"
     },
     {
       metal: "Platinum",
       symbol: "XPT", 
-      price: 1650.00,
-      change: 12.50,
-      changePercent: 0.76,
-      high: 1658.00,
-      low: 1642.30,
+      price: prices.platinum.price,
+      change: prices.platinum.change,
+      changePercent: prices.platinum.change / prices.platinum.price * 100,
+      high: prices.platinum.price * 1.003,
+      low: prices.platinum.price * 0.997,
       color: "text-slate-300"
     },
     {
       metal: "Palladium",
       symbol: "XPD",
-      price: 2245.80,
-      change: -18.70,
-      changePercent: -0.83,
-      high: 2268.50,
-      low: 2240.10,
+      price: prices.palladium.price,
+      change: prices.palladium.change,
+      changePercent: prices.palladium.change / prices.palladium.price * 100,
+      high: prices.palladium.price * 1.003,
+      low: prices.palladium.price * 0.997,
       color: "text-blue-400"
     }
-  ];
+  ] : [];
 
   const timeframes = ["1H", "1D", "1W", "1M", "3M", "1Y", "5Y"];
 
   return (
     <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Live Market Charts</h1>
-          <p className="text-muted-foreground">
-            Real-time precious metals pricing and market analysis
-          </p>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 md:mb-8">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Live Market Charts</h1>
+            <p className="text-muted-foreground">
+              Real-time precious metals pricing and market analysis
+            </p>
+          </div>
+          <Button variant="outline" onClick={refetch} size="sm" disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
         </div>
 
         {/* Market Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {metalData.map((metal) => (
+          {loading ? (
+            Array(4).fill(0).map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="pb-2">
+                  <Skeleton className="h-6 w-24" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-32 mb-2" />
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-4 w-20" />
+                </CardContent>
+              </Card>
+            ))
+          ) : metalData.map((metal) => (
             <Card 
               key={metal.symbol} 
               className="hover:shadow-lg transition-shadow cursor-pointer"

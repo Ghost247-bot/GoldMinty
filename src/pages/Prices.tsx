@@ -9,34 +9,43 @@ import { Download, Search, TrendingUp, TrendingDown, RefreshCw } from "lucide-re
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { formatCurrency } from "@/lib/utils";
+import { useMetalPrices } from "@/hooks/useMetalPrices";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Prices = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const { prices, loading, refetch } = useMetalPrices();
+
+  // Use live prices for spot rates and calculate product prices
+  const goldSpot = prices?.gold.price || 3800;
+  const silverSpot = prices?.silver.price || 46;
+  const platinumSpot = prices?.platinum.price || 1600;
+  const palladiumSpot = prices?.palladium.price || 1300;
 
   const priceData = [
     // Gold Products
-    { id: "1", name: "1 oz Gold American Eagle", category: "gold", buyPrice: 2089.50, sellPrice: 2045.30, change: 15.30, mint: "US Mint", weight: "1 oz" },
-    { id: "2", name: "1 oz Gold Canadian Maple Leaf", category: "gold", buyPrice: 2087.20, sellPrice: 2043.10, change: 14.80, mint: "Royal Canadian Mint", weight: "1 oz" },
-    { id: "3", name: "1/2 oz Gold American Eagle", category: "gold", buyPrice: 1055.75, sellPrice: 1032.40, change: 7.65, mint: "US Mint", weight: "1/2 oz" },
-    { id: "4", name: "1/4 oz Gold American Eagle", category: "gold", buyPrice: 535.90, sellPrice: 522.80, change: 3.85, mint: "US Mint", weight: "1/4 oz" },
-    { id: "5", name: "1/10 oz Gold American Eagle", category: "gold", buyPrice: 215.30, sellPrice: 208.90, change: 1.55, mint: "US Mint", weight: "1/10 oz" },
-    { id: "6", name: "1 oz Gold Krugerrand", category: "gold", buyPrice: 2082.40, sellPrice: 2038.60, change: 14.20, mint: "South African Mint", weight: "1 oz" },
+    { id: "1", name: "1 oz Gold American Eagle", category: "gold", buyPrice: goldSpot * 1.05, sellPrice: goldSpot * 1.02, change: prices?.gold.change || 0, mint: "US Mint", weight: "1 oz" },
+    { id: "2", name: "1 oz Gold Canadian Maple Leaf", category: "gold", buyPrice: goldSpot * 1.04, sellPrice: goldSpot * 1.01, change: prices?.gold.change || 0, mint: "Royal Canadian Mint", weight: "1 oz" },
+    { id: "3", name: "1/2 oz Gold American Eagle", category: "gold", buyPrice: goldSpot * 0.525, sellPrice: goldSpot * 0.51, change: prices?.gold.change ? prices.gold.change * 0.5 : 0, mint: "US Mint", weight: "1/2 oz" },
+    { id: "4", name: "1/4 oz Gold American Eagle", category: "gold", buyPrice: goldSpot * 0.265, sellPrice: goldSpot * 0.255, change: prices?.gold.change ? prices.gold.change * 0.25 : 0, mint: "US Mint", weight: "1/4 oz" },
+    { id: "5", name: "1/10 oz Gold American Eagle", category: "gold", buyPrice: goldSpot * 0.108, sellPrice: goldSpot * 0.103, change: prices?.gold.change ? prices.gold.change * 0.1 : 0, mint: "US Mint", weight: "1/10 oz" },
+    { id: "6", name: "1 oz Gold Krugerrand", category: "gold", buyPrice: goldSpot * 1.03, sellPrice: goldSpot * 1.0, change: prices?.gold.change || 0, mint: "South African Mint", weight: "1 oz" },
     
     // Silver Products  
-    { id: "7", name: "1 oz Silver American Eagle", category: "silver", buyPrice: 48.75, sellPrice: 46.20, change: -0.85, mint: "US Mint", weight: "1 oz" },
-    { id: "8", name: "1 oz Silver Canadian Maple Leaf", category: "silver", buyPrice: 47.90, sellPrice: 45.40, change: -0.95, mint: "Royal Canadian Mint", weight: "1 oz" },
-    { id: "9", name: "10 oz Silver Bar PAMP Suisse", category: "silver", buyPrice: 487.50, sellPrice: 462.00, change: -8.50, mint: "PAMP Suisse", weight: "10 oz" },
-    { id: "10", name: "100 oz Silver Bar", category: "silver", buyPrice: 4850.00, sellPrice: 4610.00, change: -85.00, mint: "Generic", weight: "100 oz" },
+    { id: "7", name: "1 oz Silver American Eagle", category: "silver", buyPrice: silverSpot * 1.06, sellPrice: silverSpot * 1.0, change: prices?.silver.change || 0, mint: "US Mint", weight: "1 oz" },
+    { id: "8", name: "1 oz Silver Canadian Maple Leaf", category: "silver", buyPrice: silverSpot * 1.04, sellPrice: silverSpot * 0.98, change: prices?.silver.change || 0, mint: "Royal Canadian Mint", weight: "1 oz" },
+    { id: "9", name: "10 oz Silver Bar PAMP Suisse", category: "silver", buyPrice: silverSpot * 10.5, sellPrice: silverSpot * 9.9, change: prices?.silver.change ? prices.silver.change * 10 : 0, mint: "PAMP Suisse", weight: "10 oz" },
+    { id: "10", name: "100 oz Silver Bar", category: "silver", buyPrice: silverSpot * 104, sellPrice: silverSpot * 98, change: prices?.silver.change ? prices.silver.change * 100 : 0, mint: "Generic", weight: "100 oz" },
     
     // Platinum Products
-    { id: "11", name: "1 oz Platinum American Eagle", category: "platinum", buyPrice: 1650.00, sellPrice: 1598.50, change: 12.50, mint: "US Mint", weight: "1 oz" },
-    { id: "12", name: "1 oz Platinum Canadian Maple Leaf", category: "platinum", buyPrice: 1645.75, sellPrice: 1594.30, change: 11.80, mint: "Royal Canadian Mint", weight: "1 oz" },
+    { id: "11", name: "1 oz Platinum American Eagle", category: "platinum", buyPrice: platinumSpot * 1.03, sellPrice: platinumSpot * 0.99, change: prices?.platinum.change || 0, mint: "US Mint", weight: "1 oz" },
+    { id: "12", name: "1 oz Platinum Canadian Maple Leaf", category: "platinum", buyPrice: platinumSpot * 1.025, sellPrice: platinumSpot * 0.985, change: prices?.platinum.change || 0, mint: "Royal Canadian Mint", weight: "1 oz" },
     
     // Palladium Products
-    { id: "13", name: "1 oz Palladium Canadian Maple Leaf", category: "palladium", buyPrice: 2245.80, sellPrice: 2178.90, change: -18.70, mint: "Royal Canadian Mint", weight: "1 oz" },
+    { id: "13", name: "1 oz Palladium Canadian Maple Leaf", category: "palladium", buyPrice: palladiumSpot * 1.04, sellPrice: palladiumSpot * 0.98, change: prices?.palladium.change || 0, mint: "Royal Canadian Mint", weight: "1 oz" },
   ];
 
   const filteredPrices = priceData.filter(item => {
@@ -52,7 +61,8 @@ const Prices = () => {
     });
   };
 
-  const refreshPrices = () => {
+  const refreshPrices = async () => {
+    await refetch();
     toast({
       title: "Prices Updated",
       description: "All prices have been refreshed with the latest market data.",
@@ -70,8 +80,8 @@ const Prices = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
-            <Button variant="outline" onClick={refreshPrices} size="sm" className="w-full sm:w-auto">
-              <RefreshCw className="w-4 h-4 mr-2" />
+            <Button variant="outline" onClick={refreshPrices} size="sm" className="w-full sm:w-auto" disabled={loading}>
+              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
             <Button variant="gold" onClick={downloadPriceList} size="sm" className="w-full sm:w-auto">
@@ -84,50 +94,79 @@ const Prices = () => {
 
         {/* Market Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Gold Spot</p>
-                  <p className="text-xl font-bold text-gold">$2,089.50</p>
-                </div>
-                <TrendingUp className="w-6 h-6 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Silver Spot</p>
-                  <p className="text-xl font-bold text-gray-400">$48.75</p>
-                </div>
-                <TrendingDown className="w-6 h-6 text-red-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Platinum Spot</p>
-                  <p className="text-xl font-bold text-slate-300">$1,650.00</p>
-                </div>
-                <TrendingUp className="w-6 h-6 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Palladium Spot</p>
-                  <p className="text-xl font-bold text-blue-400">$2,245.80</p>
-                </div>
-                <TrendingDown className="w-6 h-6 text-red-600" />
-              </div>
-            </CardContent>
-          </Card>
+          {loading ? (
+            Array(4).fill(0).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-4">
+                  <Skeleton className="h-4 w-20 mb-2" />
+                  <Skeleton className="h-6 w-28" />
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Gold Spot</p>
+                      <p className="text-xl font-bold text-gold">${formatCurrency(goldSpot)}</p>
+                    </div>
+                    {prices && prices.gold.change >= 0 ? (
+                      <TrendingUp className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-6 h-6 text-red-600" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Silver Spot</p>
+                      <p className="text-xl font-bold text-gray-400">${formatCurrency(silverSpot)}</p>
+                    </div>
+                    {prices && prices.silver.change >= 0 ? (
+                      <TrendingUp className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-6 h-6 text-red-600" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Platinum Spot</p>
+                      <p className="text-xl font-bold text-slate-300">${formatCurrency(platinumSpot)}</p>
+                    </div>
+                    {prices && prices.platinum.change >= 0 ? (
+                      <TrendingUp className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-6 h-6 text-red-600" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Palladium Spot</p>
+                      <p className="text-xl font-bold text-blue-400">${formatCurrency(palladiumSpot)}</p>
+                    </div>
+                    {prices && prices.palladium.change >= 0 ? (
+                      <TrendingUp className="w-6 h-6 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-6 h-6 text-red-600" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* Filters */}

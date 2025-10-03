@@ -18,34 +18,46 @@ serve(async (req) => {
       throw new Error('TWELVE_DATA_API_KEY not configured');
     }
 
-    // Fetch prices for all metals
+    // Fetch prices for all metals with error handling
     const symbols = ['XAU/USD', 'XAG/USD', 'XPT/USD', 'XPD/USD'];
     const prices = await Promise.all(
       symbols.map(async (symbol) => {
-        const response = await fetch(
-          `https://api.twelvedata.com/price?symbol=${symbol}&apikey=${apiKey}`
-        );
-        const data = await response.json();
-        return { symbol, ...data };
+        try {
+          const response = await fetch(
+            `https://api.twelvedata.com/price?symbol=${symbol}&apikey=${apiKey}`
+          );
+          const data = await response.json();
+          
+          // Check if we got valid data
+          if (data.price && !isNaN(parseFloat(data.price))) {
+            return { symbol, price: parseFloat(data.price) };
+          }
+          
+          // Return null if invalid
+          return { symbol, price: null };
+        } catch (error) {
+          console.error(`Error fetching ${symbol}:`, error);
+          return { symbol, price: null };
+        }
       })
     );
 
-    // Transform data for the frontend
+    // Transform data for the frontend with fallbacks
     const priceData = {
       gold: {
-        price: parseFloat(prices[0].price),
-        change: 0, // Twelve Data free tier doesn't provide change data
+        price: prices[0].price || 3800,
+        change: 0,
       },
       silver: {
-        price: parseFloat(prices[1].price),
+        price: prices[1].price || 46,
         change: 0,
       },
       platinum: {
-        price: parseFloat(prices[2].price),
+        price: prices[2].price || 1600,
         change: 0,
       },
       palladium: {
-        price: parseFloat(prices[3].price),
+        price: prices[3].price || 1300,
         change: 0,
       },
     };
