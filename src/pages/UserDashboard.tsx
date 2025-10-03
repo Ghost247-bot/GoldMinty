@@ -2516,145 +2516,12 @@ export default function UserDashboard() {
                           </Dialog>
 
                           <Dialog open={withdrawalDialogOpen} onOpenChange={setWithdrawalDialogOpen}>
-                            <DialogTrigger asChild>
-                              <Button className="w-full justify-start" variant="outline">
-                                <Minus className="h-4 w-4 mr-2" />
-                                Request Withdrawal
-                              </Button>
-                            </DialogTrigger>
                             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                               <DialogHeader>
                                 <DialogTitle>Request Metal Withdrawal</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4">
-                                <div className="grid grid-cols-3 gap-2 p-3 bg-muted rounded-lg text-sm">
-                                  <div>
-                                    <p className="text-muted-foreground">Gold</p>
-                                    <p className="font-semibold">{formatOz(totalGoldHoldings)} oz</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-muted-foreground">Silver</p>
-                                    <p className="font-semibold">{formatOz(totalSilverHoldings)} oz</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-muted-foreground">Platinum</p>
-                                    <p className="font-semibold">{formatOz(totalPlatinumHoldings)} oz</p>
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <Label htmlFor="withdrawal-type">Withdrawal Type</Label>
-                                  <Select 
-                                    value={withdrawalForm.withdrawalType} 
-                                    onValueChange={(value) => setWithdrawalForm({...withdrawalForm, withdrawalType: value})}
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="cash">Cash (Sell metals and receive USD)</SelectItem>
-                                      <SelectItem value="physical">Physical Shipment (Ship metals to address)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label htmlFor="metal-type">Metal Type</Label>
-                                    <Select 
-                                      value={withdrawalForm.metalType} 
-                                      onValueChange={(value) => setWithdrawalForm({...withdrawalForm, metalType: value})}
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="gold">Gold</SelectItem>
-                                        <SelectItem value="silver">Silver</SelectItem>
-                                        <SelectItem value="platinum">Platinum</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div>
-                                    <Label htmlFor="amount-oz">Amount (oz)</Label>
-                                    <Input
-                                      id="amount-oz"
-                                      type="number"
-                                      step="0.01"
-                                      placeholder="0.00"
-                                      value={withdrawalForm.amountOz}
-                                      onChange={(e) => setWithdrawalForm({...withdrawalForm, amountOz: e.target.value})}
-                                    />
-                                  </div>
-                                </div>
-
-                                {withdrawalForm.withdrawalType === 'physical' && (
-                                  <>
-                                    <Separator />
-                                    <div className="space-y-4">
-                                      <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                                        <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                        <p className="text-sm text-blue-900 dark:text-blue-100">
-                                          Shipping via <strong>freightease.online</strong> - You'll receive tracking information once processed
-                                        </p>
-                                      </div>
-                                      
-                                      <h4 className="font-semibold">Shipping Address</h4>
-                                      
-                                      <div>
-                                        <Label htmlFor="shipping-address">Street Address</Label>
-                                        <Input
-                                          id="shipping-address"
-                                          placeholder="123 Main Street"
-                                          value={withdrawalForm.shippingAddress}
-                                          onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingAddress: e.target.value})}
-                                        />
-                                      </div>
-
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                          <Label htmlFor="shipping-city">City</Label>
-                                          <Input
-                                            id="shipping-city"
-                                            placeholder="New York"
-                                            value={withdrawalForm.shippingCity}
-                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingCity: e.target.value})}
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label htmlFor="shipping-state">State</Label>
-                                          <Input
-                                            id="shipping-state"
-                                            placeholder="NY"
-                                            value={withdrawalForm.shippingState}
-                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingState: e.target.value})}
-                                          />
-                                        </div>
-                                      </div>
-
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                          <Label htmlFor="shipping-zip">ZIP Code</Label>
-                                          <Input
-                                            id="shipping-zip"
-                                            placeholder="10001"
-                                            value={withdrawalForm.shippingZip}
-                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingZip: e.target.value})}
-                                          />
-                                        </div>
-                                        <div>
-                                          <Label htmlFor="shipping-country">Country</Label>
-                                          <Input
-                                            id="shipping-country"
-                                            value={withdrawalForm.shippingCountry}
-                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingCountry: e.target.value})}
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-
+...
                                 <div className="flex gap-2">
                                   <Button variant="outline" onClick={() => setWithdrawalDialogOpen(false)} className="flex-1">
                                     Cancel
@@ -3053,6 +2920,153 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Withdrawal Dialog - Available from any tab */}
+        <Dialog open={withdrawalDialogOpen} onOpenChange={setWithdrawalDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Request Metal Withdrawal</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-2 p-3 bg-muted rounded-lg text-sm">
+                <div>
+                  <p className="text-muted-foreground">Gold</p>
+                  <p className="font-semibold">{formatOz(totalGoldHoldings)} oz</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Silver</p>
+                  <p className="font-semibold">{formatOz(totalSilverHoldings)} oz</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Platinum</p>
+                  <p className="font-semibold">{formatOz(totalPlatinumHoldings)} oz</p>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="withdrawal-type">Withdrawal Type</Label>
+                <Select 
+                  value={withdrawalForm.withdrawalType} 
+                  onValueChange={(value) => setWithdrawalForm({...withdrawalForm, withdrawalType: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">Cash (Sell metals and receive USD)</SelectItem>
+                    <SelectItem value="physical">Physical Shipment (Ship metals to address)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="metal-type">Metal Type</Label>
+                  <Select 
+                    value={withdrawalForm.metalType} 
+                    onValueChange={(value) => setWithdrawalForm({...withdrawalForm, metalType: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gold">Gold</SelectItem>
+                      <SelectItem value="silver">Silver</SelectItem>
+                      <SelectItem value="platinum">Platinum</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="amount-oz">Amount (oz)</Label>
+                  <Input
+                    id="amount-oz"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={withdrawalForm.amountOz}
+                    onChange={(e) => setWithdrawalForm({...withdrawalForm, amountOz: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              {withdrawalForm.withdrawalType === 'physical' && (
+                <>
+                  <Separator />
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <p className="text-sm text-blue-900 dark:text-blue-100">
+                        Shipping via <strong>freightease.online</strong> - You'll receive tracking information once processed
+                      </p>
+                    </div>
+                    
+                    <h4 className="font-semibold">Shipping Address</h4>
+                    
+                    <div>
+                      <Label htmlFor="shipping-address">Street Address</Label>
+                      <Input
+                        id="shipping-address"
+                        placeholder="123 Main Street"
+                        value={withdrawalForm.shippingAddress}
+                        onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingAddress: e.target.value})}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="shipping-city">City</Label>
+                        <Input
+                          id="shipping-city"
+                          placeholder="New York"
+                          value={withdrawalForm.shippingCity}
+                          onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingCity: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="shipping-state">State</Label>
+                        <Input
+                          id="shipping-state"
+                          placeholder="NY"
+                          value={withdrawalForm.shippingState}
+                          onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingState: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="shipping-zip">ZIP Code</Label>
+                        <Input
+                          id="shipping-zip"
+                          placeholder="10001"
+                          value={withdrawalForm.shippingZip}
+                          onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingZip: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="shipping-country">Country</Label>
+                        <Input
+                          id="shipping-country"
+                          value={withdrawalForm.shippingCountry}
+                          onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingCountry: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setWithdrawalDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleWithdrawalRequest} className="flex-1">
+                  Submit Request
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div className="mt-8">
           <Card>
