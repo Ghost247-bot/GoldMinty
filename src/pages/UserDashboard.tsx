@@ -802,97 +802,84 @@ export default function UserDashboard() {
       <main className="container mx-auto px-4 py-8">
         {/* User Banners */}
         {userBanners.length > 0 && (
-          <div className="space-y-6 mb-8">
+          <div className="space-y-4 mb-8">
             {userBanners.map((banner) => {
               const isExpanded = expandedBanners.has(banner.id);
               return (
                 <div
                   key={banner.id}
-                  className={`relative overflow-hidden rounded-xl border shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${
+                  className={`relative overflow-hidden rounded-lg border backdrop-blur-sm transition-all duration-300 hover:shadow-md cursor-pointer ${
                     banner.banner_type === 'error'
-                      ? 'bg-gradient-to-r from-destructive/10 via-destructive/5 to-background border-destructive/20'
+                      ? 'bg-destructive/5 border-destructive/30 hover:border-destructive/50'
                       : banner.banner_type === 'warning'
-                      ? 'bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-background border-amber-500/20'
+                      ? 'bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50'
                       : banner.banner_type === 'success'
-                      ? 'bg-gradient-to-r from-success/10 via-success/5 to-background border-success/20'
-                      : 'bg-gradient-to-r from-primary/10 via-primary/5 to-background border-primary/20'
+                      ? 'bg-success/5 border-success/30 hover:border-success/50'
+                      : 'bg-primary/5 border-primary/30 hover:border-primary/50'
                   }`}
                   onClick={() => toggleBannerExpansion(banner.id)}
                 >
-                  <div
-                    className={`absolute left-0 top-0 bottom-0 w-1 ${
-                      banner.banner_type === 'error'
-                        ? 'bg-gradient-to-b from-destructive to-destructive/70'
-                        : banner.banner_type === 'warning'
-                        ? 'bg-gradient-to-b from-amber-500 to-amber-600'
-                        : banner.banner_type === 'success'
-                        ? 'bg-gradient-to-b from-success to-success/70'
-                        : 'bg-gradient-to-b from-primary to-gold'
-                    }`}
-                  />
-                  <div className="p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`p-2 rounded-lg ${
-                              banner.banner_type === 'error'
-                                ? 'bg-destructive/20 text-destructive'
-                                : banner.banner_type === 'warning'
-                                ? 'bg-amber-500/20 text-amber-600'
-                                : banner.banner_type === 'success'
-                                ? 'bg-success/20 text-success'
-                                : 'bg-primary/20 text-primary'
-                            }`}
-                          >
-                            {banner.banner_type === 'error' ? (
-                              <AlertTriangle className="h-5 w-5" />
-                            ) : banner.banner_type === 'warning' ? (
-                              <AlertCircle className="h-5 w-5" />
-                            ) : banner.banner_type === 'success' ? (
-                              <Award className="h-5 w-5" />
-                            ) : (
-                              <Lightbulb className="h-5 w-5" />
-                            )}
-                          </div>
-                          <h3 className="font-display font-bold text-xl text-foreground">
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-start gap-3 sm:gap-4">
+                      <div
+                        className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                          banner.banner_type === 'error'
+                            ? 'bg-destructive/10 text-destructive'
+                            : banner.banner_type === 'warning'
+                            ? 'bg-amber-500/10 text-amber-600'
+                            : banner.banner_type === 'success'
+                            ? 'bg-success/10 text-success'
+                            : 'bg-primary/10 text-primary'
+                        }`}
+                      >
+                        {banner.banner_type === 'error' ? (
+                          <AlertTriangle className="h-5 w-5" />
+                        ) : banner.banner_type === 'warning' ? (
+                          <AlertCircle className="h-5 w-5" />
+                        ) : banner.banner_type === 'success' ? (
+                          <Award className="h-5 w-5" />
+                        ) : (
+                          <Lightbulb className="h-5 w-5" />
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-base sm:text-lg text-foreground line-clamp-2">
                             {banner.title}
                           </h3>
+                          <div
+                            className={`flex-shrink-0 transition-transform duration-300 ${
+                              isExpanded ? 'rotate-180' : ''
+                            } ${
+                              banner.banner_type === 'error'
+                                ? 'text-destructive'
+                                : banner.banner_type === 'warning'
+                                ? 'text-amber-600'
+                                : banner.banner_type === 'success'
+                                ? 'text-success'
+                                : 'text-primary'
+                            }`}
+                          >
+                            <ChevronDown className="h-5 w-5" />
+                          </div>
                         </div>
                         
                         {isExpanded && (
-                          <div className="space-y-3 mt-4 pl-11 animate-fade-in">
-                            <p className="text-muted-foreground leading-relaxed">
+                          <div className="space-y-3 mt-3 animate-fade-in">
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                               {banner.message}
                             </p>
                             {banner.expires_at && (
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground">
-                                  Expires: {new Date(banner.expires_at).toLocaleDateString()}
+                              <div className="flex items-center gap-2 pt-2 border-t">
+                                <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <p className="text-xs text-muted-foreground">
+                                  Expires {new Date(banner.expires_at).toLocaleDateString()}
                                 </p>
                               </div>
                             )}
                           </div>
                         )}
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`p-1 rounded transition-transform duration-300 ${
-                            isExpanded ? 'rotate-180' : ''
-                          } ${
-                            banner.banner_type === 'error'
-                              ? 'text-destructive'
-                              : banner.banner_type === 'warning'
-                              ? 'text-amber-600'
-                              : banner.banner_type === 'success'
-                              ? 'text-success'
-                              : 'text-primary'
-                          }`}
-                        >
-                          <ChevronDown className="h-5 w-5" />
-                        </div>
                       </div>
                     </div>
                   </div>
