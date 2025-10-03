@@ -86,6 +86,10 @@ export default function UserDashboard() {
   const [calculatorDialogOpen, setCalculatorDialogOpen] = useState(false);
   const [riskDialogOpen, setRiskDialogOpen] = useState(false);
   const [recommendationsDialogOpen, setRecommendationsDialogOpen] = useState(false);
+  const [priceAlertsDialogOpen, setPriceAlertsDialogOpen] = useState(false);
+  const [watchlistDialogOpen, setWatchlistDialogOpen] = useState(false);
+  const [guidesDialogOpen, setGuidesDialogOpen] = useState(false);
+  const [marketAnalysisDialogOpen, setMarketAnalysisDialogOpen] = useState(false);
   
   // Form states
   const [depositForm, setDepositForm] = useState({
@@ -134,6 +138,15 @@ export default function UserDashboard() {
     targetPlatinum: '15',
     rebalanceThreshold: '5'
   });
+  const [priceAlerts, setPriceAlerts] = useState({
+    goldPrice: '',
+    silverPrice: '',
+    platinumPrice: '',
+    emailAlerts: true,
+    pushNotifications: true
+  });
+  const [wishlistItems, setWishlistItems] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -142,6 +155,9 @@ export default function UserDashboard() {
       fetchUserBanners();
       fetchTransactions(1);
       checkAdminRole();
+      fetchUserToolSettings();
+      fetchWishlist();
+      fetchProducts();
     }
   }, [user]);
 
@@ -264,6 +280,51 @@ export default function UserDashboard() {
     
     if (data) {
       setTransactions(data);
+    }
+  };
+
+  const fetchUserToolSettings = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('user_tool_settings')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    
+    if (data) {
+      setPriceAlerts({
+        goldPrice: data.gold_price_alert?.toString() || '',
+        silverPrice: data.silver_price_alert?.toString() || '',
+        platinumPrice: data.platinum_price_alert?.toString() || '',
+        emailAlerts: data.email_alerts_enabled ?? true,
+        pushNotifications: data.push_notifications_enabled ?? true
+      });
+    }
+  };
+
+  const fetchWishlist = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('wishlist')
+      .select('*, products(*)')
+      .eq('user_id', user.id);
+    
+    if (data) {
+      setWishlistItems(data);
+    }
+  };
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true)
+      .limit(20);
+    
+    if (data) {
+      setProducts(data);
     }
   };
 
@@ -497,6 +558,88 @@ export default function UserDashboard() {
       action: "Consult Advisor"
     }
   ];
+
+  const handleSavePriceAlerts = async () => {
+    if (!user) return;
+
+    const { data: existing } = await supabase
+      .from('user_tool_settings')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    let error;
+    if (existing) {
+      ({ error } = await supabase
+        .from('user_tool_settings')
+        .update({
+          gold_price_alert: priceAlerts.goldPrice ? parseFloat(priceAlerts.goldPrice) : null,
+          silver_price_alert: priceAlerts.silverPrice ? parseFloat(priceAlerts.silverPrice) : null,
+          platinum_price_alert: priceAlerts.platinumPrice ? parseFloat(priceAlerts.platinumPrice) : null,
+          email_alerts_enabled: priceAlerts.emailAlerts,
+          push_notifications_enabled: priceAlerts.pushNotifications,
+        })
+        .eq('id', existing.id));
+    } else {
+      ({ error } = await supabase
+        .from('user_tool_settings')
+        .insert({
+          user_id: user.id,
+          gold_price_alert: priceAlerts.goldPrice ? parseFloat(priceAlerts.goldPrice) : null,
+          silver_price_alert: priceAlerts.silverPrice ? parseFloat(priceAlerts.silverPrice) : null,
+          platinum_price_alert: priceAlerts.platinumPrice ? parseFloat(priceAlerts.platinumPrice) : null,
+          email_alerts_enabled: priceAlerts.emailAlerts,
+          push_notifications_enabled: priceAlerts.pushNotifications,
+          created_by: user.id,
+        }));
+    }
+
+    if (error) {
+      toast({ title: "Error", description: "Failed to save price alerts", variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Success", description: "Price alerts saved successfully" });
+    setPriceAlertsDialogOpen(false);
+  };
+
+  const handleRemoveFromWishlist = async (wishlistId: string) => {
+    const { error } = await supabase
+      .from('wishlist')
+      .delete()
+      .eq('id', wishlistId);
+
+    if (error) {
+      toast({ title: "Error", description: "Failed to remove item from wishlist", variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Success", description: "Item removed from wishlist" });
+    fetchWishlist();
+  };
+
+  const handleAddToWishlist = async (productId: string) => {
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('wishlist')
+      .insert({
+        user_id: user.id,
+        product_id: productId,
+      });
+
+    if (error) {
+      if (error.code === '23505') {
+        toast({ title: "Info", description: "Item already in wishlist", variant: "default" });
+      } else {
+        toast({ title: "Error", description: "Failed to add item to wishlist", variant: "destructive" });
+      }
+      return;
+    }
+
+    toast({ title: "Success", description: "Item added to wishlist" });
+    fetchWishlist();
+  };
 
   const toggleBannerExpansion = (bannerId: string) => {
     setExpandedBanners(prev => {
@@ -1489,14 +1632,175 @@ export default function UserDashboard() {
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
-                            <Button variant="outline" className="w-full justify-start">
-                              <Bell className="h-4 w-4 mr-2" />
-                              Set Price Alerts
-                            </Button>
-                            <Button variant="outline" className="w-full justify-start">
-                              <Eye className="h-4 w-4 mr-2" />
-                              Manage Watchlist
-                            </Button>
+                            <Dialog open={priceAlertsDialogOpen} onOpenChange={setPriceAlertsDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start">
+                                  <Bell className="h-4 w-4 mr-2" />
+                                  Set Price Alerts
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Set Price Alerts</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div>
+                                    <Label>Gold Price Alert ($/oz)</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g., 2500"
+                                      value={priceAlerts.goldPrice}
+                                      onChange={(e) => setPriceAlerts({...priceAlerts, goldPrice: e.target.value})}
+                                    />
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Get notified when gold reaches this price
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <Label>Silver Price Alert ($/oz)</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g., 32"
+                                      value={priceAlerts.silverPrice}
+                                      onChange={(e) => setPriceAlerts({...priceAlerts, silverPrice: e.target.value})}
+                                    />
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Get notified when silver reaches this price
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <Label>Platinum Price Alert ($/oz)</Label>
+                                    <Input
+                                      type="number"
+                                      placeholder="e.g., 1000"
+                                      value={priceAlerts.platinumPrice}
+                                      onChange={(e) => setPriceAlerts({...priceAlerts, platinumPrice: e.target.value})}
+                                    />
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Get notified when platinum reaches this price
+                                    </p>
+                                  </div>
+                                  <Separator />
+                                  <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <Label>Email Alerts</Label>
+                                      <Switch
+                                        checked={priceAlerts.emailAlerts}
+                                        onCheckedChange={(checked) => setPriceAlerts({...priceAlerts, emailAlerts: checked})}
+                                      />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <Label>Push Notifications</Label>
+                                      <Switch
+                                        checked={priceAlerts.pushNotifications}
+                                        onCheckedChange={(checked) => setPriceAlerts({...priceAlerts, pushNotifications: checked})}
+                                      />
+                                    </div>
+                                  </div>
+                                  <Button onClick={handleSavePriceAlerts} className="w-full">
+                                    Save Price Alerts
+                                  </Button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={watchlistDialogOpen} onOpenChange={setWatchlistDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start">
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  Manage Watchlist
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Manage Watchlist</DialogTitle>
+                                </DialogHeader>
+                                <Tabs defaultValue="watchlist" className="w-full">
+                                  <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="watchlist">My Watchlist ({wishlistItems.length})</TabsTrigger>
+                                    <TabsTrigger value="products">Add Products</TabsTrigger>
+                                  </TabsList>
+                                  
+                                  <TabsContent value="watchlist" className="space-y-4 mt-4">
+                                    {wishlistItems.length === 0 ? (
+                                      <div className="text-center py-8">
+                                        <Eye className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                        <h3 className="text-lg font-medium text-muted-foreground">Your watchlist is empty</h3>
+                                        <p className="text-sm text-muted-foreground">Add products to track them here</p>
+                                      </div>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        {wishlistItems.map((item) => (
+                                          <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                            <div className="flex items-center gap-4">
+                                              {item.products?.image_url && (
+                                                <img 
+                                                  src={item.products.image_url} 
+                                                  alt={item.products.name}
+                                                  className="w-16 h-16 object-cover rounded"
+                                                />
+                                              )}
+                                              <div>
+                                                <h4 className="font-semibold">{item.products?.name}</h4>
+                                                <p className="text-sm text-muted-foreground">
+                                                  ${formatCurrency(item.products?.price_usd || 0)}
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => handleRemoveFromWishlist(item.id)}
+                                            >
+                                              <X className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </TabsContent>
+                                  
+                                  <TabsContent value="products" className="space-y-4 mt-4">
+                                    {products.length === 0 ? (
+                                      <div className="text-center py-8">
+                                        <p className="text-muted-foreground">No products available</p>
+                                      </div>
+                                    ) : (
+                                      <div className="grid gap-4 md:grid-cols-2">
+                                        {products.map((product) => {
+                                          const inWishlist = wishlistItems.some(item => item.product_id === product.id);
+                                          return (
+                                            <div key={product.id} className="border rounded-lg p-4">
+                                              {product.image_url && (
+                                                <img 
+                                                  src={product.image_url} 
+                                                  alt={product.name}
+                                                  className="w-full h-32 object-cover rounded mb-3"
+                                                />
+                                              )}
+                                              <h4 className="font-semibold mb-1">{product.name}</h4>
+                                              <p className="text-sm text-muted-foreground mb-2">
+                                                ${formatCurrency(product.price_usd)}
+                                              </p>
+                                              <Button
+                                                size="sm"
+                                                variant={inWishlist ? "secondary" : "outline"}
+                                                className="w-full"
+                                                onClick={() => inWishlist ? null : handleAddToWishlist(product.id)}
+                                                disabled={inWishlist}
+                                              >
+                                                {inWishlist ? "In Watchlist" : "Add to Watchlist"}
+                                              </Button>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </TabsContent>
+                                </Tabs>
+                              </DialogContent>
+                            </Dialog>
+                            
                             <div className="p-3 bg-muted rounded-lg">
                               <p className="text-sm">Get notified when precious metals hit your target prices.</p>
                             </div>
@@ -1513,14 +1817,242 @@ export default function UserDashboard() {
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
-                            <Button variant="outline" className="w-full justify-start">
-                              <BookOpen className="h-4 w-4 mr-2" />
-                              Investment Guides
-                            </Button>
-                            <Button variant="outline" className="w-full justify-start">
-                              <TrendingUp className="h-4 w-4 mr-2" />
-                              Market Analysis
-                            </Button>
+                            <Dialog open={guidesDialogOpen} onOpenChange={setGuidesDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start">
+                                  <BookOpen className="h-4 w-4 mr-2" />
+                                  Investment Guides
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Investment Guides</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-6">
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Getting Started with Gold Investment</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                      <p className="text-sm text-muted-foreground">
+                                        Gold has been a store of value for thousands of years. Learn the fundamentals of investing in physical gold.
+                                      </p>
+                                      <div className="space-y-2">
+                                        <h4 className="font-semibold text-sm">Key Points:</h4>
+                                        <ul className="list-disc list-inside text-sm space-y-1">
+                                          <li>Gold serves as a hedge against inflation</li>
+                                          <li>Physical gold provides portfolio diversification</li>
+                                          <li>Consider purity levels (24K, 22K, etc.)</li>
+                                          <li>Storage and insurance are important factors</li>
+                                        </ul>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Silver Investment Strategies</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                      <p className="text-sm text-muted-foreground">
+                                        Silver offers both industrial demand and investment value. Discover why silver is often called "poor man's gold".
+                                      </p>
+                                      <div className="space-y-2">
+                                        <h4 className="font-semibold text-sm">Key Points:</h4>
+                                        <ul className="list-disc list-inside text-sm space-y-1">
+                                          <li>Higher volatility than gold presents opportunities</li>
+                                          <li>Strong industrial demand from technology sector</li>
+                                          <li>Lower entry price point for new investors</li>
+                                          <li>Gold-to-silver ratio can signal market opportunities</li>
+                                        </ul>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Platinum Group Metals</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                      <p className="text-sm text-muted-foreground">
+                                        Platinum is rarer than gold and has unique industrial applications. Learn about this premium precious metal.
+                                      </p>
+                                      <div className="space-y-2">
+                                        <h4 className="font-semibold text-sm">Key Points:</h4>
+                                        <ul className="list-disc list-inside text-sm space-y-1">
+                                          <li>Rarer than gold with limited supply</li>
+                                          <li>Critical for automotive catalytic converters</li>
+                                          <li>Price correlates with industrial production</li>
+                                          <li>Potential for significant price appreciation</li>
+                                        </ul>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Portfolio Allocation Best Practices</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                      <p className="text-sm text-muted-foreground">
+                                        Proper allocation is key to managing risk and optimizing returns in precious metals investing.
+                                      </p>
+                                      <div className="space-y-2">
+                                        <h4 className="font-semibold text-sm">Recommended Allocations:</h4>
+                                        <ul className="list-disc list-inside text-sm space-y-1">
+                                          <li>Conservative: 5-10% of total portfolio</li>
+                                          <li>Moderate: 10-20% of total portfolio</li>
+                                          <li>Aggressive: 20-30% of total portfolio</li>
+                                          <li>Rebalance quarterly to maintain targets</li>
+                                        </ul>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={marketAnalysisDialogOpen} onOpenChange={setMarketAnalysisDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start">
+                                  <TrendingUp className="h-4 w-4 mr-2" />
+                                  Market Analysis
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle>Market Analysis & Trends</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-6">
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg flex items-center gap-2">
+                                        <TrendingUp className="h-5 w-5 text-green-600" />
+                                        Current Market Overview
+                                      </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                      <div className="grid gap-4 md:grid-cols-3">
+                                        <div className="p-4 bg-muted rounded-lg">
+                                          <div className="text-sm text-muted-foreground mb-1">Gold (XAU/USD)</div>
+                                          <div className="text-2xl font-bold">$2,456.80</div>
+                                          <div className="text-sm text-green-600">+2.3% (1M)</div>
+                                        </div>
+                                        <div className="p-4 bg-muted rounded-lg">
+                                          <div className="text-sm text-muted-foreground mb-1">Silver (XAG/USD)</div>
+                                          <div className="text-2xl font-bold">$31.24</div>
+                                          <div className="text-sm text-red-600">-0.8% (1M)</div>
+                                        </div>
+                                        <div className="p-4 bg-muted rounded-lg">
+                                          <div className="text-sm text-muted-foreground mb-1">Platinum (XPT/USD)</div>
+                                          <div className="text-2xl font-bold">$952.10</div>
+                                          <div className="text-sm text-green-600">+1.5% (1M)</div>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Market Drivers</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                      <div className="space-y-3">
+                                        <div className="flex gap-3">
+                                          <Badge variant="default">Monetary Policy</Badge>
+                                          <p className="text-sm">
+                                            Central bank decisions and interest rate changes significantly impact precious metals prices.
+                                          </p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                          <Badge variant="default">Inflation</Badge>
+                                          <p className="text-sm">
+                                            Gold historically performs well during periods of high inflation as a store of value.
+                                          </p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                          <Badge variant="default">Geopolitical Risk</Badge>
+                                          <p className="text-sm">
+                                            Global uncertainty drives demand for safe-haven assets like gold and silver.
+                                          </p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                          <Badge variant="default">Dollar Strength</Badge>
+                                          <p className="text-sm">
+                                            Precious metals typically have an inverse relationship with the US dollar.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Technical Indicators</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                      <div className="space-y-4">
+                                        <div>
+                                          <div className="flex justify-between mb-2">
+                                            <span className="text-sm font-medium">Gold Support/Resistance</span>
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-2 text-sm">
+                                            <div className="p-2 bg-red-50 dark:bg-red-950 rounded">
+                                              <div className="text-muted-foreground">Support: $2,420</div>
+                                            </div>
+                                            <div className="p-2 bg-green-50 dark:bg-green-950 rounded">
+                                              <div className="text-muted-foreground">Resistance: $2,480</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <div className="flex justify-between mb-2">
+                                            <span className="text-sm font-medium">Silver Support/Resistance</span>
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-2 text-sm">
+                                            <div className="p-2 bg-red-50 dark:bg-red-950 rounded">
+                                              <div className="text-muted-foreground">Support: $30.50</div>
+                                            </div>
+                                            <div className="p-2 bg-green-50 dark:bg-green-950 rounded">
+                                              <div className="text-muted-foreground">Resistance: $32.00</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">Analyst Outlook</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                      <div className="space-y-3 text-sm">
+                                        <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                                          <div className="font-semibold mb-1">Bullish on Gold</div>
+                                          <p className="text-muted-foreground">
+                                            70% of analysts expect gold to reach $2,600+ in Q4 2025 due to continued inflation concerns and geopolitical tensions.
+                                          </p>
+                                        </div>
+                                        <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
+                                          <div className="font-semibold mb-1">Neutral on Silver</div>
+                                          <p className="text-muted-foreground">
+                                            Mixed outlook on silver with industrial demand offsetting investment demand concerns.
+                                          </p>
+                                        </div>
+                                        <div className="p-3 bg-green-50 dark:bg-green-950 rounded-lg">
+                                          <div className="font-semibold mb-1">Bullish on Platinum</div>
+                                          <p className="text-muted-foreground">
+                                            Supply constraints and recovering auto industry point to potential upside for platinum.
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                            
                             <div className="p-3 bg-muted rounded-lg">
                               <p className="text-sm">Learn about precious metals investing and market trends.</p>
                             </div>
