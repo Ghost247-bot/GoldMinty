@@ -776,18 +776,22 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-primary">GoldMint Dashboard</h1>
-              <Badge variant="secondary">User</Badge>
+      <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl lg:text-2xl font-display font-bold text-foreground">
+                GoldMint Dashboard
+              </h1>
+              <Badge variant="secondary" className="hidden sm:inline-flex">
+                User
+              </Badge>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
-                Welcome, {profile?.full_name || user?.email}
+            <div className="flex items-center gap-3 lg:gap-4">
+              <span className="hidden md:inline-flex text-sm text-muted-foreground">
+                Welcome, {profile?.full_name || user?.email?.split('@')[0] || 'User'}
               </span>
-              <Button variant="outline" onClick={signOut}>
+              <Button variant="outline" size="sm" onClick={signOut} className="h-9">
                 Sign Out
               </Button>
             </div>
