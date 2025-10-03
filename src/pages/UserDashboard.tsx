@@ -63,6 +63,7 @@ export default function UserDashboard() {
   const [userBanners, setUserBanners] = useState<any[]>([]);
   const [expandedBanners, setExpandedBanners] = useState<Set<string>>(new Set());
   const [portfolioAllocations, setPortfolioAllocations] = useState<Map<string, any>>(new Map());
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [editAllocationDialogOpen, setEditAllocationDialogOpen] = useState(false);
   const [editingAllocation, setEditingAllocation] = useState<any>(null);
@@ -136,6 +137,7 @@ export default function UserDashboard() {
       fetchProfile();
       fetchInvestmentAccounts();
       fetchUserBanners();
+      fetchTransactions();
       checkAdminRole();
     }
   }, [user]);
@@ -224,6 +226,26 @@ export default function UserDashboard() {
     
     if (data) {
       setUserBanners(data);
+    }
+  };
+
+  const fetchTransactions = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('user_transactions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('transaction_date', { ascending: false })
+      .limit(20);
+    
+    if (error) {
+      console.error('Error fetching transactions:', error);
+      return;
+    }
+    
+    if (data) {
+      setTransactions(data);
     }
   };
 
@@ -803,51 +825,55 @@ export default function UserDashboard() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              <TableRow>
-                                <TableCell className="font-medium">Oct 15, 2024</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <ArrowUpRight className="h-4 w-4 text-green-600" />
-                                    Buy
-                                  </div>
-                                </TableCell>
-                                <TableCell>Gold</TableCell>
-                                <TableCell>2.5000 oz</TableCell>
-                                <TableCell>$2,450.00</TableCell>
-                                <TableCell>
-                                  <Badge variant="default">Completed</Badge>
-                                </TableCell>
-                              </TableRow>
-                              <TableRow>
-                                <TableCell className="font-medium">Oct 12, 2024</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <ArrowDownRight className="h-4 w-4 text-red-600" />
-                                    Sell
-                                  </div>
-                                </TableCell>
-                                <TableCell>Silver</TableCell>
-                                <TableCell>15.0000 oz</TableCell>
-                                <TableCell>$31.25</TableCell>
-                                <TableCell>
-                                  <Badge variant="default">Completed</Badge>
-                                </TableCell>
-                              </TableRow>
-                              <TableRow>
-                                <TableCell className="font-medium">Oct 10, 2024</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-yellow-600" />
-                                    Pending
-                                  </div>
-                                </TableCell>
-                                <TableCell>Platinum</TableCell>
-                                <TableCell>0.5000 oz</TableCell>
-                                <TableCell>$950.00</TableCell>
-                                <TableCell>
-                                  <Badge variant="secondary">Processing</Badge>
-                                </TableCell>
-                              </TableRow>
+                              {transactions.length === 0 ? (
+                                <TableRow>
+                                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                    No transactions found
+                                  </TableCell>
+                                </TableRow>
+                              ) : (
+                                transactions.map((transaction) => (
+                                  <TableRow key={transaction.id}>
+                                    <TableCell className="font-medium">
+                                      {new Date(transaction.transaction_date).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center gap-2">
+                                        {transaction.transaction_type === 'buy' && (
+                                          <>
+                                            <ArrowUpRight className="h-4 w-4 text-green-600" />
+                                            <span className="capitalize">Buy</span>
+                                          </>
+                                        )}
+                                        {transaction.transaction_type === 'sell' && (
+                                          <>
+                                            <ArrowDownRight className="h-4 w-4 text-red-600" />
+                                            <span className="capitalize">Sell</span>
+                                          </>
+                                        )}
+                                        {(transaction.transaction_type === 'transfer' || transaction.transaction_type === 'dividend') && (
+                                          <>
+                                            <Clock className="h-4 w-4 text-blue-600" />
+                                            <span className="capitalize">{transaction.transaction_type}</span>
+                                          </>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="capitalize">{transaction.metal_type}</TableCell>
+                                    <TableCell>{formatOz(transaction.amount)} oz</TableCell>
+                                    <TableCell>${formatCurrency(transaction.price_per_oz)}</TableCell>
+                                    <TableCell>
+                                      <Badge variant={
+                                        transaction.status === 'completed' ? 'default' : 
+                                        transaction.status === 'pending' ? 'secondary' : 
+                                        'outline'
+                                      }>
+                                        {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                                      </Badge>
+                                    </TableCell>
+                                  </TableRow>
+                                ))
+                              )}
                             </TableBody>
                           </Table>
                         </CardContent>
