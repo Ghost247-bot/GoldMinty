@@ -140,6 +140,13 @@ export default function UserDashboard() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (investmentAccounts.length > 0) {
+      const accountIds = investmentAccounts.map(acc => acc.id);
+      fetchPortfolioAllocations(accountIds);
+    }
+  }, [investmentAccounts]);
+
   const checkAdminRole = async () => {
     if (!user) return;
     
