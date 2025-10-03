@@ -98,10 +98,16 @@ export default function UserDashboard() {
     notes: ''
   });
   const [withdrawalForm, setWithdrawalForm] = useState({
-    amount: '',
-    method: 'bank_transfer',
-    notes: ''
+    withdrawalType: 'cash',
+    metalType: 'gold',
+    amountOz: '',
+    shippingAddress: '',
+    shippingCity: '',
+    shippingState: '',
+    shippingZip: '',
+    shippingCountry: 'United States'
   });
+  const [withdrawalRequests, setWithdrawalRequests] = useState<any[]>([]);
   const [supportForm, setSupportForm] = useState({
     subject: '',
     category: 'general',
@@ -158,6 +164,7 @@ export default function UserDashboard() {
       fetchUserToolSettings();
       fetchWishlist();
       fetchProducts();
+      fetchWithdrawalRequests();
     }
   }, [user]);
 
@@ -350,24 +357,104 @@ export default function UserDashboard() {
     setDepositForm({ amount: '', method: 'bank_transfer', notes: '' });
   };
 
-  const handleWithdrawalRequest = async () => {
-    if (!withdrawalForm.amount) {
-      toast({ title: "Error", description: "Please enter withdrawal amount", variant: "destructive" });
+  const fetchWithdrawalRequests = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('withdrawal_requests')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching withdrawal requests:', error);
       return;
     }
     
-    if (Number(withdrawalForm.amount) > totalBalance) {
-      toast({ title: "Error", description: "Insufficient funds for withdrawal", variant: "destructive" });
+    setWithdrawalRequests(data || []);
+  };
+
+  const handleWithdrawalRequest = async () => {
+    if (!user) return;
+    
+    if (!withdrawalForm.amountOz || Number(withdrawalForm.amountOz) <= 0) {
+      toast({ title: "Error", description: "Please enter a valid amount", variant: "destructive" });
+      return;
+    }
+
+    // Check if user has enough holdings
+    const metalHoldings = {
+      gold: totalGoldHoldings,
+      silver: totalSilverHoldings,
+      platinum: totalPlatinumHoldings
+    };
+    
+    if (Number(withdrawalForm.amountOz) > metalHoldings[withdrawalForm.metalType as keyof typeof metalHoldings]) {
+      toast({ 
+        title: "Error", 
+        description: `Insufficient ${withdrawalForm.metalType} holdings. Available: ${formatOz(metalHoldings[withdrawalForm.metalType as keyof typeof metalHoldings])} oz`,
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    // Validate shipping address if physical withdrawal
+    if (withdrawalForm.withdrawalType === 'physical') {
+      if (!withdrawalForm.shippingAddress || !withdrawalForm.shippingCity || 
+          !withdrawalForm.shippingState || !withdrawalForm.shippingZip) {
+        toast({ title: "Error", description: "Please complete all shipping address fields", variant: "destructive" });
+        return;
+      }
+    }
+
+    // Get current metal prices for estimated value
+    const metalPrices = {
+      gold: 2650,
+      silver: 31.50,
+      platinum: 990
+    };
+    const estimatedValue = Number(withdrawalForm.amountOz) * metalPrices[withdrawalForm.metalType as keyof typeof metalPrices];
+
+    const { error } = await supabase
+      .from('withdrawal_requests')
+      .insert({
+        user_id: user.id,
+        metal_type: withdrawalForm.metalType,
+        amount_oz: Number(withdrawalForm.amountOz),
+        withdrawal_type: withdrawalForm.withdrawalType,
+        shipping_address: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingAddress : null,
+        shipping_city: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingCity : null,
+        shipping_state: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingState : null,
+        shipping_zip: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingZip : null,
+        shipping_country: withdrawalForm.withdrawalType === 'physical' ? withdrawalForm.shippingCountry : null,
+        estimated_value: estimatedValue,
+        created_by: user.id,
+        status: 'pending'
+      });
+    
+    if (error) {
+      toast({ title: "Error", description: "Failed to submit withdrawal request", variant: "destructive" });
+      console.error('Error submitting withdrawal request:', error);
       return;
     }
     
     toast({
       title: "Withdrawal Request Submitted", 
-      description: `Your withdrawal request for $${withdrawalForm.amount} has been submitted and is pending review.`
+      description: `Your ${withdrawalForm.withdrawalType === 'physical' ? 'physical shipment' : 'cash withdrawal'} request for ${withdrawalForm.amountOz} oz of ${withdrawalForm.metalType} has been submitted.`
     });
     
     setWithdrawalDialogOpen(false);
-    setWithdrawalForm({ amount: '', method: 'bank_transfer', notes: '' });
+    setWithdrawalForm({ 
+      withdrawalType: 'cash',
+      metalType: 'gold',
+      amountOz: '',
+      shippingAddress: '',
+      shippingCity: '',
+      shippingState: '',
+      shippingZip: '',
+      shippingCountry: 'United States'
+    });
+    fetchWithdrawalRequests();
   };
 
   const handleDownloadStatements = () => {
@@ -1166,6 +1253,95 @@ export default function UserDashboard() {
                           </PaginationContent>
                         </Pagination>
                       )}
+
+                      {/* Withdrawal Requests Section */}
+                      <div className="mt-8">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold">Withdrawal Requests</h3>
+                        </div>
+                        <Card>
+                          <CardContent className="p-0">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Date</TableHead>
+                                  <TableHead>Type</TableHead>
+                                  <TableHead>Metal</TableHead>
+                                  <TableHead>Amount</TableHead>
+                                  <TableHead>Est. Value</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Tracking</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {withdrawalRequests.length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                                      No withdrawal requests found
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  withdrawalRequests.map((request) => (
+                                    <TableRow key={request.id}>
+                                      <TableCell className="font-medium">
+                                        {new Date(request.created_at).toLocaleDateString()}
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex items-center gap-2">
+                                          {request.withdrawal_type === 'cash' ? (
+                                            <>
+                                              <DollarSign className="h-4 w-4 text-green-600" />
+                                              <span>Cash</span>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Clock className="h-4 w-4 text-blue-600" />
+                                              <span>Physical</span>
+                                            </>
+                                          )}
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="capitalize">{request.metal_type}</TableCell>
+                                      <TableCell>{formatOz(request.amount_oz)} oz</TableCell>
+                                      <TableCell>${formatCurrency(request.estimated_value || 0)}</TableCell>
+                                      <TableCell>
+                                        <Badge variant={
+                                          request.status === 'completed' ? 'default' : 
+                                          request.status === 'shipped' ? 'default' :
+                                          request.status === 'processing' ? 'secondary' :
+                                          request.status === 'pending' ? 'secondary' : 
+                                          request.status === 'rejected' ? 'destructive' :
+                                          'outline'
+                                        }>
+                                          {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                                        </Badge>
+                                        {request.rejection_reason && (
+                                          <p className="text-xs text-red-600 mt-1">{request.rejection_reason}</p>
+                                        )}
+                                      </TableCell>
+                                      <TableCell>
+                                        {request.tracking_number ? (
+                                          <a 
+                                            href={`https://freightease.online/track/${request.tracking_number}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                                          >
+                                            {request.tracking_number}
+                                            <ArrowUpRight className="h-3 w-3" />
+                                          </a>
+                                        ) : (
+                                          <span className="text-muted-foreground text-sm">-</span>
+                                        )}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))
+                                )}
+                              </TableBody>
+                            </Table>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
                   </TabsContent>
 
@@ -2135,49 +2311,139 @@ export default function UserDashboard() {
                                 Request Withdrawal
                               </Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                               <DialogHeader>
-                                <DialogTitle>Request Withdrawal</DialogTitle>
+                                <DialogTitle>Request Metal Withdrawal</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4">
-                                <div className="p-3 bg-muted rounded-lg">
-                                  <p className="text-sm text-muted-foreground">
-                                    Available Balance: <span className="font-semibold">${formatCurrency(totalBalance)}</span>
-                                  </p>
+                                <div className="grid grid-cols-3 gap-2 p-3 bg-muted rounded-lg text-sm">
+                                  <div>
+                                    <p className="text-muted-foreground">Gold</p>
+                                    <p className="font-semibold">{formatOz(totalGoldHoldings)} oz</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Silver</p>
+                                    <p className="font-semibold">{formatOz(totalSilverHoldings)} oz</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Platinum</p>
+                                    <p className="font-semibold">{formatOz(totalPlatinumHoldings)} oz</p>
+                                  </div>
                                 </div>
+
                                 <div>
-                                  <Label htmlFor="withdrawal-amount">Amount ($)</Label>
-                                  <Input
-                                    id="withdrawal-amount"
-                                    type="number"
-                                    placeholder="0.00"
-                                    max={totalBalance}
-                                    value={withdrawalForm.amount}
-                                    onChange={(e) => setWithdrawalForm({...withdrawalForm, amount: e.target.value})}
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor="withdrawal-method">Withdrawal Method</Label>
-                                  <Select value={withdrawalForm.method} onValueChange={(value) => setWithdrawalForm({...withdrawalForm, method: value})}>
+                                  <Label htmlFor="withdrawal-type">Withdrawal Type</Label>
+                                  <Select 
+                                    value={withdrawalForm.withdrawalType} 
+                                    onValueChange={(value) => setWithdrawalForm({...withdrawalForm, withdrawalType: value})}
+                                  >
                                     <SelectTrigger>
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                                      <SelectItem value="wire">Wire Transfer</SelectItem>
-                                      <SelectItem value="check">Check</SelectItem>
+                                      <SelectItem value="cash">Cash (Sell metals and receive USD)</SelectItem>
+                                      <SelectItem value="physical">Physical Shipment (Ship metals to address)</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
-                                <div>
-                                  <Label htmlFor="withdrawal-notes">Notes (Optional)</Label>
-                                  <Textarea
-                                    id="withdrawal-notes"
-                                    placeholder="Any additional information..."
-                                    value={withdrawalForm.notes}
-                                    onChange={(e) => setWithdrawalForm({...withdrawalForm, notes: e.target.value})}
-                                  />
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <Label htmlFor="metal-type">Metal Type</Label>
+                                    <Select 
+                                      value={withdrawalForm.metalType} 
+                                      onValueChange={(value) => setWithdrawalForm({...withdrawalForm, metalType: value})}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="gold">Gold</SelectItem>
+                                        <SelectItem value="silver">Silver</SelectItem>
+                                        <SelectItem value="platinum">Platinum</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div>
+                                    <Label htmlFor="amount-oz">Amount (oz)</Label>
+                                    <Input
+                                      id="amount-oz"
+                                      type="number"
+                                      step="0.01"
+                                      placeholder="0.00"
+                                      value={withdrawalForm.amountOz}
+                                      onChange={(e) => setWithdrawalForm({...withdrawalForm, amountOz: e.target.value})}
+                                    />
+                                  </div>
                                 </div>
+
+                                {withdrawalForm.withdrawalType === 'physical' && (
+                                  <>
+                                    <Separator />
+                                    <div className="space-y-4">
+                                      <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                                        <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                        <p className="text-sm text-blue-900 dark:text-blue-100">
+                                          Shipping via <strong>freightease.online</strong> - You'll receive tracking information once processed
+                                        </p>
+                                      </div>
+                                      
+                                      <h4 className="font-semibold">Shipping Address</h4>
+                                      
+                                      <div>
+                                        <Label htmlFor="shipping-address">Street Address</Label>
+                                        <Input
+                                          id="shipping-address"
+                                          placeholder="123 Main Street"
+                                          value={withdrawalForm.shippingAddress}
+                                          onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingAddress: e.target.value})}
+                                        />
+                                      </div>
+
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <Label htmlFor="shipping-city">City</Label>
+                                          <Input
+                                            id="shipping-city"
+                                            placeholder="New York"
+                                            value={withdrawalForm.shippingCity}
+                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingCity: e.target.value})}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label htmlFor="shipping-state">State</Label>
+                                          <Input
+                                            id="shipping-state"
+                                            placeholder="NY"
+                                            value={withdrawalForm.shippingState}
+                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingState: e.target.value})}
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <Label htmlFor="shipping-zip">ZIP Code</Label>
+                                          <Input
+                                            id="shipping-zip"
+                                            placeholder="10001"
+                                            value={withdrawalForm.shippingZip}
+                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingZip: e.target.value})}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Label htmlFor="shipping-country">Country</Label>
+                                          <Input
+                                            id="shipping-country"
+                                            value={withdrawalForm.shippingCountry}
+                                            onChange={(e) => setWithdrawalForm({...withdrawalForm, shippingCountry: e.target.value})}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+
                                 <div className="flex gap-2">
                                   <Button variant="outline" onClick={() => setWithdrawalDialogOpen(false)} className="flex-1">
                                     Cancel

@@ -683,6 +683,72 @@ export type Database = {
           },
         ]
       }
+      withdrawal_requests: {
+        Row: {
+          amount_oz: number
+          created_at: string
+          created_by: string
+          estimated_value: number | null
+          id: string
+          metal_type: string
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
+          shipping_address: string | null
+          shipping_city: string | null
+          shipping_country: string | null
+          shipping_state: string | null
+          shipping_zip: string | null
+          status: string
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          withdrawal_type: string
+        }
+        Insert: {
+          amount_oz: number
+          created_at?: string
+          created_by: string
+          estimated_value?: number | null
+          id?: string
+          metal_type: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_state?: string | null
+          shipping_zip?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          user_id: string
+          withdrawal_type: string
+        }
+        Update: {
+          amount_oz?: number
+          created_at?: string
+          created_by?: string
+          estimated_value?: number | null
+          id?: string
+          metal_type?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_state?: string | null
+          shipping_zip?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          user_id?: string
+          withdrawal_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
