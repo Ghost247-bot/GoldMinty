@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Progress } from '@/components/ui/progress';
@@ -53,7 +54,8 @@ import {
   Lightbulb,
   AlertTriangle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Menu
 } from 'lucide-react';
 
 export default function UserDashboard() {
@@ -92,6 +94,8 @@ export default function UserDashboard() {
   const [marketAnalysisDialogOpen, setMarketAnalysisDialogOpen] = useState(false);
   const [withdrawalDetailsDialogOpen, setWithdrawalDetailsDialogOpen] = useState(false);
   const [selectedWithdrawalRequest, setSelectedWithdrawalRequest] = useState<any>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   
   // Form states
   const [depositForm, setDepositForm] = useState({
@@ -953,17 +957,175 @@ export default function UserDashboard() {
                   </p>
                 </div>
               ) : (
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-8">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                    <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
-                    <TabsTrigger value="performance">Performance</TabsTrigger>
-                    <TabsTrigger value="analysis">Risk Analysis</TabsTrigger>
-                    <TabsTrigger value="recommendations">AI Insights</TabsTrigger>
-                    <TabsTrigger value="tools">Tools</TabsTrigger>
-                    <TabsTrigger value="actions">Actions</TabsTrigger>
-                  </TabsList>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  {/* Mobile Hamburger Menu */}
+                  <div className="lg:hidden mb-4">
+                    <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                      <SheetTrigger asChild>
+                        <Button variant="outline" size="lg" className="w-full justify-start gap-2">
+                          <Menu className="h-5 w-5" />
+                          <span className="font-medium">Navigation Menu</span>
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent side="left" className="w-[280px] sm:w-[350px]">
+                        <SheetHeader>
+                          <SheetTitle>Dashboard Navigation</SheetTitle>
+                        </SheetHeader>
+                        <nav className="mt-6 flex flex-col gap-2">
+                          <Button
+                            variant={activeTab === 'overview' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('overview');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <Activity className="h-5 w-5" />
+                            <span>Overview</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'transactions' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('transactions');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <ArrowUpRight className="h-5 w-5" />
+                            <span>Transactions</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'withdrawals' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('withdrawals');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <ArrowDownRight className="h-5 w-5" />
+                            <span>Withdrawals</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'performance' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('performance');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <TrendingUp className="h-5 w-5" />
+                            <span>Performance</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'analysis' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('analysis');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <Shield className="h-5 w-5" />
+                            <span>Risk Analysis</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'recommendations' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('recommendations');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <Lightbulb className="h-5 w-5" />
+                            <span>AI Insights</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'tools' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('tools');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <Settings className="h-5 w-5" />
+                            <span>Tools</span>
+                          </Button>
+                          <Button
+                            variant={activeTab === 'actions' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('actions');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <Zap className="h-5 w-5" />
+                            <span>Actions</span>
+                          </Button>
+                        </nav>
+                      </SheetContent>
+                    </Sheet>
+                  </div>
+
+                  {/* Desktop Tabs */}
+                  <div className="hidden lg:block border-b border-border bg-card rounded-lg p-2 shadow-sm mb-4">
+                    <TabsList className="w-full h-auto flex gap-1 bg-transparent p-0">
+                      <TabsTrigger 
+                        value="overview"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <Activity className="h-4 w-4" />
+                        <span>Overview</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="transactions"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <ArrowUpRight className="h-4 w-4" />
+                        <span>Transactions</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="withdrawals"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <ArrowDownRight className="h-4 w-4" />
+                        <span>Withdrawals</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="performance"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <TrendingUp className="h-4 w-4" />
+                        <span>Performance</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="analysis"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <Shield className="h-4 w-4" />
+                        <span>Risk Analysis</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="recommendations"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <Lightbulb className="h-4 w-4" />
+                        <span>AI Insights</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="tools"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <Settings className="h-4 w-4" />
+                        <span>Tools</span>
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="actions"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <Zap className="h-4 w-4" />
+                        <span>Actions</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
 
                   <TabsContent value="overview" className="space-y-4 mt-6">
                     {investmentAccounts.map((account) => (
