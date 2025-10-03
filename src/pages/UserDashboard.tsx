@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -64,6 +65,8 @@ export default function UserDashboard() {
   const [expandedBanners, setExpandedBanners] = useState<Set<string>>(new Set());
   const [portfolioAllocations, setPortfolioAllocations] = useState<Map<string, any>>(new Map());
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactionsPage, setTransactionsPage] = useState(1);
+  const [transactionsTotalCount, setTransactionsTotalCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [editAllocationDialogOpen, setEditAllocationDialogOpen] = useState(false);
   const [editingAllocation, setEditingAllocation] = useState<any>(null);
@@ -137,7 +140,7 @@ export default function UserDashboard() {
       fetchProfile();
       fetchInvestmentAccounts();
       fetchUserBanners();
-      fetchTransactions();
+      fetchTransactions(1);
       checkAdminRole();
     }
   }, [user]);
@@ -229,15 +232,30 @@ export default function UserDashboard() {
     }
   };
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = async (page: number = 1) => {
     if (!user) return;
     
+    const itemsPerPage = 15;
+    const from = (page - 1) * itemsPerPage;
+    const to = from + itemsPerPage - 1;
+    
+    // Get total count
+    const { count } = await supabase
+      .from('user_transactions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+    
+    if (count !== null) {
+      setTransactionsTotalCount(count);
+    }
+    
+    // Get paginated data
     const { data, error } = await supabase
       .from('user_transactions')
       .select('*')
       .eq('user_id', user.id)
       .order('transaction_date', { ascending: false })
-      .limit(20);
+      .range(from, to);
     
     if (error) {
       console.error('Error fetching transactions:', error);
@@ -959,6 +977,52 @@ export default function UserDashboard() {
                           </Table>
                         </CardContent>
                       </Card>
+                      
+                      {/* Pagination */}
+                      {transactionsTotalCount > 15 && (
+                        <Pagination>
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious 
+                                onClick={() => {
+                                  if (transactionsPage > 1) {
+                                    setTransactionsPage(transactionsPage - 1);
+                                    fetchTransactions(transactionsPage - 1);
+                                  }
+                                }}
+                                className={transactionsPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                              />
+                            </PaginationItem>
+                            
+                            {Array.from({ length: Math.ceil(transactionsTotalCount / 15) }, (_, i) => i + 1).map((page) => (
+                              <PaginationItem key={page}>
+                                <PaginationLink 
+                                  onClick={() => {
+                                    setTransactionsPage(page);
+                                    fetchTransactions(page);
+                                  }}
+                                  isActive={page === transactionsPage}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                            
+                            <PaginationItem>
+                              <PaginationNext 
+                                onClick={() => {
+                                  if (transactionsPage < Math.ceil(transactionsTotalCount / 15)) {
+                                    setTransactionsPage(transactionsPage + 1);
+                                    fetchTransactions(transactionsPage + 1);
+                                  }
+                                }}
+                                className={transactionsPage >= Math.ceil(transactionsTotalCount / 15) ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                              />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                      )}
                     </div>
                   </TabsContent>
 
