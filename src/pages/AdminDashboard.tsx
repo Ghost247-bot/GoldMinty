@@ -180,6 +180,34 @@ export default function AdminDashboard() {
     trackingNumber: '',
     rejectionReason: ''
   });
+
+  // Metal prices for withdrawal calculations
+  const metalPrices = {
+    gold: 3876,
+    silver: 46,
+    platinum: 1600
+  };
+
+  // Calculate estimated value when amount or metal type changes
+  const calculateWithdrawalValue = (metalType: string, amountOz: string) => {
+    const amount = parseFloat(amountOz) || 0;
+    const price = metalPrices[metalType as keyof typeof metalPrices] || 0;
+    return (amount * price).toFixed(2);
+  };
+
+  // Update withdrawal form data with auto-calculation
+  const updateWithdrawalFormData = (updates: Partial<typeof withdrawalFormData>) => {
+    setWithdrawalFormData(prev => {
+      const newData = { ...prev, ...updates };
+      
+      // Auto-calculate estimated value if amount or metal type changed
+      if ('amountOz' in updates || 'metalType' in updates) {
+        newData.estimatedValue = calculateWithdrawalValue(newData.metalType, newData.amountOz);
+      }
+      
+      return newData;
+    });
+  };
   
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -831,6 +859,12 @@ export default function AdminDashboard() {
   const handleCreateWithdrawal = async () => {
     if (!withdrawalFormData.userId || !user?.id) return;
 
+    // Recalculate estimated value to ensure it's accurate
+    const finalEstimatedValue = calculateWithdrawalValue(
+      withdrawalFormData.metalType, 
+      withdrawalFormData.amountOz
+    );
+
     const { error } = await supabase
       .from('withdrawal_requests')
       .insert({
@@ -838,7 +872,7 @@ export default function AdminDashboard() {
         withdrawal_type: withdrawalFormData.withdrawalType,
         metal_type: withdrawalFormData.metalType,
         amount_oz: parseFloat(withdrawalFormData.amountOz),
-        estimated_value: parseFloat(withdrawalFormData.estimatedValue),
+        estimated_value: parseFloat(finalEstimatedValue),
         status: withdrawalFormData.status,
         shipping_address: withdrawalFormData.shippingAddress || null,
         shipping_city: withdrawalFormData.shippingCity || null,
@@ -883,12 +917,13 @@ export default function AdminDashboard() {
 
   const handleEditWithdrawal = (withdrawal: any) => {
     setEditingWithdrawal(withdrawal);
+    const calculatedValue = calculateWithdrawalValue(withdrawal.metal_type, withdrawal.amount_oz.toString());
     setWithdrawalFormData({
       userId: withdrawal.user_id,
       withdrawalType: withdrawal.withdrawal_type,
       metalType: withdrawal.metal_type,
       amountOz: withdrawal.amount_oz.toString(),
-      estimatedValue: withdrawal.estimated_value?.toString() || '0.00',
+      estimatedValue: calculatedValue,
       status: withdrawal.status,
       shippingAddress: withdrawal.shipping_address || '',
       shippingCity: withdrawal.shipping_city || '',
@@ -904,13 +939,19 @@ export default function AdminDashboard() {
   const handleUpdateWithdrawal = async () => {
     if (!editingWithdrawal || !user?.id) return;
 
+    // Recalculate estimated value to ensure it's accurate
+    const finalEstimatedValue = calculateWithdrawalValue(
+      withdrawalFormData.metalType, 
+      withdrawalFormData.amountOz
+    );
+
     const { error } = await supabase
       .from('withdrawal_requests')
       .update({
         withdrawal_type: withdrawalFormData.withdrawalType,
         metal_type: withdrawalFormData.metalType,
         amount_oz: parseFloat(withdrawalFormData.amountOz),
-        estimated_value: parseFloat(withdrawalFormData.estimatedValue),
+        estimated_value: parseFloat(finalEstimatedValue),
         status: withdrawalFormData.status,
         shipping_address: withdrawalFormData.shippingAddress || null,
         shipping_city: withdrawalFormData.shippingCity || null,
@@ -2115,7 +2156,7 @@ export default function AdminDashboard() {
                       <div className="space-y-4">
                         <div>
                           <Label htmlFor="withdrawal-user-select">Select User</Label>
-                          <Select value={withdrawalFormData.userId} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, userId: value})}>
+                          <Select value={withdrawalFormData.userId} onValueChange={(value) => updateWithdrawalFormData({userId: value})}>
                             <SelectTrigger>
                               <SelectValue placeholder={
                                 usersLoading ? "Loading users..." : 
@@ -2150,7 +2191,7 @@ export default function AdminDashboard() {
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="withdrawal-type">Withdrawal Type</Label>
-                            <Select value={withdrawalFormData.withdrawalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, withdrawalType: value})}>
+                            <Select value={withdrawalFormData.withdrawalType} onValueChange={(value) => updateWithdrawalFormData({withdrawalType: value})}>
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
@@ -2162,14 +2203,14 @@ export default function AdminDashboard() {
                           </div>
                           <div>
                             <Label htmlFor="withdrawal-metal">Metal Type</Label>
-                            <Select value={withdrawalFormData.metalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, metalType: value})}>
+                            <Select value={withdrawalFormData.metalType} onValueChange={(value) => updateWithdrawalFormData({metalType: value})}>
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="gold">Gold</SelectItem>
-                                <SelectItem value="silver">Silver</SelectItem>
-                                <SelectItem value="platinum">Platinum</SelectItem>
+                                <SelectItem value="gold">Gold ($3,876/oz)</SelectItem>
+                                <SelectItem value="silver">Silver ($46/oz)</SelectItem>
+                                <SelectItem value="platinum">Platinum ($1,600/oz)</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -2183,26 +2224,25 @@ export default function AdminDashboard() {
                               type="number"
                               step="0.0001"
                               value={withdrawalFormData.amountOz}
-                              onChange={(e) => setWithdrawalFormData({...withdrawalFormData, amountOz: e.target.value})}
+                              onChange={(e) => updateWithdrawalFormData({amountOz: e.target.value})}
                               placeholder="0.0000"
                             />
                           </div>
                           <div>
-                            <Label htmlFor="withdrawal-value">Estimated Value ($)</Label>
+                            <Label htmlFor="withdrawal-value">Estimated Value (Auto-calculated)</Label>
                             <Input
                               id="withdrawal-value"
-                              type="number"
-                              step="0.01"
-                              value={withdrawalFormData.estimatedValue}
-                              onChange={(e) => setWithdrawalFormData({...withdrawalFormData, estimatedValue: e.target.value})}
-                              placeholder="0.00"
+                              type="text"
+                              value={`$${withdrawalFormData.estimatedValue}`}
+                              readOnly
+                              className="bg-muted"
                             />
                           </div>
                         </div>
 
                         <div>
                           <Label htmlFor="withdrawal-status">Status</Label>
-                          <Select value={withdrawalFormData.status} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, status: value})}>
+                          <Select value={withdrawalFormData.status} onValueChange={(value) => updateWithdrawalFormData({status: value})}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -2224,7 +2264,7 @@ export default function AdminDashboard() {
                               <Input
                                 id="withdrawal-address"
                                 value={withdrawalFormData.shippingAddress}
-                                onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingAddress: e.target.value})}
+                                onChange={(e) => updateWithdrawalFormData({shippingAddress: e.target.value})}
                                 placeholder="Enter shipping address..."
                               />
                             </div>
@@ -2235,7 +2275,7 @@ export default function AdminDashboard() {
                                 <Input
                                   id="withdrawal-city"
                                   value={withdrawalFormData.shippingCity}
-                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCity: e.target.value})}
+                                  onChange={(e) => updateWithdrawalFormData({shippingCity: e.target.value})}
                                   placeholder="City"
                                 />
                               </div>
@@ -2244,7 +2284,7 @@ export default function AdminDashboard() {
                                 <Input
                                   id="withdrawal-state"
                                   value={withdrawalFormData.shippingState}
-                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingState: e.target.value})}
+                                  onChange={(e) => updateWithdrawalFormData({shippingState: e.target.value})}
                                   placeholder="State"
                                 />
                               </div>
@@ -2256,7 +2296,7 @@ export default function AdminDashboard() {
                                 <Input
                                   id="withdrawal-zip"
                                   value={withdrawalFormData.shippingZip}
-                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingZip: e.target.value})}
+                                  onChange={(e) => updateWithdrawalFormData({shippingZip: e.target.value})}
                                   placeholder="ZIP Code"
                                 />
                               </div>
@@ -2265,7 +2305,7 @@ export default function AdminDashboard() {
                                 <Input
                                   id="withdrawal-country"
                                   value={withdrawalFormData.shippingCountry}
-                                  onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCountry: e.target.value})}
+                                  onChange={(e) => updateWithdrawalFormData({shippingCountry: e.target.value})}
                                   placeholder="Country"
                                 />
                               </div>
@@ -2276,7 +2316,7 @@ export default function AdminDashboard() {
                               <Input
                                 id="withdrawal-tracking"
                                 value={withdrawalFormData.trackingNumber}
-                                onChange={(e) => setWithdrawalFormData({...withdrawalFormData, trackingNumber: e.target.value})}
+                                onChange={(e) => updateWithdrawalFormData({trackingNumber: e.target.value})}
                                 placeholder="Enter tracking number..."
                               />
                             </div>
@@ -2289,7 +2329,7 @@ export default function AdminDashboard() {
                             <Textarea
                               id="withdrawal-rejection"
                               value={withdrawalFormData.rejectionReason}
-                              onChange={(e) => setWithdrawalFormData({...withdrawalFormData, rejectionReason: e.target.value})}
+                              onChange={(e) => updateWithdrawalFormData({rejectionReason: e.target.value})}
                               placeholder="Enter rejection reason..."
                               rows={3}
                             />
@@ -4040,7 +4080,7 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="edit-withdrawal-user-select">User</Label>
-                <Select value={withdrawalFormData.userId} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, userId: value})}>
+                <Select value={withdrawalFormData.userId} onValueChange={(value) => updateWithdrawalFormData({userId: value})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a user" />
                   </SelectTrigger>
@@ -4061,7 +4101,7 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="edit-withdrawal-type">Withdrawal Type</Label>
-                  <Select value={withdrawalFormData.withdrawalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, withdrawalType: value})}>
+                  <Select value={withdrawalFormData.withdrawalType} onValueChange={(value) => updateWithdrawalFormData({withdrawalType: value})}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -4073,14 +4113,14 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <Label htmlFor="edit-withdrawal-metal">Metal Type</Label>
-                  <Select value={withdrawalFormData.metalType} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, metalType: value})}>
+                  <Select value={withdrawalFormData.metalType} onValueChange={(value) => updateWithdrawalFormData({metalType: value})}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="gold">Gold</SelectItem>
-                      <SelectItem value="silver">Silver</SelectItem>
-                      <SelectItem value="platinum">Platinum</SelectItem>
+                      <SelectItem value="gold">Gold ($3,876/oz)</SelectItem>
+                      <SelectItem value="silver">Silver ($46/oz)</SelectItem>
+                      <SelectItem value="platinum">Platinum ($1,600/oz)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -4094,26 +4134,25 @@ export default function AdminDashboard() {
                     type="number"
                     step="0.0001"
                     value={withdrawalFormData.amountOz}
-                    onChange={(e) => setWithdrawalFormData({...withdrawalFormData, amountOz: e.target.value})}
+                    onChange={(e) => updateWithdrawalFormData({amountOz: e.target.value})}
                     placeholder="0.0000"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-withdrawal-value">Estimated Value ($)</Label>
+                  <Label htmlFor="edit-withdrawal-value">Estimated Value (Auto-calculated)</Label>
                   <Input
                     id="edit-withdrawal-value"
-                    type="number"
-                    step="0.01"
-                    value={withdrawalFormData.estimatedValue}
-                    onChange={(e) => setWithdrawalFormData({...withdrawalFormData, estimatedValue: e.target.value})}
-                    placeholder="0.00"
+                    type="text"
+                    value={`$${withdrawalFormData.estimatedValue}`}
+                    readOnly
+                    className="bg-muted"
                   />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="edit-withdrawal-status">Status</Label>
-                <Select value={withdrawalFormData.status} onValueChange={(value) => setWithdrawalFormData({...withdrawalFormData, status: value})}>
+                <Select value={withdrawalFormData.status} onValueChange={(value) => updateWithdrawalFormData({status: value})}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -4135,7 +4174,7 @@ export default function AdminDashboard() {
                     <Input
                       id="edit-withdrawal-address"
                       value={withdrawalFormData.shippingAddress}
-                      onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingAddress: e.target.value})}
+                      onChange={(e) => updateWithdrawalFormData({shippingAddress: e.target.value})}
                       placeholder="Enter shipping address..."
                     />
                   </div>
@@ -4146,7 +4185,7 @@ export default function AdminDashboard() {
                       <Input
                         id="edit-withdrawal-city"
                         value={withdrawalFormData.shippingCity}
-                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCity: e.target.value})}
+                        onChange={(e) => updateWithdrawalFormData({shippingCity: e.target.value})}
                         placeholder="City"
                       />
                     </div>
@@ -4155,7 +4194,7 @@ export default function AdminDashboard() {
                       <Input
                         id="edit-withdrawal-state"
                         value={withdrawalFormData.shippingState}
-                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingState: e.target.value})}
+                        onChange={(e) => updateWithdrawalFormData({shippingState: e.target.value})}
                         placeholder="State"
                       />
                     </div>
@@ -4167,7 +4206,7 @@ export default function AdminDashboard() {
                       <Input
                         id="edit-withdrawal-zip"
                         value={withdrawalFormData.shippingZip}
-                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingZip: e.target.value})}
+                        onChange={(e) => updateWithdrawalFormData({shippingZip: e.target.value})}
                         placeholder="ZIP Code"
                       />
                     </div>
@@ -4176,7 +4215,7 @@ export default function AdminDashboard() {
                       <Input
                         id="edit-withdrawal-country"
                         value={withdrawalFormData.shippingCountry}
-                        onChange={(e) => setWithdrawalFormData({...withdrawalFormData, shippingCountry: e.target.value})}
+                        onChange={(e) => updateWithdrawalFormData({shippingCountry: e.target.value})}
                         placeholder="Country"
                       />
                     </div>
@@ -4187,7 +4226,7 @@ export default function AdminDashboard() {
                     <Input
                       id="edit-withdrawal-tracking"
                       value={withdrawalFormData.trackingNumber}
-                      onChange={(e) => setWithdrawalFormData({...withdrawalFormData, trackingNumber: e.target.value})}
+                      onChange={(e) => updateWithdrawalFormData({trackingNumber: e.target.value})}
                       placeholder="Enter tracking number..."
                     />
                   </div>
@@ -4200,7 +4239,7 @@ export default function AdminDashboard() {
                   <Textarea
                     id="edit-withdrawal-rejection"
                     value={withdrawalFormData.rejectionReason}
-                    onChange={(e) => setWithdrawalFormData({...withdrawalFormData, rejectionReason: e.target.value})}
+                    onChange={(e) => updateWithdrawalFormData({rejectionReason: e.target.value})}
                     placeholder="Enter rejection reason..."
                     rows={3}
                   />
