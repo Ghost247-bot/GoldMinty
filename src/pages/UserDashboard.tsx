@@ -802,80 +802,79 @@ export default function UserDashboard() {
       <main className="container mx-auto px-4 py-8">
         {/* User Banners */}
         {userBanners.length > 0 && (
-          <div className="space-y-4 mb-8">
+          <div className="space-y-3 mb-8">
             {userBanners.map((banner) => {
               const isExpanded = expandedBanners.has(banner.id);
               return (
                 <div
                   key={banner.id}
-                  className={`relative overflow-hidden rounded-lg border backdrop-blur-sm transition-all duration-300 hover:shadow-md cursor-pointer ${
-                    banner.banner_type === 'error'
-                      ? 'bg-destructive/5 border-destructive/30 hover:border-destructive/50'
-                      : banner.banner_type === 'warning'
-                      ? 'bg-amber-500/5 border-amber-500/30 hover:border-amber-500/50'
-                      : banner.banner_type === 'success'
-                      ? 'bg-success/5 border-success/30 hover:border-success/50'
-                      : 'bg-primary/5 border-primary/30 hover:border-primary/50'
-                  }`}
+                  className="group relative bg-card border rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
                   onClick={() => toggleBannerExpansion(banner.id)}
                 >
-                  <div className="p-4 sm:p-5">
-                    <div className="flex items-start gap-3 sm:gap-4">
+                  {/* Status Indicator Line */}
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-1 ${
+                      banner.banner_type === 'error'
+                        ? 'bg-destructive'
+                        : banner.banner_type === 'warning'
+                        ? 'bg-amber-500'
+                        : banner.banner_type === 'success'
+                        ? 'bg-success'
+                        : 'bg-primary'
+                    }`}
+                  />
+                  
+                  <div className="pl-5 pr-4 py-4">
+                    <div className="flex items-start gap-4">
+                      {/* Icon */}
                       <div
-                        className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                        className={`flex-shrink-0 w-9 h-9 rounded-md flex items-center justify-center ${
                           banner.banner_type === 'error'
                             ? 'bg-destructive/10 text-destructive'
                             : banner.banner_type === 'warning'
-                            ? 'bg-amber-500/10 text-amber-600'
+                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-500'
                             : banner.banner_type === 'success'
                             ? 'bg-success/10 text-success'
                             : 'bg-primary/10 text-primary'
                         }`}
                       >
                         {banner.banner_type === 'error' ? (
-                          <AlertTriangle className="h-5 w-5" />
+                          <AlertTriangle className="h-4 w-4" />
                         ) : banner.banner_type === 'warning' ? (
-                          <AlertCircle className="h-5 w-5" />
+                          <AlertCircle className="h-4 w-4" />
                         ) : banner.banner_type === 'success' ? (
-                          <Award className="h-5 w-5" />
+                          <Award className="h-4 w-4" />
                         ) : (
-                          <Lightbulb className="h-5 w-5" />
+                          <Lightbulb className="h-4 w-4" />
                         )}
                       </div>
                       
+                      {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-semibold text-base sm:text-lg text-foreground line-clamp-2">
+                        <div className="flex items-center justify-between gap-3 mb-1">
+                          <h4 className="font-semibold text-sm text-foreground">
                             {banner.title}
-                          </h3>
-                          <div
-                            className={`flex-shrink-0 transition-transform duration-300 ${
+                          </h4>
+                          <ChevronDown
+                            className={`h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
                               isExpanded ? 'rotate-180' : ''
-                            } ${
-                              banner.banner_type === 'error'
-                                ? 'text-destructive'
-                                : banner.banner_type === 'warning'
-                                ? 'text-amber-600'
-                                : banner.banner_type === 'success'
-                                ? 'text-success'
-                                : 'text-primary'
                             }`}
-                          >
-                            <ChevronDown className="h-5 w-5" />
-                          </div>
+                          />
                         </div>
                         
                         {isExpanded && (
-                          <div className="space-y-3 mt-3 animate-fade-in">
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                          <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <p className="text-sm text-muted-foreground leading-relaxed pr-6">
                               {banner.message}
                             </p>
                             {banner.expires_at && (
-                              <div className="flex items-center gap-2 pt-2 border-t">
-                                <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                                <p className="text-xs text-muted-foreground">
-                                  Expires {new Date(banner.expires_at).toLocaleDateString()}
-                                </p>
+                              <div className="flex items-center gap-1.5 pt-2 mt-2 border-t text-xs text-muted-foreground">
+                                <Clock className="h-3.5 w-3.5" />
+                                <span>Expires {new Date(banner.expires_at).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  year: 'numeric' 
+                                })}</span>
                               </div>
                             )}
                           </div>
