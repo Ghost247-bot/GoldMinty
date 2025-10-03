@@ -804,6 +804,87 @@ export default function UserDashboard() {
 
                   <TabsContent value="transactions" className="mt-6">
                     <div className="space-y-4">
+                      {/* Transaction Summary Cards */}
+                      <div className="grid gap-4 md:grid-cols-4">
+                        <Card>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Total Value</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-2xl font-bold">
+                              ${formatCurrency(
+                                transactions
+                                  .filter(t => t.status === 'completed')
+                                  .reduce((sum, t) => sum + Number(t.total_value || 0), 0)
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Gold Holdings</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-2xl font-bold">
+                              {formatOz(
+                                transactions
+                                  .filter(t => t.metal_type === 'gold' && t.status === 'completed')
+                                  .reduce((sum, t) => {
+                                    if (t.transaction_type === 'buy' || t.transaction_type === 'dividend' || t.transaction_type === 'transfer') {
+                                      return sum + Number(t.amount);
+                                    } else if (t.transaction_type === 'sell') {
+                                      return sum - Number(t.amount);
+                                    }
+                                    return sum;
+                                  }, 0)
+                              )} oz
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Silver Holdings</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-2xl font-bold">
+                              {formatOz(
+                                transactions
+                                  .filter(t => t.metal_type === 'silver' && t.status === 'completed')
+                                  .reduce((sum, t) => {
+                                    if (t.transaction_type === 'buy' || t.transaction_type === 'dividend' || t.transaction_type === 'transfer') {
+                                      return sum + Number(t.amount);
+                                    } else if (t.transaction_type === 'sell') {
+                                      return sum - Number(t.amount);
+                                    }
+                                    return sum;
+                                  }, 0)
+                              )} oz
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">Platinum Holdings</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="text-2xl font-bold">
+                              {formatOz(
+                                transactions
+                                  .filter(t => t.metal_type === 'platinum' && t.status === 'completed')
+                                  .reduce((sum, t) => {
+                                    if (t.transaction_type === 'buy' || t.transaction_type === 'dividend' || t.transaction_type === 'transfer') {
+                                      return sum + Number(t.amount);
+                                    } else if (t.transaction_type === 'sell') {
+                                      return sum - Number(t.amount);
+                                    }
+                                    return sum;
+                                  }, 0)
+                              )} oz
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">Recent Transactions</h3>
                         <Button variant="outline" size="sm">
