@@ -62,6 +62,10 @@ export default function UserDashboard() {
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
   const [expandedBanners, setExpandedBanners] = useState<Set<string>>(new Set());
+  const [portfolioAllocations, setPortfolioAllocations] = useState<Map<string, any>>(new Map());
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editAllocationDialogOpen, setEditAllocationDialogOpen] = useState(false);
+  const [editingAllocation, setEditingAllocation] = useState<any>(null);
   
   // Dialog states for quick actions
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
@@ -132,8 +136,41 @@ export default function UserDashboard() {
       fetchProfile();
       fetchInvestmentAccounts();
       fetchUserBanners();
+      checkAdminRole();
     }
   }, [user]);
+
+  const checkAdminRole = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+    
+    if (!error && data) {
+      setIsAdmin(true);
+    }
+  };
+
+  const fetchPortfolioAllocations = async (accountIds: string[]) => {
+    if (accountIds.length === 0) return;
+    
+    const { data, error } = await supabase
+      .from('portfolio_allocations')
+      .select('*')
+      .in('account_id', accountIds);
+    
+    if (!error && data) {
+      const allocationsMap = new Map();
+      data.forEach(allocation => {
+        allocationsMap.set(allocation.account_id, allocation);
+      });
+      setPortfolioAllocations(allocationsMap);
+    }
+  };
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -279,6 +316,73 @@ export default function UserDashboard() {
       description: "Your investment goals have been saved successfully."
     });
     setGoalsDialogOpen(false);
+  };
+  
+  const handleSaveAllocation = async () => {
+    if (!editingAllocation || !user) return;
+    
+    const total = Number(editingAllocation.gold_percentage) + 
+                  Number(editingAllocation.silver_percentage) + 
+                  Number(editingAllocation.platinum_percentage) + 
+                  Number(editingAllocation.cash_percentage);
+    
+    if (total !== 100) {
+      toast({ 
+        title: "Error", 
+        description: "Total allocation must equal 100%", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    const { data: existing } = await supabase
+      .from('portfolio_allocations')
+      .select('id')
+      .eq('account_id', editingAllocation.account_id)
+      .maybeSingle();
+    
+    let error;
+    if (existing) {
+      ({ error } = await supabase
+        .from('portfolio_allocations')
+        .update({
+          gold_percentage: editingAllocation.gold_percentage,
+          silver_percentage: editingAllocation.silver_percentage,
+          platinum_percentage: editingAllocation.platinum_percentage,
+          cash_percentage: editingAllocation.cash_percentage,
+        })
+        .eq('id', existing.id));
+    } else {
+      ({ error } = await supabase
+        .from('portfolio_allocations')
+        .insert({
+          account_id: editingAllocation.account_id,
+          gold_percentage: editingAllocation.gold_percentage,
+          silver_percentage: editingAllocation.silver_percentage,
+          platinum_percentage: editingAllocation.platinum_percentage,
+          cash_percentage: editingAllocation.cash_percentage,
+          created_by: user.id,
+        }));
+    }
+    
+    if (error) {
+      console.error('Error saving allocation:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to save portfolio allocation", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    toast({ 
+      title: "Success", 
+      description: "Portfolio allocation updated successfully" 
+    });
+    
+    setEditAllocationDialogOpen(false);
+    setEditingAllocation(null);
+    fetchInvestmentAccounts();
   };
 
   // Enhanced feature handlers
@@ -593,39 +697,73 @@ export default function UserDashboard() {
 
                         {/* Portfolio Allocation */}
                         <div className="mt-6 p-4 bg-card rounded-lg">
-                          <h5 className="font-medium mb-3 flex items-center gap-2">
-                            <PieChart className="h-4 w-4" />
-                            Portfolio Allocation
-                          </h5>
+                          <div className="flex justify-between items-center mb-3">
+                            <h5 className="font-medium flex items-center gap-2">
+                              <PieChart className="h-4 w-4" />
+                              Portfolio Allocation
+                            </h5>
+                            {isAdmin && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const allocation = portfolioAllocations.get(account.id);
+                                  setEditingAllocation({
+                                    account_id: account.id,
+                                    account_number: account.account_number,
+                                    gold_percentage: allocation?.gold_percentage || 0,
+                                    silver_percentage: allocation?.silver_percentage || 0,
+                                    platinum_percentage: allocation?.platinum_percentage || 0,
+                                    cash_percentage: allocation?.cash_percentage || 0,
+                                  });
+                                  setEditAllocationDialogOpen(true);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                            )}
+                          </div>
                           <div className="space-y-3">
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Gold</span>
-                                <span>65%</span>
-                              </div>
-                              <Progress value={65} className="h-2" />
-                            </div>
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Cash</span>
-                                <span>25%</span>
-                              </div>
-                              <Progress value={25} className="h-2" />
-                            </div>
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Silver</span>
-                                <span>7%</span>
-                              </div>
-                              <Progress value={7} className="h-2" />
-                            </div>
-                            <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span>Platinum</span>
-                                <span>3%</span>
-                              </div>
-                              <Progress value={3} className="h-2" />
-                            </div>
+                            {(() => {
+                              const allocation = portfolioAllocations.get(account.id);
+                              const goldPct = Number(allocation?.gold_percentage || 0);
+                              const cashPct = Number(allocation?.cash_percentage || 0);
+                              const silverPct = Number(allocation?.silver_percentage || 0);
+                              const platinumPct = Number(allocation?.platinum_percentage || 0);
+                              
+                              return (
+                                <>
+                                  <div>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span>Gold</span>
+                                      <span>{goldPct}%</span>
+                                    </div>
+                                    <Progress value={goldPct} className="h-2" />
+                                  </div>
+                                  <div>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span>Cash</span>
+                                      <span>{cashPct}%</span>
+                                    </div>
+                                    <Progress value={cashPct} className="h-2" />
+                                  </div>
+                                  <div>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span>Silver</span>
+                                      <span>{silverPct}%</span>
+                                    </div>
+                                    <Progress value={silverPct} className="h-2" />
+                                  </div>
+                                  <div>
+                                    <div className="flex justify-between text-sm mb-1">
+                                      <span>Platinum</span>
+                                      <span>{platinumPct}%</span>
+                                    </div>
+                                    <Progress value={platinumPct} className="h-2" />
+                                  </div>
+                                </>
+                              );
+                            })()}
                           </div>
                         </div>
                         
@@ -1765,6 +1903,103 @@ export default function UserDashboard() {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Portfolio Allocation Edit Dialog */}
+        <Dialog open={editAllocationDialogOpen} onOpenChange={setEditAllocationDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Portfolio Allocation</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="text-sm text-muted-foreground mb-4">
+                Account: {editingAllocation?.account_number}
+              </div>
+              <div>
+                <Label htmlFor="gold-pct">Gold (%)</Label>
+                <Input
+                  id="gold-pct"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={editingAllocation?.gold_percentage || 0}
+                  onChange={(e) => setEditingAllocation({
+                    ...editingAllocation,
+                    gold_percentage: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="silver-pct">Silver (%)</Label>
+                <Input
+                  id="silver-pct"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={editingAllocation?.silver_percentage || 0}
+                  onChange={(e) => setEditingAllocation({
+                    ...editingAllocation,
+                    silver_percentage: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="platinum-pct">Platinum (%)</Label>
+                <Input
+                  id="platinum-pct"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={editingAllocation?.platinum_percentage || 0}
+                  onChange={(e) => setEditingAllocation({
+                    ...editingAllocation,
+                    platinum_percentage: e.target.value
+                  })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="cash-pct">Cash (%)</Label>
+                <Input
+                  id="cash-pct"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={editingAllocation?.cash_percentage || 0}
+                  onChange={(e) => setEditingAllocation({
+                    ...editingAllocation,
+                    cash_percentage: e.target.value
+                  })}
+                />
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Total: {
+                  (Number(editingAllocation?.gold_percentage || 0) + 
+                   Number(editingAllocation?.silver_percentage || 0) + 
+                   Number(editingAllocation?.platinum_percentage || 0) + 
+                   Number(editingAllocation?.cash_percentage || 0)).toFixed(1)
+                }% (must equal 100%)
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setEditAllocationDialogOpen(false);
+                    setEditingAllocation(null);
+                  }} 
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveAllocation} className="flex-1">
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

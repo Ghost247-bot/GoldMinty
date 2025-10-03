@@ -62,6 +62,50 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_allocations: {
+        Row: {
+          account_id: string
+          cash_percentage: number
+          created_at: string
+          created_by: string
+          gold_percentage: number
+          id: string
+          platinum_percentage: number
+          silver_percentage: number
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          cash_percentage?: number
+          created_at?: string
+          created_by: string
+          gold_percentage?: number
+          id?: string
+          platinum_percentage?: number
+          silver_percentage?: number
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          cash_percentage?: number
+          created_at?: string
+          created_by?: string
+          gold_percentage?: number
+          id?: string
+          platinum_percentage?: number
+          silver_percentage?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_allocations_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: true
+            referencedRelation: "investment_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           brand: string | null
