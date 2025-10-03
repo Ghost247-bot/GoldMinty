@@ -35,6 +35,7 @@ import NotFound from "./pages/NotFound";
 import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import BulkProductUpload from "./components/BulkProductUpload";
+import Wishlist from "./pages/Wishlist";
 
 const App = () => (
   <AuthProvider>
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/products/:category" element={<Layout><Products /></Layout>} />
           <Route path="/product/:id" element={<Layout><ProductDetail /></Layout>} />
           <Route path="/cart" element={<Layout><Cart /></Layout>} />
+          <Route path="/wishlist" element={<Layout><Wishlist /></Layout>} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/bulk-upload" element={<BulkProductUpload />} />
