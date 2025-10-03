@@ -19,8 +19,6 @@ import {
   Clock
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const HelpCenter = () => {
   const navigate = useNavigate();
@@ -125,9 +123,7 @@ const HelpCenter = () => {
     : popularFaqs;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="text-center mb-8 md:mb-12">
           <HelpCircle className="w-12 md:w-16 h-12 md:h-16 text-primary mx-auto mb-4" />
@@ -332,8 +328,6 @@ const HelpCenter = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-      <Footer />
     </div>
   );
 };

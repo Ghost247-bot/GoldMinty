@@ -7,8 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag, Shield, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { useCart, CartItem } from "@/contexts/CartContext";
 import { formatCurrency } from "@/lib/utils";
 
@@ -57,9 +55,7 @@ const Cart = () => {
 
   if (state.items.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
           <Button 
             variant="ghost" 
             onClick={() => navigate("/")}
@@ -83,16 +79,12 @@ const Cart = () => {
               Browse Products
             </Button>
           </div>
-        </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
           onClick={() => navigate(-1)}
@@ -254,8 +246,6 @@ const Cart = () => {
             </Button>
           </div>
         </div>
-      </div>
-      <Footer />
     </div>
   );
 };

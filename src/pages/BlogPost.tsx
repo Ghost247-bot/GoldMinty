@@ -2,8 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, Clock, User, Share2, BookOpen } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -92,9 +90,7 @@ const BlogPost = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-16 text-center">
+      <div className="container mx-auto px-4 py-16 text-center">
           <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-primary mb-4">Article Not Found</h1>
           <p className="text-muted-foreground mb-8">The blog post you're looking for doesn't exist.</p>
@@ -102,16 +98,12 @@ const BlogPost = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Blog
           </Button>
-        </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <article className="container mx-auto px-4 py-8 max-w-4xl">
+    <article className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -178,9 +170,7 @@ const BlogPost = () => {
             View All Articles
           </Button>
         </div>
-      </article>
-      <Footer />
-    </div>
+    </article>
   );
 };
 

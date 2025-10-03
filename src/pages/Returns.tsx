@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RefreshCw, Shield, Clock, CheckCircle, AlertCircle, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Returns = () => {
   const navigate = useNavigate();
@@ -103,9 +101,7 @@ const Returns = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -390,8 +386,6 @@ const Returns = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-      <Footer />
     </div>
   );
 };

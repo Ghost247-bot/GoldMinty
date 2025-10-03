@@ -16,8 +16,6 @@ import {
   HeadphonesIcon
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Contact = () => {
   const { toast } = useToast();
@@ -116,9 +114,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Contact Us</h1>
@@ -299,8 +295,6 @@ const Contact = () => {
             </CardContent>
           </Card>
         </section>
-      </div>
-      <Footer />
     </div>
   );
 };

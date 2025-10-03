@@ -8,8 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Download, Search, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { formatCurrency } from "@/lib/utils";
 
 const Prices = () => {
@@ -62,9 +60,7 @@ const Prices = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 md:mb-8">
           <div>
@@ -266,8 +262,6 @@ const Prices = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-      <Footer />
     </div>
   );
 };

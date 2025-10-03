@@ -6,8 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Cookie, Settings, Shield, BarChart3, Palette } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const CookiePolicy = () => {
   const navigate = useNavigate();
@@ -128,9 +126,7 @@ const CookiePolicy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -320,8 +316,6 @@ const CookiePolicy = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-      <Footer />
     </div>
   );
 };

@@ -6,8 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Search, Calendar, User, Clock, TrendingUp, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const Blog = () => {
   const navigate = useNavigate();
@@ -100,9 +98,7 @@ const Blog = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -296,8 +292,6 @@ const Blog = () => {
               </div>
           </CardContent>
         </Card>
-      </div>
-      <Footer />
     </div>
   );
 };

@@ -11,8 +11,6 @@ import {
   Target,
   Heart
 } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 
 const About = () => {
   const stats = [
@@ -62,9 +60,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="text-center mb-12 md:mb-16">
           <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4 md:mb-6">About Gold Avenue</h1>
@@ -204,8 +200,6 @@ const About = () => {
             </CardContent>
           </Card>
         </section>
-      </div>
-      <Footer />
     </div>
   );
 };

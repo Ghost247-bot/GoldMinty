@@ -19,8 +19,6 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/utils";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { parseGoldProductsCSV } from "@/utils/csvParser";
 import { useCart } from "@/contexts/CartContext";
 
@@ -111,23 +109,17 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">Loading product...</p>
           </div>
-        </div>
-        <Footer />
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">Product not found</p>
             <Button 
@@ -138,8 +130,6 @@ const ProductDetail = () => {
               Back to Products
             </Button>
           </div>
-        </div>
-        <Footer />
       </div>
     );
   }
@@ -203,9 +193,7 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -407,8 +395,6 @@ const ProductDetail = () => {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
-      <Footer />
     </div>
   );
 };

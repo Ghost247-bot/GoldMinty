@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, BarChart3, LineChart, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { formatCurrency } from "@/lib/utils";
 
 const Charts = () => {
@@ -59,9 +57,7 @@ const Charts = () => {
   const timeframes = ["1H", "1D", "1W", "1M", "3M", "1Y", "5Y"];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Live Market Charts</h1>
@@ -245,8 +241,6 @@ const Charts = () => {
             </CardContent>
           </Card>
         </div>
-      </div>
-      <Footer />
     </div>
   );
 };
