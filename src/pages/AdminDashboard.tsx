@@ -1651,14 +1651,58 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="users">User Management</TabsTrigger>
-            <TabsTrigger value="accounts">Investment Accounts</TabsTrigger>
-            <TabsTrigger value="portfolio">Portfolio Management</TabsTrigger>
-            <TabsTrigger value="banners">User Banners</TabsTrigger>
-            <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
-            <TabsTrigger value="products">Product Management</TabsTrigger>
-          </TabsList>
+          <div className="border-b border-border bg-card rounded-lg p-2 shadow-sm">
+            <TabsList className="w-full h-auto flex flex-wrap md:flex-nowrap gap-1 bg-transparent p-0">
+              <TabsTrigger 
+                value="users" 
+                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">User Management</span>
+                <span className="sm:hidden">Users</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="accounts" 
+                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <Wallet className="h-4 w-4" />
+                <span className="hidden sm:inline">Investment Accounts</span>
+                <span className="sm:hidden">Accounts</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="portfolio" 
+                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Portfolio Management</span>
+                <span className="sm:hidden">Portfolio</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="banners" 
+                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span className="hidden sm:inline">User Banners</span>
+                <span className="sm:hidden">Banners</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="withdrawals" 
+                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <ArrowDownLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Withdrawals</span>
+                <span className="sm:hidden">Withdrawals</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="products" 
+                className="flex-1 min-w-[140px] sm:min-w-[160px] md:min-w-0 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <Database className="h-4 w-4" />
+                <span className="hidden sm:inline">Product Management</span>
+                <span className="sm:hidden">Products</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
           <TabsContent value="users">
             <Card>
@@ -2448,15 +2492,61 @@ export default function AdminDashboard() {
                 
                 {selectedUserId && (
                   <Tabs defaultValue="overview-admin" className="w-full">
-                    <TabsList className="grid w-full grid-cols-7">
-                      <TabsTrigger value="overview-admin">Overview</TabsTrigger>
-                      <TabsTrigger value="transactions-admin">Transactions</TabsTrigger>
-                      <TabsTrigger value="performance-admin">Performance</TabsTrigger>
-                      <TabsTrigger value="risk-admin">Risk Analysis</TabsTrigger>
-                      <TabsTrigger value="insights-admin">AI Insights</TabsTrigger>
-                      <TabsTrigger value="tools-admin">Tools</TabsTrigger>
-                      <TabsTrigger value="actions-admin">Actions</TabsTrigger>
-                    </TabsList>
+                    <div className="border-b border-border bg-muted/30 rounded-lg p-2">
+                      <TabsList className="w-full h-auto flex flex-wrap gap-1 bg-transparent p-0">
+                        <TabsTrigger 
+                          value="overview-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <Activity className="h-3.5 w-3.5" />
+                          <span>Overview</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="transactions-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <Calendar className="h-3.5 w-3.5" />
+                          <span>Transactions</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="performance-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <TrendingUp className="h-3.5 w-3.5" />
+                          <span>Performance</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="risk-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <Shield className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">Risk Analysis</span>
+                          <span className="sm:hidden">Risk</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="insights-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <BookOpen className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">AI Insights</span>
+                          <span className="sm:hidden">Insights</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="tools-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <Settings className="h-3.5 w-3.5" />
+                          <span>Tools</span>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="actions-admin" 
+                          className="flex-1 min-w-[100px] flex items-center gap-2 justify-center px-3 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-background/50"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          <span>Actions</span>
+                        </TabsTrigger>
+                      </TabsList>
+                    </div>
 
                     <TabsContent value="overview-admin" className="space-y-6 mt-6">
                       <Card>
