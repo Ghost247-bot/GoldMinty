@@ -712,6 +712,8 @@ export default function UserDashboard() {
                            <div className="space-y-3">
                              {(() => {
                                const allocation = portfolioAllocations.get(account.id);
+                               console.log('Account ID:', account.id, 'Allocation:', allocation, 'All allocations:', Array.from(portfolioAllocations.entries()));
+                               
                                const goldPct = Number(allocation?.gold_percentage || 0);
                                const cashPct = Number(allocation?.cash_percentage || 0);
                                const silverPct = Number(allocation?.silver_percentage || 0);
@@ -732,28 +734,28 @@ export default function UserDashboard() {
                                    <div>
                                      <div className="flex justify-between text-sm mb-1">
                                        <span>Gold</span>
-                                       <span>{goldPct}%</span>
+                                       <span>{goldPct.toFixed(1)}%</span>
                                      </div>
                                      <Progress value={goldPct} className="h-2" />
                                    </div>
                                    <div>
                                      <div className="flex justify-between text-sm mb-1">
                                        <span>Cash</span>
-                                       <span>{cashPct}%</span>
+                                       <span>{cashPct.toFixed(1)}%</span>
                                      </div>
                                      <Progress value={cashPct} className="h-2" />
                                    </div>
                                    <div>
                                      <div className="flex justify-between text-sm mb-1">
                                        <span>Silver</span>
-                                       <span>{silverPct}%</span>
+                                       <span>{silverPct.toFixed(1)}%</span>
                                      </div>
                                      <Progress value={silverPct} className="h-2" />
                                    </div>
                                    <div>
                                      <div className="flex justify-between text-sm mb-1">
                                        <span>Platinum</span>
-                                       <span>{platinumPct}%</span>
+                                       <span>{platinumPct.toFixed(1)}%</span>
                                      </div>
                                      <Progress value={platinumPct} className="h-2" />
                                    </div>
