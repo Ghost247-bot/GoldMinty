@@ -14,7 +14,7 @@ const Layout = ({ children, showPriceTicker = false }: LayoutProps) => {
     <div className="min-h-screen flex flex-col">
       {showPriceTicker && <PriceTicker />}
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 pt-24">
         <LanguageTransitionWrapper>
           {children}
         </LanguageTransitionWrapper>

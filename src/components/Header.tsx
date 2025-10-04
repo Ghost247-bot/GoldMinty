@@ -83,7 +83,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`bg-background border-b border-border language-transition ${isTransitioning ? 'transitioning' : 'fade-in'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border language-transition ${isTransitioning ? 'transitioning' : 'fade-in'}`}>
       <div className="container mx-auto px-4">
         {/* Top bar - Hidden on mobile */}
         <div className="hidden md:flex items-center justify-between py-3 text-sm text-muted-foreground">
