@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Award, TrendingUp, CheckCircle2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroGoldBars from "@/assets/hero-gold-bars.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 py-12 md:py-20 lg:py-24">
@@ -20,32 +22,32 @@ const HeroSection = () => {
               {/* Badge */}
               <div className="inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1.5 text-xs md:text-sm font-medium text-gold border border-gold/20 animate-fade-in [animation-delay:100ms]">
                 <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">Trusted by 151,000+ Investors Worldwide</span>
-                <span className="sm:hidden">151,000+ Investors</span>
+                <span className="hidden sm:inline">{t('hero.badge')}</span>
+                <span className="sm:hidden">{t('hero.badgeShort')}</span>
               </div>
 
               {/* Headline */}
               <div className="space-y-3 md:space-y-4 animate-fade-in [animation-delay:200ms]">
                 <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
-                  Invest in
+                  {t('hero.title1')}
                   <span className="block bg-gradient-to-r from-gold via-gold/80 to-gold/60 bg-clip-text text-transparent">
-                    Precious Metals
+                    {t('hero.title2')}
                   </span>
-                  <span className="block">with Confidence</span>
+                  <span className="block">{t('hero.title3')}</span>
                 </h1>
                 
                 <p className="text-base text-muted-foreground md:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0">
-                  Build lasting wealth with certified gold, silver, platinum, and palladium from the world's most trusted mints.
+                  {t('hero.subtitle')}
                 </p>
               </div>
 
               {/* Features */}
               <div className="grid grid-cols-2 gap-2 sm:gap-3 animate-fade-in [animation-delay:300ms] max-w-2xl mx-auto lg:mx-0">
                 {[
-                  { icon: Shield, text: "Bank-Grade Security" },
-                  { icon: Award, text: "100% Authentic" },
-                  { icon: TrendingUp, text: "Live Market Prices" },
-                  { icon: CheckCircle2, text: "Insured Delivery" },
+                  { icon: Shield, text: t('hero.feature1') },
+                  { icon: Award, text: t('hero.feature2') },
+                  { icon: TrendingUp, text: t('hero.feature3') },
+                  { icon: CheckCircle2, text: t('hero.feature4') },
                 ].map((feature, index) => (
                   <div
                     key={index}
@@ -66,7 +68,7 @@ const HeroSection = () => {
                   className="bg-gold hover:bg-gold/90 text-white shadow-lg shadow-gold/20 hover:shadow-xl hover:shadow-gold/30 transition-all duration-300 group w-full sm:w-auto"
                   onClick={() => navigate("/products")}
                 >
-                  Start Investing
+                  {t('hero.cta1')}
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
                 <Button 
@@ -75,7 +77,7 @@ const HeroSection = () => {
                   className="border-2 hover:bg-accent w-full sm:w-auto"
                   onClick={() => navigate("/prices")}
                 >
-                  View Live Prices
+                  {t('hero.cta2')}
                 </Button>
               </div>
 
@@ -95,14 +97,14 @@ const HeroSection = () => {
                   </div>
                   <span className="text-xs md:text-sm">
                     <strong className="font-bold">4.9/5</strong>
-                    <span className="text-muted-foreground hidden sm:inline"> from 12,500+ reviews</span>
-                    <span className="text-muted-foreground sm:hidden"> rating</span>
+                    <span className="text-muted-foreground hidden sm:inline"> {t('hero.rating')}</span>
+                    <span className="text-muted-foreground sm:hidden"> {t('hero.ratingShort')}</span>
                   </span>
                 </div>
                 <div className="hidden sm:block h-4 w-px bg-border" />
                 <div className="text-xs md:text-sm">
                   <strong className="font-bold">$550M+</strong>
-                  <span className="text-muted-foreground"> sold</span>
+                  <span className="text-muted-foreground"> {t('hero.sold')}</span>
                 </div>
               </div>
             </div>
@@ -128,7 +130,7 @@ const HeroSection = () => {
                       </div>
                       <div>
                         <p className="text-xl md:text-2xl font-bold text-gold">+12.5%</p>
-                        <p className="text-[10px] md:text-xs text-muted-foreground">Annual Growth</p>
+                        <p className="text-[10px] md:text-xs text-muted-foreground">{t('hero.growthCard')}</p>
                       </div>
                     </div>
                   </div>
@@ -143,7 +145,7 @@ const HeroSection = () => {
                       </div>
                       <div>
                         <p className="text-xl md:text-2xl font-bold">20+</p>
-                        <p className="text-[10px] md:text-xs text-muted-foreground">Years Trusted</p>
+                        <p className="text-[10px] md:text-xs text-muted-foreground">{t('hero.trustCard')}</p>
                       </div>
                     </div>
                   </div>

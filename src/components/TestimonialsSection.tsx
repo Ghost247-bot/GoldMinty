@@ -1,5 +1,6 @@
 import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Testimonial {
   name: string;
@@ -10,6 +11,8 @@ interface Testimonial {
 }
 
 const TestimonialsSection = () => {
+  const { t } = useLanguage();
+  
   const testimonials: Testimonial[] = [
     {
       name: "Sarah Martinez",
@@ -40,10 +43,10 @@ const TestimonialsSection = () => {
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
-            Customer Testimonials
+            {t('testimonials.title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Read what our satisfied customers have to say about their experience with Gold Avenue.
+            {t('testimonials.subtitle')}
           </p>
         </div>
 
@@ -87,15 +90,15 @@ const TestimonialsSection = () => {
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 fill-gold text-gold" />
               <span className="font-semibold text-primary">4.9/5</span>
-              <span className="text-sm text-muted-foreground">Rating</span>
+              <span className="text-sm text-muted-foreground">{t('testimonials.rating')}</span>
             </div>
             <div className="w-px h-4 bg-border"></div>
             <div className="text-sm text-muted-foreground">
-              <span className="font-semibold text-primary">10,000+</span> Reviews
+              <span className="font-semibold text-primary">10,000+</span> {t('testimonials.reviews')}
             </div>
             <div className="w-px h-4 bg-border"></div>
             <div className="text-sm text-muted-foreground">
-              <span className="font-semibold text-primary">A+</span> BBB Rating
+              <span className="font-semibold text-primary">A+</span> {t('testimonials.bbbRating')}
             </div>
           </div>
         </div>

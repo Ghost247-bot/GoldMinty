@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import categoryGold from "@/assets/category-gold.jpg";
 import categorySilver from "@/assets/category-silver.jpg";
 import categoryPlatinum from "@/assets/category-platinum.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Category {
   title: string;
@@ -15,22 +16,24 @@ interface Category {
 
 const ProductCategories = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  
   const categories: Category[] = [
     {
-      title: "Gold",
-      subtitle: "Bars & Coins",
+      title: t('categories.gold'),
+      subtitle: t('categories.goldSub'),
       image: categoryGold,
       href: "/products/gold"
     },
     {
-      title: "Silver",
-      subtitle: "Premium Selection",
+      title: t('categories.silver'),
+      subtitle: t('categories.silverSub'),
       image: categorySilver,
       href: "/products/silver"
     },
     {
-      title: "Platinum & Palladium",
-      subtitle: "Rare Metals",
+      title: t('categories.platinum'),
+      subtitle: t('categories.platinumSub'),
       image: categoryPlatinum,
       href: "/products/platinum"
     }
@@ -42,16 +45,16 @@ const ProductCategories = () => {
         {/* Header */}
         <div className="text-center space-y-4 mb-8 md:mb-12 animate-fade-in">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary">
-            Discover our products
+            {t('categories.title')}
           </h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto px-4">
-            Explore our premium selection of precious metals from trusted mints worldwide
+            {t('categories.subtitle')}
           </p>
         </div>
 
         {/* Categories Grid */}
         <div className="mb-16">
-          <h3 className="text-2xl font-bold text-primary mb-8 text-center animate-fade-in [animation-delay:200ms]">Our Product Categories</h3>
+          <h3 className="text-2xl font-bold text-primary mb-8 text-center animate-fade-in [animation-delay:200ms]">{t('categories.sectionTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {categories.map((category, index) => (
               <Card 
@@ -81,7 +84,7 @@ const ProductCategories = () => {
                         navigate(category.href);
                       }}
                     >
-                      Shop {category.title}
+                      {t('categories.shopButton')} {category.title}
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </div>
@@ -94,9 +97,9 @@ const ProductCategories = () => {
         {/* Popular Products Preview */}
         <div className="text-center space-y-8 animate-fade-in [animation-delay:1000ms]">
           <div className="space-y-2">
-            <h3 className="text-2xl font-bold text-primary">Popular Products</h3>
+            <h3 className="text-2xl font-bold text-primary">{t('categories.popular')}</h3>
             <p className="text-muted-foreground">
-              Best-selling precious metals from our collection
+              {t('categories.popularSub')}
             </p>
           </div>
           
@@ -136,7 +139,7 @@ const ProductCategories = () => {
             className="bg-primary text-primary-foreground hover:bg-primary/90 hover-scale transition-all duration-300"
             onClick={() => navigate("/products")}
           >
-            View All Products
+            {t('categories.viewAll')}
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>

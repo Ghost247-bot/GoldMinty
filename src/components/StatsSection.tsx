@@ -1,4 +1,5 @@
 import { TrendingUp, Users, Vault, Shield, Award, Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Stat {
   icon: React.ReactNode;
@@ -8,42 +9,44 @@ interface Stat {
 }
 
 const StatsSection = () => {
+  const { t } = useLanguage();
+  
   const stats: Stat[] = [
     {
       icon: <TrendingUp className="w-8 h-8 text-gold" />,
       value: "$550M+",
-      label: "Total Sales Volume",
-      description: "Trusted by investors worldwide"
+      label: t('stats.sales'),
+      description: t('stats.salesDesc')
     },
     {
       icon: <Users className="w-8 h-8 text-gold" />,
       value: "151K+",
-      label: "Active Customers",
-      description: "Growing community of precious metal investors"
+      label: t('stats.customers'),
+      description: t('stats.customersDesc')
     },
     {
       icon: <Vault className="w-8 h-8 text-gold" />,
       value: "$400M+",
-      label: "Secure Storage",
-      description: "Safely stored precious metals"
+      label: t('stats.storage'),
+      description: t('stats.storageDesc')
     }
   ];
 
   const features = [
     {
       icon: <Shield className="w-6 h-6 text-gold" />,
-      title: "Secure Storage",
-      description: "Swiss-grade security for your investments"
+      title: t('stats.feature1Title'),
+      description: t('stats.feature1Desc')
     },
     {
       icon: <Award className="w-6 h-6 text-gold" />,
-      title: "Certified Metals",
-      description: "All products from accredited mints"
+      title: t('stats.feature2Title'),
+      description: t('stats.feature2Desc')
     },
     {
       icon: <Globe className="w-6 h-6 text-gold" />,
-      title: "Global Delivery",
-      description: "Worldwide shipping & insurance included"
+      title: t('stats.feature3Title'),
+      description: t('stats.feature3Desc')
     }
   ];
 
@@ -53,10 +56,10 @@ const StatsSection = () => {
         {/* Section Header */}
         <div className="text-center mb-12 animate-fade-in">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
-            Why Choose Gold Avenue
+            {t('stats.title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Trusted by investors worldwide for our commitment to quality, security, and exceptional service
+            {t('stats.subtitle')}
           </p>
         </div>
 
