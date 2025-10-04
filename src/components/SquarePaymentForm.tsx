@@ -60,7 +60,29 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
   const handlePaymentError = (error: any) => {
     console.error('Square payment error:', error);
-    onPaymentError('Payment failed. Please check your card information and try again.');
+    
+    // Handle specific error types
+    let errorMessage = 'Payment failed. Please check your card information and try again.';
+    
+    // Check for network/connection errors
+    if (error && error.message && error.message.includes('ERR_BLOCKED_BY_CLIENT')) {
+      errorMessage = 'Payment blocked by browser security. Please disable ad blockers or try a different browser.';
+    } else if (error && error.message && error.message.includes('network')) {
+      errorMessage = 'Network error. Please check your internet connection and try again.';
+    } else if (error && error.errors && error.errors.length > 0) {
+      const firstError = error.errors[0];
+      if (firstError.field === 'expirationDate') {
+        errorMessage = 'Please enter a valid expiration date (MM/YY format).';
+      } else if (firstError.field === 'cardNumber') {
+        errorMessage = 'Please enter a valid card number.';
+      } else if (firstError.field === 'cvv') {
+        errorMessage = 'Please enter a valid CVV code.';
+      } else {
+        errorMessage = firstError.message || errorMessage;
+      }
+    }
+    
+    onPaymentError(errorMessage);
   };
 
   // Show configuration error if Square is not properly set up
@@ -134,6 +156,15 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
             requestShippingContact: false,
             requestBillingContact: false
           })}
+          environment="sandbox"
+          methods={{
+            card: {
+              supportedMethods: ['card'],
+              data: {
+                supportedNetworks: ['visa', 'mastercard', 'amex', 'discover']
+              }
+            }
+          }}
         >
           <div className="space-y-4">
             <CreditCard 
@@ -149,9 +180,12 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
               }}
             />
             
-            <div className="text-xs text-muted-foreground text-center">
+            <div className="text-xs text-muted-foreground text-center space-y-1">
               <p>Your payment information is secure and encrypted.</p>
               <p>We accept Visa, Mastercard, American Express, and Discover.</p>
+              <p className="text-amber-600 dark:text-amber-400">
+                <strong>Test Cards:</strong> Use 4111 1111 1111 1111 with any future date and CVV
+              </p>
             </div>
           </div>
         </PaymentForm>
