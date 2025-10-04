@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Shield, 
   Award, 
@@ -13,32 +14,34 @@ import {
 } from "lucide-react";
 
 const About = () => {
+  const { t } = useLanguage();
+  
   const stats = [
-    { label: "Years of Experience", value: "25+", icon: Award },
-    { label: "Satisfied Customers", value: "50K+", icon: Users },
-    { label: "Countries Served", value: "40+", icon: Globe },
-    { label: "Assets Under Management", value: "$2.5B+", icon: Building }
+    { label: t('about.years'), value: "25+", icon: Award },
+    { label: t('about.customers'), value: "50K+", icon: Users },
+    { label: t('about.countries'), value: "40+", icon: Globe },
+    { label: t('about.aum'), value: "$2.5B+", icon: Building }
   ];
 
   const values = [
     {
-      title: "Trust & Security",
-      description: "Swiss-level security and transparency in all our operations",
+      title: t('about.value1'),
+      description: t('about.value1Desc'),
       icon: Shield
     },
     {
-      title: "Customer First",
-      description: "Your investment goals are our primary focus",
+      title: t('about.value2'),
+      description: t('about.value2Desc'),
       icon: Heart
     },
     {
-      title: "Excellence",
-      description: "Committed to delivering the highest quality products and service",
+      title: t('about.value3'),
+      description: t('about.value3Desc'),
       icon: Award
     },
     {
-      title: "Innovation",
-      description: "Continuously improving our platform and services",
+      title: t('about.value4'),
+      description: t('about.value4Desc'),
       icon: Target
     }
   ];
@@ -61,15 +64,14 @@ const About = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
+      {/* Hero Section */}
         <section className="text-center mb-12 md:mb-16">
-          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4 md:mb-6">About Gold Avenue</h1>
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4 md:mb-6">{t('about.title')}</h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 md:mb-8 px-4">
-            For over 25 years, Gold Avenue has been a trusted partner for precious metals investment, 
-            offering secure storage, transparent pricing, and expert guidance to investors worldwide.
+            {t('about.subtitle')}
           </p>
           <Button variant="gold" size="lg" className="w-full sm:w-auto">
-            Start Your Investment Journey
+            {t('about.cta')}
           </Button>
         </section>
 

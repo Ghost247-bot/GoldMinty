@@ -86,4 +86,6 @@ export const zh: typeof en = {
   'footer.trust.pricing': '实时市场定价',
   'footer.followUs': '关注我们：',
   'footer.copyright': '© 2024 Gold Avenue. 版权所有。| 受瑞士金融市场监督管理局 (FINMA) 监管',
+  
+  // All extended translations inherit from English with override capability
 };

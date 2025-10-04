@@ -9,6 +9,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/utils";
 
@@ -34,6 +35,7 @@ const Products = () => {
   const { toast } = useToast();
   const { addItem } = useCart();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("featured");
@@ -278,11 +280,11 @@ const Products = () => {
 
   const getCategoryTitle = () => {
     switch (category) {
-      case "gold": return "Gold Products";
-      case "silver": return "Silver Products";
-      case "platinum": return "Platinum Products";
-      case "palladium": return "Palladium Products";
-      default: return "All Products";
+      case "gold": return t('products.title.gold');
+      case "silver": return t('products.title.silver');
+      case "platinum": return t('products.title.platinum');
+      case "palladium": return t('products.title.palladium');
+      default: return t('products.title.all');
     }
   };
 
@@ -292,7 +294,7 @@ const Products = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-primary mb-2">{getCategoryTitle()}</h1>
           <p className="text-muted-foreground">
-            Discover our premium selection of precious metals from trusted mints worldwide
+            {t('products.subtitle')}
           </p>
         </div>
 
@@ -301,7 +303,7 @@ const Products = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder={t('products.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -311,20 +313,20 @@ const Products = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t('products.sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="featured">Featured</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="featured">{t('products.featured')}</SelectItem>
+                <SelectItem value="price-low">{t('products.priceLow')}</SelectItem>
+                <SelectItem value="price-high">{t('products.priceHigh')}</SelectItem>
+                <SelectItem value="rating">{t('products.rating')}</SelectItem>
+                <SelectItem value="newest">{t('products.newest')}</SelectItem>
               </SelectContent>
             </Select>
 
             <Button variant="outline" className="w-full sm:w-auto">
               <Filter className="w-4 h-4 mr-2" />
-              Filters
+              {t('products.filters')}
             </Button>
           </div>
         </div>
@@ -333,10 +335,10 @@ const Products = () => {
         {!loading && totalProducts > 0 && (
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-2">
             <p className="text-muted-foreground">
-              Showing {startIndex + 1}-{Math.min(endIndex, totalProducts)} of {totalProducts} products
+              {t('products.showing')} {startIndex + 1}-{Math.min(endIndex, totalProducts)} {t('products.of')} {totalProducts} {t('products.title.all').toLowerCase()}
             </p>
             <p className="text-muted-foreground">
-              Page {currentPage} of {totalPages}
+              {t('products.page')} {currentPage} {t('products.of')} {totalPages}
             </p>
           </div>
         )}
@@ -344,7 +346,7 @@ const Products = () => {
         {/* Products Grid */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">Loading products...</p>
+            <p className="text-muted-foreground text-lg">{t('products.loading')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4">

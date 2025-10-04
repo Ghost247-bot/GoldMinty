@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Download, Search, TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { formatCurrency } from "@/lib/utils";
 import { useMetalPrices } from "@/hooks/useMetalPrices";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Prices = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const { prices, loading, refetch } = useMetalPrices();
@@ -56,16 +58,16 @@ const Prices = () => {
 
   const downloadPriceList = () => {
     toast({
-      title: "Downloading Price List",
-      description: "Your current price list is being prepared for download.",
+      title: t('prices.download'),
+      description: t('prices.updatedDesc'),
     });
   };
 
   const refreshPrices = async () => {
     await refetch();
     toast({
-      title: "Prices Updated",
-      description: "All prices have been refreshed with the latest market data.",
+      title: t('prices.updated'),
+      description: t('prices.updatedDesc'),
     });
   };
 

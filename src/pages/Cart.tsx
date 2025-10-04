@@ -8,11 +8,13 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag, Shield, Truck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart, CartItem } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { formatCurrency } from "@/lib/utils";
 
 const Cart = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const { state, updateQuantity, removeItem } = useCart();
   const [promoCode, setPromoCode] = useState("");
 
@@ -23,21 +25,21 @@ const Cart = () => {
   const handleRemoveItem = (id: string) => {
     removeItem(id);
     toast({
-      title: "Item removed",
-      description: "Item has been removed from your cart.",
+      title: t('cart.removed'),
+      description: t('cart.removedDesc'),
     });
   };
 
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === "welcome10") {
       toast({
-        title: "Promo code applied!",
-        description: "You saved 10% on your order.",
+        title: t('cart.promoApplied'),
+        description: t('cart.promoAppliedDesc'),
       });
     } else {
       toast({
-        title: "Invalid promo code",
-        description: "Please check your promo code and try again.",
+        title: t('cart.promoInvalid'),
+        description: t('cart.promoInvalidDesc'),
         variant: "destructive"
       });
     }
@@ -62,21 +64,21 @@ const Cart = () => {
             className="mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Continue Shopping
+            {t('cart.continueShopping')}
           </Button>
           
           <div className="text-center py-16">
             <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('cart.empty')}</h2>
             <p className="text-muted-foreground mb-6">
-              Start building your precious metals portfolio today
+              {t('cart.emptyDesc')}
             </p>
             <Button 
               variant="gold" 
               size="lg"
               onClick={() => navigate("/products")}
             >
-              Browse Products
+              {t('cart.browse')}
             </Button>
           </div>
       </div>

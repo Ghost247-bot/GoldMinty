@@ -86,4 +86,6 @@ export const de: typeof en = {
   'footer.trust.pricing': 'Sofortige Marktpreise',
   'footer.followUs': 'Folgen Sie uns:',
   'footer.copyright': '© 2024 Gold Avenue. Alle Rechte vorbehalten. | Reguliert durch die Eidgenössische Finanzmarktaufsicht (FINMA)',
+  
+  // All extended translations inherit from English with override capability
 };

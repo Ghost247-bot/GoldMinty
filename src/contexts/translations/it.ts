@@ -86,4 +86,6 @@ export const it: typeof en = {
   'footer.trust.pricing': 'Prezzi di Mercato Istantanei',
   'footer.followUs': 'Seguici:',
   'footer.copyright': '© 2024 Gold Avenue. Tutti i diritti riservati. | Regolamentato dall\'Autorità federale di vigilanza sui mercati finanziari (FINMA)',
+  
+  // All extended translations inherit from English with override capability
 };
