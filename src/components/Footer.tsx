@@ -6,56 +6,59 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
+  const { t } = useLanguage();
 
   const handleNewsletterSignup = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim()) {
       toast({
-        title: "Thank you for subscribing!",
-        description: "You'll receive our latest market insights and exclusive offers.",
+        title: t('footer.newsletter.success'),
+        description: t('footer.newsletter.successDesc'),
       });
       setEmail("");
     }
   };
+  
   const productLinks = [
-    { label: "Gold Bars", href: "/products/gold" },
-    { label: "Gold Coins", href: "/products/gold" },
-    { label: "Silver Bars", href: "/products/silver" },
-    { label: "Silver Coins", href: "/products/silver" },
-    { label: "Platinum Products", href: "/products/platinum" },
-    { label: "Palladium Products", href: "/products/platinum" },
+    { label: t('footer.products.goldBars'), href: "/products/gold" },
+    { label: t('footer.products.goldCoins'), href: "/products/gold" },
+    { label: t('footer.products.silverBars'), href: "/products/silver" },
+    { label: t('footer.products.silverCoins'), href: "/products/silver" },
+    { label: t('footer.products.platinum'), href: "/products/platinum" },
+    { label: t('footer.products.palladium'), href: "/products/platinum" },
   ];
 
   const companyLinks = [
-    { label: "About Us", href: "/about" },
-    { label: "Our Story", href: "/about" },
-    { label: "Careers", href: "/careers" },
-    { label: "Press", href: "/press" },
-    { label: "Blog", href: "/blog" },
-    { label: "Investors", href: "/contact" },
+    { label: t('footer.company.about'), href: "/about" },
+    { label: t('footer.company.story'), href: "/about" },
+    { label: t('footer.company.careers'), href: "/careers" },
+    { label: t('footer.company.press'), href: "/press" },
+    { label: t('footer.company.blog'), href: "/blog" },
+    { label: t('footer.company.investors'), href: "/contact" },
   ];
 
   const supportLinks = [
-    { label: "Help Center", href: "/help-center" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "Shipping Info", href: "/shipping" },
-    { label: "Returns", href: "/returns" },
-    { label: "Track Order", href: "/contact" },
-    { label: "FAQ", href: "/help-center" },
+    { label: t('footer.support.helpCenter'), href: "/help-center" },
+    { label: t('footer.support.contact'), href: "/contact" },
+    { label: t('footer.support.shipping'), href: "/shipping" },
+    { label: t('footer.support.returns'), href: "/returns" },
+    { label: t('footer.support.track'), href: "/contact" },
+    { label: t('footer.support.faq'), href: "/help-center" },
   ];
 
   const legalLinks = [
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Terms of Service", href: "/terms-of-service" },
-    { label: "Cookie Policy", href: "/cookie-policy" },
-    { label: "Compliance", href: "/about" },
-    { label: "Security", href: "/about" },
-    { label: "Legal Notice", href: "/legal-notice" },
+    { label: t('footer.legal.privacy'), href: "/privacy-policy" },
+    { label: t('footer.legal.terms'), href: "/terms-of-service" },
+    { label: t('footer.legal.cookies'), href: "/cookie-policy" },
+    { label: t('footer.legal.compliance'), href: "/about" },
+    { label: t('footer.legal.security'), href: "/about" },
+    { label: t('footer.legal.notice'), href: "/legal-notice" },
   ];
 
   const socialLinks = [
@@ -71,21 +74,21 @@ const Footer = () => {
       <div className="border-b border-navy-light">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold mb-4">Stay Updated with Market Insights</h3>
+            <h3 className="text-2xl font-bold mb-4">{t('footer.newsletter.title')}</h3>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Get exclusive market analysis, precious metals insights, and early access to new products.
+              {t('footer.newsletter.subtitle')}
             </p>
             <form onSubmit={handleNewsletterSignup} className="flex max-w-md mx-auto gap-4">
               <Input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('footer.newsletter.email')}
                 className="bg-navy-light border-navy-light text-white placeholder:text-gray-400"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <Button variant="gold" className="whitespace-nowrap" type="submit">
-                Subscribe
+                {t('footer.newsletter.subscribe')}
               </Button>
             </form>
           </div>
@@ -105,8 +108,7 @@ const Footer = () => {
               <span className="text-xl font-bold">GOLD AVENUE</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-sm">
-              Your trusted partner in precious metals investment. We provide secure storage, 
-              instant buyback, and transparent pricing for gold, silver, platinum, and palladium.
+              {t('footer.description')}
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-300">
@@ -126,7 +128,7 @@ const Footer = () => {
 
           {/* Products */}
           <div>
-            <h4 className="font-semibold text-lg mb-6">Products</h4>
+            <h4 className="font-semibold text-lg mb-6">{t('footer.products.title')}</h4>
             <ul className="space-y-3">
               {productLinks.map((link) => (
                 <li key={link.label}>
@@ -143,7 +145,7 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold text-lg mb-6">Company</h4>
+            <h4 className="font-semibold text-lg mb-6">{t('footer.company.title')}</h4>
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.label}>
@@ -160,7 +162,7 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h4 className="font-semibold text-lg mb-6">Support</h4>
+            <h4 className="font-semibold text-lg mb-6">{t('footer.support.title')}</h4>
             <ul className="space-y-3">
               {supportLinks.map((link) => (
                 <li key={link.label}>
@@ -181,15 +183,15 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
               <div className="text-2xl font-bold text-gold mb-2">🔒</div>
-              <p className="text-gray-300">Swiss Bank-Level Security</p>
+              <p className="text-gray-300">{t('footer.trust.security')}</p>
             </div>
             <div>
               <div className="text-2xl font-bold text-gold mb-2">💎</div>
-              <p className="text-gray-300">Certified Precious Metals</p>
+              <p className="text-gray-300">{t('footer.trust.certified')}</p>
             </div>
             <div>
               <div className="text-2xl font-bold text-gold mb-2">📈</div>
-              <p className="text-gray-300">Instant Market Pricing</p>
+              <p className="text-gray-300">{t('footer.trust.pricing')}</p>
             </div>
           </div>
         </div>
@@ -212,7 +214,7 @@ const Footer = () => {
             </div>
             
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-400">Follow us:</span>
+              <span className="text-sm text-gray-400">{t('footer.followUs')}</span>
               <div className="flex gap-3">
                 {socialLinks.map((social) => (
                   <a
@@ -231,7 +233,7 @@ const Footer = () => {
           <Separator className="my-4 bg-navy-light" />
           
           <div className="text-center text-sm text-gray-400">
-            <p>© 2024 Gold Avenue. All rights reserved. | Regulated by Swiss Financial Market Supervisory Authority (FINMA)</p>
+            <p>{t('footer.copyright')}</p>
           </div>
         </div>
       </div>
