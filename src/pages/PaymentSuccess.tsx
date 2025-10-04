@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,15 @@ import { CheckCircle } from "lucide-react";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { dispatch } = useCart();
-  const sessionId = searchParams.get("session_id");
+  
+  // Get payment data from navigation state
+  const paymentData = location.state as {
+    paymentId?: string;
+    amount?: number;
+    status?: string;
+  } | null;
 
   useEffect(() => {
     // Clear the cart after successful payment
@@ -32,10 +38,15 @@ export default function PaymentSuccess() {
               </p>
             </div>
 
-            {sessionId && (
+            {paymentData?.paymentId && (
               <div className="mb-6 p-4 bg-muted rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Session ID:</p>
-                <p className="font-mono text-xs break-all">{sessionId}</p>
+                <p className="text-sm text-muted-foreground mb-1">Payment ID:</p>
+                <p className="font-mono text-xs break-all">{paymentData.paymentId}</p>
+                {paymentData.amount && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Amount: ${(paymentData.amount / 100).toFixed(2)}
+                  </p>
+                )}
               </div>
             )}
 

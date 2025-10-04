@@ -15,9 +15,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
-import { CreditCard, Shield, Truck, Lock, ArrowLeft } from 'lucide-react';
+import { Shield, Truck, Lock, ArrowLeft } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { formatCurrency } from '@/lib/utils';
+import SquarePaymentForm from '@/components/SquarePaymentForm';
 
 const checkoutSchema = z.object({
   // Billing Information
@@ -40,12 +41,6 @@ const checkoutSchema = z.object({
   shippingState: z.string().optional(),
   shippingZipCode: z.string().optional(),
   shippingCountry: z.string().optional(),
-  
-  // Payment
-  cardNumber: z.string().min(16, 'Card number must be 16 digits'),
-  expiryDate: z.string().min(5, 'Expiry date is required'),
-  cvv: z.string().min(3, 'CVV must be at least 3 digits'),
-  cardName: z.string().min(2, 'Cardholder name is required'),
 });
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
@@ -93,32 +88,57 @@ const Checkout = () => {
   const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + insurance + tax;
 
-  const handleSubmit = async (data: CheckoutFormData) => {
+  const handlePaymentSuccess = async (paymentResult: any) => {
     setIsProcessing(true);
     
     try {
-      // Create Stripe checkout session
-      const { data: sessionData, error } = await supabase.functions.invoke('create-payment', {
-        body: { items: cartState.items }
+      const formData = form.getValues();
+      
+      // Process Square payment
+      const { data: paymentData, error } = await supabase.functions.invoke('create-square-payment', {
+        body: { 
+          items: cartState.items,
+          paymentToken: paymentResult.token,
+          customerInfo: {
+            email: formData.email,
+            firstName: formData.firstName,
+            lastName: formData.lastName
+          }
+        }
       });
 
       if (error) throw error;
 
-      if (sessionData?.url) {
-        // Redirect to Stripe Checkout
-        window.open(sessionData.url, '_blank');
+      if (paymentData?.success) {
+        // Clear cart and redirect to success page
+        clearCart();
+        navigate('/payment-success', { 
+          state: { 
+            paymentId: paymentData.paymentId,
+            amount: paymentData.amount,
+            status: paymentData.status
+          }
+        });
       } else {
-        throw new Error('No checkout URL received');
+        throw new Error(paymentData?.error || 'Payment processing failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Payment Failed",
-        description: "There was an error creating the checkout session. Please try again.",
+        description: error.message || "There was an error processing your payment. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handlePaymentError = (error: string) => {
+    toast({
+      title: "Payment Error",
+      description: error,
+      variant: "destructive",
+    });
   };
 
   return (
@@ -345,82 +365,17 @@ const Checkout = () => {
                   </Card>
 
                   {/* Step 3: Payment Information */}
-                  <Card className="backdrop-blur-sm bg-card/95 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                          3
-                        </div>
-                        <CreditCard className="h-5 w-5" />
-                        Payment Information
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="cardName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Cardholder Name</FormLabel>
-                            <FormControl>
-                              <Input {...field} className="bg-background/50" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="cardNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Card Number</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="1234 5678 9012 3456" className="bg-background/50" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="expiryDate"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Expiry Date</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="MM/YY" className="bg-background/50" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="cvv"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>CVV</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="123" className="bg-background/50" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      {/* Security Features */}
-                      <div className="flex items-center justify-center space-x-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                        <Shield className="h-5 w-5 text-primary" />
-                        <Lock className="h-5 w-5 text-primary" />
-                        <span className="text-sm font-medium">256-bit SSL Encryption</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <SquarePaymentForm
+                    totalAmount={Math.round(total * 100)} // Convert to cents
+                    onPaymentSuccess={handlePaymentSuccess}
+                    onPaymentError={handlePaymentError}
+                    isProcessing={isProcessing}
+                    customerInfo={{
+                      email: form.getValues('email') || '',
+                      firstName: form.getValues('firstName') || '',
+                      lastName: form.getValues('lastName') || ''
+                    }}
+                  />
                 </form>
               </Form>
             </div>
@@ -492,21 +447,6 @@ const Checkout = () => {
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-lg py-6"
-                    disabled={isProcessing}
-                    onClick={form.handleSubmit(handleSubmit)}
-                  >
-                    {isProcessing ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Processing...
-                      </div>
-                    ) : (
-                      `Complete Order • $${total.toLocaleString()}`
-                    )}
-                  </Button>
 
                   {/* Trust Badges */}
                   <div className="grid grid-cols-2 gap-2 pt-4">

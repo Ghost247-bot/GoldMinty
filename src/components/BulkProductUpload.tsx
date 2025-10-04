@@ -8,9 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { Upload, CheckCircle, XCircle, Clock, Database, FileText, FolderOpen } from 'lucide-react';
 
 export default function BulkProductUpload() {
-  const [isUploadingStripe, setIsUploadingStripe] = useState(false);
   const [isUploadingDB, setIsUploadingDB] = useState(false);
-  const [stripeResults, setStripeResults] = useState<any>(null);
   const [dbResults, setDbResults] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<string>('gold-products.csv');
   const [uploadMode, setUploadMode] = useState<'predefined' | 'local'>('predefined');
@@ -63,38 +61,6 @@ export default function BulkProductUpload() {
     }
   };
 
-  const handleStripeUpload = async () => {
-    setIsUploadingStripe(true);
-    setStripeResults(null);
-
-    try {
-      const csvData = await getCSVData();
-
-      // Call the bulk upload function
-      const { data, error } = await supabase.functions.invoke('bulk-upload-products', {
-        body: { csvData }
-      });
-
-      if (error) throw error;
-
-      setStripeResults(data);
-      
-      toast({
-        title: "Stripe Upload Complete!",
-        description: `Successfully uploaded ${data.summary.success} products to Stripe`,
-      });
-
-    } catch (error) {
-      toast({
-        title: "Stripe Upload Failed",
-        description: "There was an error uploading products to Stripe",
-        variant: "destructive",
-      });
-      console.error('Stripe upload error:', error);
-    } finally {
-      setIsUploadingStripe(false);
-    }
-  };
 
   const handleDatabaseUpload = async () => {
     setIsUploadingDB(true);
@@ -212,7 +178,7 @@ export default function BulkProductUpload() {
       <CardContent className="space-y-6">
         <div className="space-y-4">
           <p className="text-muted-foreground">
-            Upload products from your CSV data to either Stripe's product catalog or your Supabase database.
+            Upload products from your CSV data to your Supabase database.
           </p>
 
           {/* Metal Type Selection */}
@@ -320,9 +286,8 @@ export default function BulkProductUpload() {
         </div>
 
         <Tabs defaultValue="database" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-1">
             <TabsTrigger value="database">Database Import</TabsTrigger>
-            <TabsTrigger value="stripe">Stripe Products</TabsTrigger>
           </TabsList>
           
           <TabsContent value="database" className="space-y-4">
@@ -355,35 +320,6 @@ export default function BulkProductUpload() {
             {renderResults(dbResults, "Database Import Results")}
           </TabsContent>
           
-          <TabsContent value="stripe" className="space-y-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    This will create products and prices in your Stripe account for payment processing.
-                  </p>
-                  <Button 
-                    onClick={handleStripeUpload} 
-                    disabled={isUploadingStripe || (!localFile && uploadMode === 'local')}
-                    className="w-full"
-                  >
-                    {isUploadingStripe ? (
-                      <>
-                        <Clock className="mr-2 h-4 w-4 animate-spin" />
-                        Uploading to Stripe...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload to Stripe
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            {renderResults(stripeResults, "Stripe Upload Results")}
-          </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
