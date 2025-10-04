@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SecurityVerification from "./components/SecurityVerification";
 import Layout from "./components/Layout";
@@ -38,11 +39,12 @@ import BulkProductUpload from "./components/BulkProductUpload";
 import Wishlist from "./pages/Wishlist";
 
 const App = () => (
-  <AuthProvider>
-    <CartProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+  <LanguageProvider>
+    <AuthProvider>
+      <CartProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
         <Routes>
           {/* Pages with Layout (Header + Footer) */}
           <Route path="/" element={<Layout showPriceTicker><Index /></Layout>} />
@@ -90,9 +92,10 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
-      </BrowserRouter>
-    </CartProvider>
-  </AuthProvider>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
+  </LanguageProvider>
 );
 
 export default App;

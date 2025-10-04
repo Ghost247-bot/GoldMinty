@@ -8,12 +8,13 @@ import { useState } from "react";
 import logoSymbol from "@/assets/logo-symbol.png";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("EN");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
   
   // Safe cart access with fallback
   let cartState = { totalItems: 0 };
@@ -34,20 +35,22 @@ const Header = () => {
   }
 
   const languages = [
-    { code: "EN", name: "English" },
-    { code: "FR", name: "Français" },
-    { code: "DE", name: "Deutsch" },
-    { code: "IT", name: "Italiano" }
+    { code: "en", name: "English", flag: "🇬🇧" },
+    { code: "fr", name: "Français", flag: "🇫🇷" },
+    { code: "es", name: "Español", flag: "🇪🇸" },
+    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "zh", name: "中文", flag: "🇨🇳" },
+    { code: "it", name: "Italiano", flag: "🇮🇹" }
   ];
 
   const navigationItems = [
-    { label: "🔥 Deals", href: "/products?category=deals" },
-    { label: "Gold", href: "/products/gold" },
-    { label: "Silver", href: "/products/silver" },
-    { label: "Platinum & Palladium", href: "/products/platinum" },
-    { label: "Live Charts", href: "/charts" },
-    { label: "Price List", href: "/prices" },
-    { label: "Resources", href: "/resources" },
+    { label: t('nav.deals'), href: "/products?category=deals" },
+    { label: t('nav.gold'), href: "/products/gold" },
+    { label: t('nav.silver'), href: "/products/silver" },
+    { label: t('nav.platinum'), href: "/products/platinum" },
+    { label: t('nav.charts'), href: "/charts" },
+    { label: t('nav.priceList'), href: "/prices" },
+    { label: t('nav.resources'), href: "/resources" },
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -76,8 +79,7 @@ const Header = () => {
   };
 
   const handleLanguageChange = (langCode: string) => {
-    setSelectedLanguage(langCode);
-    // Here you would typically update the app's language context
+    setLanguage(langCode as 'en' | 'fr' | 'es' | 'de' | 'zh' | 'it');
   };
 
   return (
@@ -98,14 +100,14 @@ const Header = () => {
               className="cursor-pointer hover:text-gold transition-colors"
               onClick={handleHelpClick}
             >
-              Need help?
+              {t('header.needHelp')}
             </span>
           </div>
           <div className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
                 <Globe className="w-4 h-4" />
-                <span>{selectedLanguage}</span>
+                <span>{languages.find(l => l.code === language)?.flag} {language.toUpperCase()}</span>
                 <ChevronDown className="w-3 h-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -115,6 +117,7 @@ const Header = () => {
                     onClick={() => handleLanguageChange(lang.code)}
                     className="cursor-pointer"
                   >
+                    <span className="mr-2">{lang.flag}</span>
                     {lang.name}
                   </DropdownMenuItem>
                 ))}
@@ -127,7 +130,7 @@ const Header = () => {
                 size="sm"
                 onClick={() => navigate("/login")}
               >
-                Sign in
+                {t('header.signIn')}
               </Button>
             ) : (
               <DropdownMenu>
@@ -140,18 +143,18 @@ const Header = () => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     <Settings className="w-4 h-4 mr-2" />
-                    Dashboard
+                    {t('header.dashboard')}
                   </DropdownMenuItem>
                   {authState.userRole === 'admin' && (
                     <DropdownMenuItem onClick={() => navigate("/admin")}>
                       <Settings className="w-4 h-4 mr-2" />
-                      Admin Panel
+                      {t('header.adminPanel')}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={authState.signOut}>
                     <LogOut className="w-4 h-4 mr-2" />
-                    Sign out
+                    {t('header.signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -170,7 +173,7 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px]">
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+                <SheetTitle>{t('header.menu')}</SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-4">
                 {/* Mobile Search */}
@@ -178,7 +181,7 @@ const Header = () => {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input 
-                      placeholder="Search products..."
+                      placeholder={t('header.searchProducts')}
                       className="pl-10"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -215,13 +218,13 @@ const Header = () => {
                     className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:text-gold transition-colors"
                     onClick={handleHelpClick}
                   >
-                    <span className="text-sm">Need help?</span>
+                    <span className="text-sm">{t('header.needHelp')}</span>
                   </div>
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 w-full hover:text-gold transition-colors">
                       <Globe className="w-4 h-4" />
-                      <span className="text-sm">{selectedLanguage}</span>
+                      <span className="text-sm">{languages.find(l => l.code === language)?.flag} {language.toUpperCase()}</span>
                       <ChevronDown className="w-3 h-3 ml-auto" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start">
@@ -230,6 +233,7 @@ const Header = () => {
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang.code)}
                         >
+                          <span className="mr-2">{lang.flag}</span>
                           {lang.name}
                         </DropdownMenuItem>
                       ))}
@@ -247,7 +251,7 @@ const Header = () => {
                         setIsMobileMenuOpen(false);
                       }}
                     >
-                      Sign in
+                      {t('header.signIn')}
                     </Button>
                   )}
                 </div>
@@ -272,7 +276,7 @@ const Header = () => {
             <div className="relative group w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
-                placeholder="Search gold, silver, platinum..."
+                placeholder={t('header.search')}
                 className="pl-10 focus:ring-2 focus:ring-gold/20 w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -359,18 +363,18 @@ const Header = () => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                     <Settings className="w-4 h-4 mr-2" />
-                    Dashboard
+                    {t('header.dashboard')}
                   </DropdownMenuItem>
                   {authState.userRole === 'admin' && (
                     <DropdownMenuItem onClick={() => navigate("/admin")}>
                       <Settings className="w-4 h-4 mr-2" />
-                      Admin Panel
+                      {t('header.adminPanel')}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={authState.signOut}>
                     <LogOut className="w-4 h-4 mr-2" />
-                    Sign out
+                    {t('header.signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
