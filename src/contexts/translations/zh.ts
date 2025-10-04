@@ -32,17 +32,17 @@ export const zh: typeof en = {
   'hero.cta1': '开始投资',
   'hero.cta2': '查看实时价格',
   
-  'stats.title': '为什么选择Gold Avenue',
+  'stats.title': '为什么选择Gold Mint',
   'stats.subtitle': '全球投资者信赖我们对质量、安全和卓越服务的承诺',
   
   'categories.title': '发现我们的产品',
   'categories.subtitle': '探索我们来自全球值得信赖的铸币厂的优质贵金属精选',
   
   'testimonials.title': '客户评价',
-  'testimonials.subtitle': '阅读我们满意的客户对Gold Avenue体验的评价。',
+  'testimonials.subtitle': '阅读我们满意的客户对Gold Mint体验的评价。',
   
   'cta.title': '准备开始投资贵金属了吗？',
-  'cta.subtitle': '加入数千名信赖Gold Avenue进行贵金属投资的投资者。充满信心地建立您的投资组合。',
+  'cta.subtitle': '加入数千名信赖Gold Mint进行贵金属投资的投资者。充满信心地建立您的投资组合。',
   'cta.browse': '浏览产品',
   'cta.createAccount': '创建账户',
   
@@ -85,7 +85,7 @@ export const zh: typeof en = {
   'footer.trust.certified': '认证贵金属',
   'footer.trust.pricing': '实时市场定价',
   'footer.followUs': '关注我们：',
-  'footer.copyright': '© 2024 Gold Avenue. 版权所有。| 受瑞士金融市场监督管理局 (FINMA) 监管',
+  'footer.copyright': '© 2024 Gold Mint. 版权所有。| 受瑞士金融市场监督管理局 (FINMA) 监管',
   
   // All extended translations inherit from English with override capability
 };

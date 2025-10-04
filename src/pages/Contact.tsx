@@ -66,13 +66,13 @@ const Contact = () => {
     {
       icon: Mail,
       title: t('contact.info.email'),
-      details: ["support@goldavenue.com", "sales@goldavenue.com"],
+      details: ["support@Gold Mint.com", "sales@Gold Mint.com"],
       description: t('contact.info.responseTime')
     },
     {
       icon: MapPin,
       title: t('contact.info.address'),
-      details: ["Gold Avenue SA", "Rue du Rhône 100", "1204 Geneva, Switzerland"],
+      details: ["Gold Mint SA", "Rue du Rhône 100", "1204 Geneva, Switzerland"],
       description: t('contact.info.appointment')
     },
     {
@@ -98,19 +98,19 @@ const Contact = () => {
     {
       name: "Europe",
       phone: "+41 22 518 92 11",
-      email: "europe@goldavenue.com",
+      email: "europe@Gold Mint.com",
       hours: "8:00 AM - 6:00 PM CET"
     },
     {
       name: "North America", 
       phone: "+1 (555) 123-4567",
-      email: "americas@goldavenue.com",
+      email: "americas@Gold Mint.com",
       hours: "9:00 AM - 5:00 PM EST"
     },
     {
       name: "Asia Pacific",
       phone: "+65 6789 0123",
-      email: "asia@goldavenue.com", 
+      email: "asia@Gold Mint.com", 
       hours: "9:00 AM - 5:00 PM SGT"
     }
   ];

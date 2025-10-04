@@ -114,7 +114,7 @@ const Careers = () => {
           <Users className="w-16 h-16 text-primary mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-primary mb-4">Join Our Team</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Build your career with Gold Avenue, where innovation meets tradition in the precious metals industry. 
+            Build your career with Gold Mint, where innovation meets tradition in the precious metals industry. 
             Join a team that values excellence, integrity, and continuous growth.
           </p>
         </div>
@@ -125,9 +125,9 @@ const Careers = () => {
             <CardContent className="p-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>
-                  <h2 className="text-3xl font-bold mb-6">Why Gold Avenue?</h2>
+                  <h2 className="text-3xl font-bold mb-6">Why Gold Mint?</h2>
                   <p className="text-muted-foreground mb-6 leading-relaxed">
-                    At Gold Avenue, we're not just colleagues – we're a close-knit team of passionate professionals 
+                    At Gold Mint, we're not just colleagues – we're a close-knit team of passionate professionals 
                     dedicated to revolutionizing precious metals investing. Our Swiss heritage of precision and 
                     excellence creates an environment where innovation thrives.
                   </p>
@@ -277,7 +277,7 @@ const Careers = () => {
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-4">Diversity & Inclusion</h3>
               <p className="text-muted-foreground mb-6 max-w-3xl mx-auto">
-                Gold Avenue is committed to creating an inclusive workplace where all employees can thrive. 
+                Gold Mint is committed to creating an inclusive workplace where all employees can thrive. 
                 We believe that diverse perspectives drive innovation and better serve our global client base. 
                 We are an equal opportunity employer and welcome applications from all qualified candidates.
               </p>

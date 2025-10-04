@@ -62,10 +62,10 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com/goldavenue", label: "Facebook" },
-    { icon: Twitter, href: "https://twitter.com/goldavenue", label: "Twitter" },
-    { icon: Instagram, href: "https://instagram.com/goldavenue", label: "Instagram" },
-    { icon: Linkedin, href: "https://linkedin.com/company/goldavenue", label: "LinkedIn" },
+    { icon: Facebook, href: "https://facebook.com/Gold Mint", label: "Facebook" },
+    { icon: Twitter, href: "https://twitter.com/Gold Mint", label: "Twitter" },
+    { icon: Instagram, href: "https://instagram.com/Gold Mint", label: "Instagram" },
+    { icon: Linkedin, href: "https://linkedin.com/company/Gold Mint", label: "LinkedIn" },
   ];
 
   return (
@@ -104,8 +104,8 @@ const Footer = () => {
               className="flex items-center gap-3 mb-6 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => navigate("/")}
             >
-              <img src={logoSymbol} alt="Gold Avenue" className="h-8 w-8" />
-              <span className="text-xl font-bold">GOLD AVENUE</span>
+              <img src={logoSymbol} alt="Gold Mint" className="h-8 w-8" />
+              <span className="text-xl font-bold">Gold Mint</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-sm">
               {t('footer.description')}
@@ -117,7 +117,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-gray-300">
                 <Mail className="h-4 w-4" />
-                <span>support@goldavenue.com</span>
+                <span>support@Gold Mint.com</span>
               </div>
               <div className="flex items-center gap-3 text-gray-300">
                 <MapPin className="h-4 w-4" />

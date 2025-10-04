@@ -1,0 +1,39 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer gold circle -->
+  <circle cx="100" cy="100" r="90" fill="url(#goldGradient)" stroke="#FFD700" stroke-width="4"/>
+  
+  <!-- Inner gold circle -->
+  <circle cx="100" cy="100" r="70" fill="url(#goldGradient)" stroke="#FFD700" stroke-width="3"/>
+  
+  <!-- Central geometric design - X pattern with curved connections -->
+  <!-- Top diagonal line -->
+  <path d="M100 30 L130 70 L100 50 L70 70 Z" fill="url(#goldGradient)"/>
+  
+  <!-- Bottom diagonal line -->
+  <path d="M100 170 L130 130 L100 150 L70 130 Z" fill="url(#goldGradient)"/>
+  
+  <!-- Left diagonal line -->
+  <path d="M30 100 L70 70 L50 100 L70 130 Z" fill="url(#goldGradient)"/>
+  
+  <!-- Right diagonal line -->
+  <path d="M170 100 L130 70 L150 100 L130 130 Z" fill="url(#goldGradient)"/>
+  
+  <!-- Central diamond/square -->
+  <rect x="95" y="95" width="10" height="10" transform="rotate(45 100 100)" fill="url(#goldGradient)"/>
+  
+  <!-- Curved connecting lines -->
+  <path d="M100 50 Q130 100 100 150" stroke="url(#goldGradient)" stroke-width="3" fill="none"/>
+  <path d="M50 100 Q100 130 150 100" stroke="url(#goldGradient)" stroke-width="3" fill="none"/>
+  
+  <!-- GOLDMINT text -->
+  <text x="100" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="url(#goldGradient)">GOLDMINT</text>
+  
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="50%" stop-color="#FFA500"/>
+      <stop offset="100%" stop-color="#FF8C00"/>
+    </linearGradient>
+  </defs>
+</svg>
+

@@ -3,53 +3,55 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, FileText, Shield, AlertTriangle, Scale } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const TermsOfService = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const sections = [
     {
-      title: "Account Terms",
+      title: t('terms.accountTerms'),
       icon: FileText,
       content: [
-        "You must be at least 18 years old to create an account and use our services",
-        "You are responsible for maintaining the confidentiality of your account credentials",
-        "You agree to provide accurate and complete information during registration",
-        "Each user may maintain only one active account unless specifically authorized",
-        "Account termination may occur for violation of these terms or applicable laws"
+        t('terms.accountTerms1'),
+        t('terms.accountTerms2'),
+        t('terms.accountTerms3'),
+        t('terms.accountTerms4'),
+        t('terms.accountTerms5')
       ]
     },
     {
-      title: "Investment Services", 
+      title: t('terms.investmentServices'), 
       icon: Shield,
       content: [
-        "Gold Avenue provides precious metals trading and storage services",
-        "All investments carry inherent risks, including potential loss of principal",
-        "We do not provide investment advice; all decisions are your responsibility",
-        "Minimum investment amounts and transaction fees apply as published",
-        "Product availability and pricing are subject to market conditions"
+        t('terms.investmentServices1'),
+        t('terms.investmentServices2'),
+        t('terms.investmentServices3'),
+        t('terms.investmentServices4'),
+        t('terms.investmentServices5')
       ]
     },
     {
-      title: "Storage & Custody",
+      title: t('terms.storageCustody'),
       icon: Scale,
       content: [
-        "Precious metals are stored in certified secure vaults in Switzerland",
-        "Storage fees apply as outlined in our current fee schedule",
-        "You retain full ownership of your stored precious metals",
-        "Insurance coverage protects against theft, loss, and damage",
-        "Delivery and withdrawal services available subject to verification procedures"
+        t('terms.storageCustody1'),
+        t('terms.storageCustody2'),
+        t('terms.storageCustody3'),
+        t('terms.storageCustody4'),
+        t('terms.storageCustody5')
       ]
     },
     {
-      title: "Compliance & Regulations",
+      title: t('terms.complianceRegulations'),
       icon: AlertTriangle,
       content: [
-        "All services are provided under Swiss financial regulations (FINMA)",
-        "Anti-money laundering (AML) and Know Your Customer (KYC) procedures apply",
-        "Transactions may be monitored and reported as required by law",
-        "Tax reporting is your responsibility in your jurisdiction of residence",
-        "We may refuse transactions that do not meet compliance requirements"
+        t('terms.complianceRegulations1'),
+        t('terms.complianceRegulations2'),
+        t('terms.complianceRegulations3'),
+        t('terms.complianceRegulations4'),
+        t('terms.complianceRegulations5')
       ]
     }
   ];
@@ -72,14 +74,14 @@ const TermsOfService = () => {
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t('ui.back')}
         </Button>
 
         {/* Page Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">Terms of Service</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            These terms govern your use of Gold Avenue's precious metals investment platform and services.
+            These terms govern your use of Gold Mint's precious metals investment platform and services.
           </p>
           <div className="flex items-center justify-center gap-4 mt-6">
             <Badge variant="outline">Last updated: December 2024</Badge>
@@ -95,7 +97,7 @@ const TermsOfService = () => {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Important Notice</h3>
                 <p className="text-muted-foreground">
-                  By accessing or using Gold Avenue's services, you agree to be bound by these Terms of Service 
+                  By accessing or using Gold Mint's services, you agree to be bound by these Terms of Service 
                   and all applicable laws and regulations. If you do not agree with any part of these terms, 
                   you must not use our services.
                 </p>
@@ -109,9 +111,9 @@ const TermsOfService = () => {
           <CardContent className="p-8">
             <div className="prose max-w-none">
               <p className="text-lg leading-relaxed text-muted-foreground">
-                Welcome to Gold Avenue SA, a Swiss-regulated precious metals investment platform. These Terms of 
+                Welcome to Gold Mint SA, a Swiss-regulated precious metals investment platform. These Terms of 
                 Service ("Terms") constitute a legally binding agreement between you ("User," "you," or "your") 
-                and Gold Avenue SA ("Company," "we," "our," or "us").
+                and Gold Mint SA ("Company," "we," "our," or "us").
               </p>
               <p className="mt-4 text-muted-foreground">
                 Our services are regulated by the Swiss Financial Market Supervisory Authority (FINMA) and operate 

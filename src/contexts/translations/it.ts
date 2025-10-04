@@ -32,17 +32,17 @@ export const it: typeof en = {
   'hero.cta1': 'Inizia a Investire',
   'hero.cta2': 'Vedi Prezzi in Tempo Reale',
   
-  'stats.title': 'Perché Scegliere Gold Avenue',
+  'stats.title': 'Perché Scegliere Gold Mint',
   'stats.subtitle': 'Fidato dagli investitori di tutto il mondo per il nostro impegno verso qualità, sicurezza e servizio eccezionale',
   
   'categories.title': 'Scopri i nostri prodotti',
   'categories.subtitle': 'Esplora la nostra selezione premium di metalli preziosi da zecche fidate in tutto il mondo',
   
   'testimonials.title': 'Testimonianze dei Clienti',
-  'testimonials.subtitle': 'Leggi cosa hanno da dire i nostri clienti soddisfatti sulla loro esperienza con Gold Avenue.',
+  'testimonials.subtitle': 'Leggi cosa hanno da dire i nostri clienti soddisfatti sulla loro esperienza con Gold Mint.',
   
   'cta.title': 'Pronto a Iniziare a Investire in Metalli Preziosi?',
-  'cta.subtitle': 'Unisciti a migliaia di investitori che si fidano di Gold Avenue per i loro investimenti in metalli preziosi. Costruisci il tuo portafoglio con fiducia.',
+  'cta.subtitle': 'Unisciti a migliaia di investitori che si fidano di Gold Mint per i loro investimenti in metalli preziosi. Costruisci il tuo portafoglio con fiducia.',
   'cta.browse': 'Esplora Prodotti',
   'cta.createAccount': 'Crea Account',
   
@@ -85,7 +85,7 @@ export const it: typeof en = {
   'footer.trust.certified': 'Metalli Preziosi Certificati',
   'footer.trust.pricing': 'Prezzi di Mercato Istantanei',
   'footer.followUs': 'Seguici:',
-  'footer.copyright': '© 2024 Gold Avenue. Tutti i diritti riservati. | Regolamentato dall\'Autorità federale di vigilanza sui mercati finanziari (FINMA)',
+  'footer.copyright': '© 2024 Gold Mint. Tutti i diritti riservati. | Regolamentato dall\'Autorità federale di vigilanza sui mercati finanziari (FINMA)',
   
   // All extended translations inherit from English with override capability
 };

@@ -3,6 +3,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Language transition animations */
+.language-transition {
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.language-transition.transitioning {
+  opacity: 0.7;
+  transform: scale(0.98);
+}
+
+.language-transition.fade-in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Smooth fade transition for content */
+.content-fade {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.content-fade.transitioning {
+  opacity: 0.6;
+}
+
 /* Professional animations for enhanced login experience */
 @keyframes float {
   0%, 100% {
@@ -61,7 +85,7 @@ All colors MUST be HSL.
     --input: 210 20% 88%;
     --ring: 210 100% 12%;
 
-    /* Gold Avenue specific colors */
+    /* Gold Mint specific colors */
     --gold: 45 100% 55%;
     --gold-dark: 38 92% 45%;
     --navy-deep: 210 100% 8%;

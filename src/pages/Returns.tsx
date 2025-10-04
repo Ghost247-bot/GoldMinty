@@ -351,7 +351,7 @@ const Returns = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-gold rounded-full mt-2 flex-shrink-0" />
-                    Transfer to another Gold Avenue customer available
+                    Transfer to another Gold Mint customer available
                   </li>
                 </ul>
                 <Button variant="outline" className="mt-4" onClick={() => navigate("/contact")}>

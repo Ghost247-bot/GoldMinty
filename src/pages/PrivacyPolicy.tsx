@@ -85,7 +85,7 @@ const PrivacyPolicy = () => {
           <CardContent className="p-8">
             <div className="prose max-w-none">
               <p className="text-lg leading-relaxed text-muted-foreground">
-                Gold Avenue SA ("we," "our," or "us") is committed to protecting your privacy and ensuring 
+                Gold Mint SA ("we," "our," or "us") is committed to protecting your privacy and ensuring 
                 the security of your personal information. This Privacy Policy explains how we collect, use, 
                 disclose, and safeguard your information when you use our precious metals investment platform 
                 and related services.
@@ -205,13 +205,13 @@ const PrivacyPolicy = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-medium mb-2">Data Protection Officer</h4>
-                <p className="text-sm text-muted-foreground mb-1">privacy@goldavenue.com</p>
+                <p className="text-sm text-muted-foreground mb-1">privacy@Gold Mint.com</p>
                 <p className="text-sm text-muted-foreground">+41 22 518 92 11</p>
               </div>
               <div>
                 <h4 className="font-medium mb-2">Mailing Address</h4>
                 <p className="text-sm text-muted-foreground">
-                  Gold Avenue SA<br />
+                  Gold Mint SA<br />
                   Attention: Privacy Officer<br />
                   Rue du Rhône 100<br />
                   1204 Geneva, Switzerland

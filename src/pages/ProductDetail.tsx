@@ -22,12 +22,14 @@ import { formatCurrency } from "@/lib/utils";
 import { parseGoldProductsCSV } from "@/utils/csvParser";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
   const { toast } = useToast();
   const { addItem } = useCart();
   const { user } = useAuth();
@@ -143,13 +145,13 @@ const ProductDetail = () => {
     return (
       <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">Product not found</p>
+            <p className="text-muted-foreground text-lg">{t('productDetail.notFound')}</p>
             <Button 
               variant="outline" 
               className="mt-4"
               onClick={() => navigate('/products')}
             >
-              Back to Products
+{t('productDetail.backToProducts')}
             </Button>
           </div>
       </div>

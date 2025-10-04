@@ -53,7 +53,7 @@ const HelpCenter = () => {
 
   const popularFaqs = [
     {
-      question: "How do I create an account with Gold Avenue?",
+      question: "How do I create an account with Gold Mint?",
       answer: "Creating an account is simple. Click 'Sign Up' on our homepage, provide your email and basic information, verify your email address, and complete the KYC (Know Your Customer) process by uploading required identification documents. The entire process typically takes 5-10 minutes.",
       category: "getting-started"
     },
@@ -69,12 +69,12 @@ const HelpCenter = () => {
     },
     {
       question: "Is my investment secure?",
-      answer: "Yes, your investments are highly secure. Precious metals are stored in certified Swiss vaults with full insurance coverage. Your metals are segregated and allocated specifically to you. Gold Avenue is regulated by FINMA and follows Swiss banking security standards.",
+      answer: "Yes, your investments are highly secure. Precious metals are stored in certified Swiss vaults with full insurance coverage. Your metals are segregated and allocated specifically to you. Gold Mint is regulated by FINMA and follows Swiss banking security standards.",
       category: "account"
     },
     {
-      question: "Can I sell my metals back to Gold Avenue?",
-      answer: "Absolutely. Gold Avenue offers instant buyback on all products we sell. You can sell your metals at any time during market hours at competitive market prices. Funds are typically available in your account within 24 hours of the sale.",
+      question: "Can I sell my metals back to Gold Mint?",
+      answer: "Absolutely. Gold Mint offers instant buyback on all products we sell. You can sell your metals at any time during market hours at competitive market prices. Funds are typically available in your account within 24 hours of the sale.",
       category: "trading"
     },
     {
@@ -170,7 +170,7 @@ const HelpCenter = () => {
                     } else if (option.title === "Phone Support") {
                       window.open("tel:+41225189211", "_self");
                     } else if (option.title === "Email Support") {
-                      window.open("mailto:support@goldavenue.com", "_self");
+                      window.open("mailto:support@Gold Mint.com", "_self");
                     } else {
                       navigate("/contact");
                     }

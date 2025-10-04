@@ -23,7 +23,7 @@ const LegalNotice = () => {
           <Scale className="w-16 h-16 text-primary mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-primary mb-4">Legal Notice</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Important legal information about Gold Avenue SA, our regulatory status, 
+            Important legal information about Gold Mint SA, our regulatory status, 
             and terms applicable to our services.
           </p>
         </div>
@@ -41,7 +41,7 @@ const LegalNotice = () => {
               <div>
                 <h4 className="font-semibold mb-3">Legal Entity</h4>
                 <div className="space-y-2 text-muted-foreground">
-                  <p><span className="font-medium">Company Name:</span> Gold Avenue SA</p>
+                  <p><span className="font-medium">Company Name:</span> Gold Mint SA</p>
                   <p><span className="font-medium">Legal Form:</span> Swiss Corporation (Société Anonyme)</p>
                   <p><span className="font-medium">Registration Number:</span> CHE-123.456.789</p>
                   <p><span className="font-medium">VAT Number:</span> CHE-123.456.789 MWST</p>
@@ -51,12 +51,12 @@ const LegalNotice = () => {
               <div>
                 <h4 className="font-semibold mb-3">Registered Address</h4>
                 <div className="space-y-2 text-muted-foreground">
-                  <p>Gold Avenue SA</p>
+                  <p>Gold Mint SA</p>
                   <p>Rue du Rhône 100</p>
                   <p>1204 Geneva</p>
                   <p>Switzerland</p>
                   <p><span className="font-medium">Phone:</span> +41 22 518 92 11</p>
-                  <p><span className="font-medium">Email:</span> info@goldavenue.com</p>
+                  <p><span className="font-medium">Email:</span> info@Gold Mint.com</p>
                 </div>
               </div>
             </div>
@@ -71,7 +71,7 @@ const LegalNotice = () => {
               Regulatory Information
             </CardTitle>
             <CardDescription>
-              Gold Avenue SA operates under Swiss financial regulations
+              Gold Mint SA operates under Swiss financial regulations
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -79,7 +79,7 @@ const LegalNotice = () => {
               <div>
                 <h4 className="font-semibold mb-3">Regulatory Authority</h4>
                 <p className="text-muted-foreground mb-2">
-                  Gold Avenue SA is regulated by the Swiss Financial Market Supervisory Authority (FINMA)
+                  Gold Mint SA is regulated by the Swiss Financial Market Supervisory Authority (FINMA)
                 </p>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <p><span className="font-medium">License Number:</span> FINMA-12345</p>
@@ -158,7 +158,7 @@ const LegalNotice = () => {
           <CardContent>
             <div className="space-y-4">
               <p className="text-muted-foreground">
-                Gold Avenue SA maintains comprehensive professional indemnity insurance coverage 
+                Gold Mint SA maintains comprehensive professional indemnity insurance coverage 
                 as required by Swiss financial regulations.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -190,7 +190,7 @@ const LegalNotice = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Gold Avenue SA participates in the Swiss Investor Compensation Scheme as required 
+              Gold Mint SA participates in the Swiss Investor Compensation Scheme as required 
               by Article 37d of the Banking Act.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -254,10 +254,10 @@ const LegalNotice = () => {
               For legal matters, regulatory inquiries, or formal notices, please contact:
             </p>
             <div className="space-y-2">
-              <p><span className="font-medium">Legal Department:</span> legal@goldavenue.com</p>
-              <p><span className="font-medium">Compliance Officer:</span> compliance@goldavenue.com</p>
-              <p><span className="font-medium">Data Protection Officer:</span> privacy@goldavenue.com</p>
-              <p><span className="font-medium">Postal Address:</span> Gold Avenue SA, Legal Department, Rue du Rhône 100, 1204 Geneva, Switzerland</p>
+              <p><span className="font-medium">Legal Department:</span> legal@Gold Mint.com</p>
+              <p><span className="font-medium">Compliance Officer:</span> compliance@Gold Mint.com</p>
+              <p><span className="font-medium">Data Protection Officer:</span> privacy@Gold Mint.com</p>
+              <p><span className="font-medium">Postal Address:</span> Gold Mint SA, Legal Department, Rue du Rhône 100, 1204 Geneva, Switzerland</p>
             </div>
           </CardContent>
         </Card>

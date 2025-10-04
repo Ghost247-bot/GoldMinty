@@ -15,23 +15,23 @@ const TestimonialsSection = () => {
   
   const testimonials: Testimonial[] = [
     {
-      name: "Sarah Martinez",
+      name: "Jackie R Martinez",
       role: "Investment Advisor",
-      content: "Gold Avenue has been my go-to platform for precious metals. Their selection is outstanding and the service is impeccable. I've recommended them to all my clients.",
+      content: "Gold Mint has been my go-to platform for precious metals. Their selection is outstanding and the service is impeccable. I've recommended them to all my clients.",
       rating: 5,
       image: "/api/placeholder/80/80"
     },
     {
-      name: "Michael Chen",
+      name: "Michael L Troy",
       role: "Portfolio Manager",
-      content: "The transparency in pricing and the quality of metals is exceptional. I've been investing through Gold Avenue for over 3 years and couldn't be happier.",
+      content: "The transparency in pricing and the quality of metals is exceptional. I've been investing through Gold Mint for over 3 years and couldn't be happier.",
       rating: 5,
       image: "/api/placeholder/80/80"
     },
     {
       name: "Elena Rodriguez",
       role: "Private Investor",
-      content: "Fast delivery, secure packaging, and competitive prices. Gold Avenue makes precious metal investing accessible and trustworthy.",
+      content: "Fast delivery, secure packaging, and competitive prices. Gold Mint makes precious metal investing accessible and trustworthy.",
       rating: 5,
       image: "/api/placeholder/80/80"
     }

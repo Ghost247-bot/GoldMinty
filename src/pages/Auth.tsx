@@ -71,7 +71,7 @@ const Auth = () => {
     
     toast({
       title: "Account created!",
-      description: "Welcome to Gold Avenue. Please check your email to verify your account.",
+      description: "Welcome to Gold Mint. Please check your email to verify your account.",
     });
     
     setIsLoading(false);
@@ -101,9 +101,9 @@ const Auth = () => {
         <Card className="shadow-2xl">
           <CardHeader className="text-center pb-2">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <img src={logoSymbol} alt="Gold Avenue" className="w-8 h-8" />
+              <img src={logoSymbol} alt="Gold Mint" className="w-8 h-8" />
               <span className="text-xl font-bold">
-                <span className="text-gold">GOLD</span> AVENUE
+                <span className="text-gold">GOLD</span> MINT
               </span>
             </div>
             <CardTitle className="text-2xl">Welcome</CardTitle>

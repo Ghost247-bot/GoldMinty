@@ -165,7 +165,7 @@ const CookiePolicy = () => {
                 keeping you logged in, and helping us understand how you use our platform.
               </p>
               <p>
-                We use both first-party cookies (set by Gold Avenue) and third-party cookies 
+                We use both first-party cookies (set by Gold Mint) and third-party cookies 
                 (set by our partners and service providers) to deliver our services effectively and securely.
               </p>
             </div>

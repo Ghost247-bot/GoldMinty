@@ -36,7 +36,7 @@ export const fr = {
   'hero.trustCard': 'Années de Confiance',
   
   // Stats Section
-  'stats.title': 'Pourquoi Choisir Gold Avenue',
+  'stats.title': 'Pourquoi Choisir Gold Mint',
   'stats.subtitle': 'La confiance des investisseurs du monde entier pour notre engagement envers la qualité, la sécurité et un service exceptionnel',
   'stats.sales': 'Volume Total des Ventes',
   'stats.salesDesc': 'La confiance des investisseurs du monde entier',
@@ -68,14 +68,14 @@ export const fr = {
   
   // Testimonials
   'testimonials.title': 'Témoignages de Clients',
-  'testimonials.subtitle': 'Découvrez ce que nos clients satisfaits ont à dire sur leur expérience avec Gold Avenue.',
+  'testimonials.subtitle': 'Découvrez ce que nos clients satisfaits ont à dire sur leur expérience avec Gold Mint.',
   'testimonials.rating': 'Note',
   'testimonials.reviews': 'Avis',
   'testimonials.bbbRating': 'Note BBB',
   
   // CTA Section
   'cta.title': 'Prêt à Commencer à Investir dans les Métaux Précieux?',
-  'cta.subtitle': 'Rejoignez des milliers d\'investisseurs qui font confiance à Gold Avenue pour leurs investissements en métaux précieux. Constituez votre portefeuille en toute confiance.',
+  'cta.subtitle': 'Rejoignez des milliers d\'investisseurs qui font confiance à Gold Mint pour leurs investissements en métaux précieux. Constituez votre portefeuille en toute confiance.',
   'cta.browse': 'Parcourir les Produits',
   'cta.createAccount': 'Créer un Compte',
   'cta.feature1Title': 'Sécurisé et Assuré',
@@ -125,7 +125,7 @@ export const fr = {
   'footer.trust.certified': 'Métaux Précieux Certifiés',
   'footer.trust.pricing': 'Prix du Marché Instantané',
   'footer.followUs': 'Suivez-nous:',
-  'footer.copyright': '© 2024 Gold Avenue. Tous droits réservés. | Réglementé par l\'Autorité fédérale de surveillance des marchés financiers (FINMA)',
+  'footer.copyright': '© 2024 Gold Mint. Tous droits réservés. | Réglementé par l\'Autorité fédérale de surveillance des marchés financiers (FINMA)',
   
   // Contact Page
   'contact.title': 'Contactez-nous',
@@ -194,15 +194,15 @@ export const fr = {
   'products.addedToCartDesc': 'a été ajouté à votre panier.',
   
   // About Page
-  'about.title': 'À propos de Gold Avenue',
-  'about.subtitle': 'Depuis plus de 25 ans, Gold Avenue est un partenaire de confiance pour l\'investissement en métaux précieux, offrant un stockage sécurisé, des prix transparents et des conseils d\'experts aux investisseurs du monde entier.',
+  'about.title': 'À propos de Gold Mint',
+  'about.subtitle': 'Depuis plus de 25 ans, Gold Mint est un partenaire de confiance pour l\'investissement en métaux précieux, offrant un stockage sécurisé, des prix transparents et des conseils d\'experts aux investisseurs du monde entier.',
   'about.cta': 'Commencez votre parcours d\'investissement',
   'about.years': 'Années d\'expérience',
   'about.customers': 'Clients satisfaits',
   'about.countries': 'Pays desservis',
   'about.aum': 'Actifs sous gestion',
   'about.storyTitle': 'Notre histoire',
-  'about.storyP1': 'Fondée en 1999 au cœur de Genève, en Suisse, Gold Avenue est née d\'une vision simple : rendre l\'investissement en métaux précieux accessible, sûr et transparent pour les investisseurs du monde entier.',
+  'about.storyP1': 'Fondée en 1999 au cœur de Genève, en Suisse, Gold Mint est née d\'une vision simple : rendre l\'investissement en métaux précieux accessible, sûr et transparent pour les investisseurs du monde entier.',
   'about.storyP2': 'Ce qui a commencé comme un petit négociant en métaux précieux est devenu l\'une des principales plateformes d\'investissement en métaux précieux d\'Europe, au service de plus de 50 000 clients dans 40 pays.',
   'about.storyP3': 'Notre engagement envers la sécurité de niveau suisse, la tarification transparente et un service client exceptionnel nous a valu la confiance des investisseurs individuels, des familles et des institutions cherchant à préserver et à accroître leur patrimoine grâce aux métaux précieux.',
   'about.valuesTitle': 'Nos valeurs',
@@ -219,7 +219,7 @@ export const fr = {
   'about.certSubtitle': 'Conformité réglementaire et certifications',
   'about.certDesc': 'Nous maintenons les normes les plus élevées en matière de conformité réglementaire et de sécurité',
   'about.readyCTA': 'Prêt à commencer à investir ?',
-  'about.readySubtitle': 'Rejoignez des milliers d\'investisseurs qui font confiance à Gold Avenue pour leur portefeuille de métaux précieux',
+  'about.readySubtitle': 'Rejoignez des milliers d\'investisseurs qui font confiance à Gold Mint pour leur portefeuille de métaux précieux',
   'about.openAccount': 'Ouvrir un compte',
   'about.contactUs': 'Contactez-nous',
   

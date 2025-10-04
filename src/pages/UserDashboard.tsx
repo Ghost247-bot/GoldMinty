@@ -16,6 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { useAccountStatus } from '@/hooks/useAccountStatus';
+import { FrozenAccountGuard } from '@/components/FrozenAccountGuard';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, formatOz } from '@/lib/utils';
 import { 
@@ -61,6 +63,7 @@ import {
 export default function UserDashboard() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const { isFrozen, freezeReason, isLoading: accountStatusLoading } = useAccountStatus();
   const [profile, setProfile] = useState<any>(null);
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
@@ -799,6 +802,31 @@ export default function UserDashboard() {
         </div>
       </header>
 
+      {/* Frozen Account Warning Banner */}
+      {isFrozen && (
+        <div className="bg-destructive/10 border-l-4 border-destructive p-4 mx-4 mt-4 rounded-r-lg">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-destructive mb-1">
+                Account Frozen
+              </h3>
+              <p className="text-sm text-destructive/80 mb-2">
+                Your account has been temporarily frozen. You cannot access withdrawal, actions, tools, or AI insights.
+                {freezeReason && (
+                  <span className="block mt-1">
+                    <strong>Reason:</strong> {freezeReason}
+                  </span>
+                )}
+              </p>
+              <p className="text-sm text-destructive/80">
+                Please contact support to resolve this issue.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="container mx-auto px-4 py-8">
         {/* User Banners */}
         {userBanners.length > 0 && (
@@ -1017,39 +1045,45 @@ export default function UserDashboard() {
                             <Shield className="h-5 w-5" />
                             <span>Risk Analysis</span>
                           </Button>
-                          <Button
-                            variant={activeTab === 'recommendations' ? 'default' : 'ghost'}
-                            className="w-full justify-start gap-3 h-12"
-                            onClick={() => {
-                              setActiveTab('recommendations');
-                              setIsMenuOpen(false);
-                            }}
-                          >
-                            <Lightbulb className="h-5 w-5" />
-                            <span>AI Insights</span>
-                          </Button>
-                          <Button
-                            variant={activeTab === 'tools' ? 'default' : 'ghost'}
-                            className="w-full justify-start gap-3 h-12"
-                            onClick={() => {
-                              setActiveTab('tools');
-                              setIsMenuOpen(false);
-                            }}
-                          >
-                            <Settings className="h-5 w-5" />
-                            <span>Tools</span>
-                          </Button>
-                          <Button
-                            variant={activeTab === 'actions' ? 'default' : 'ghost'}
-                            className="w-full justify-start gap-3 h-12"
-                            onClick={() => {
-                              setActiveTab('actions');
-                              setIsMenuOpen(false);
-                            }}
-                          >
-                            <Zap className="h-5 w-5" />
-                            <span>Actions</span>
-                          </Button>
+                          <FrozenAccountGuard feature="AI insights">
+                            <Button
+                              variant={activeTab === 'recommendations' ? 'default' : 'ghost'}
+                              className="w-full justify-start gap-3 h-12"
+                              onClick={() => {
+                                setActiveTab('recommendations');
+                                setIsMenuOpen(false);
+                              }}
+                            >
+                              <Lightbulb className="h-5 w-5" />
+                              <span>AI Insights</span>
+                            </Button>
+                          </FrozenAccountGuard>
+                          <FrozenAccountGuard feature="tools">
+                            <Button
+                              variant={activeTab === 'tools' ? 'default' : 'ghost'}
+                              className="w-full justify-start gap-3 h-12"
+                              onClick={() => {
+                                setActiveTab('tools');
+                                setIsMenuOpen(false);
+                              }}
+                            >
+                              <Settings className="h-5 w-5" />
+                              <span>Tools</span>
+                            </Button>
+                          </FrozenAccountGuard>
+                          <FrozenAccountGuard feature="actions">
+                            <Button
+                              variant={activeTab === 'actions' ? 'default' : 'ghost'}
+                              className="w-full justify-start gap-3 h-12"
+                              onClick={() => {
+                                setActiveTab('actions');
+                                setIsMenuOpen(false);
+                              }}
+                            >
+                              <Zap className="h-5 w-5" />
+                              <span>Actions</span>
+                            </Button>
+                          </FrozenAccountGuard>
                         </nav>
                       </SheetContent>
                     </Sheet>
@@ -1093,27 +1127,33 @@ export default function UserDashboard() {
                         <Shield className="h-4 w-4" />
                         <span>Risk Analysis</span>
                       </TabsTrigger>
-                      <TabsTrigger 
-                        value="recommendations"
-                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
-                      >
-                        <Lightbulb className="h-4 w-4" />
-                        <span>AI Insights</span>
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="tools"
-                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
-                      >
-                        <Settings className="h-4 w-4" />
-                        <span>Tools</span>
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="actions"
-                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
-                      >
-                        <Zap className="h-4 w-4" />
-                        <span>Actions</span>
-                      </TabsTrigger>
+                      <FrozenAccountGuard feature="AI insights">
+                        <TabsTrigger 
+                          value="recommendations"
+                          className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                        >
+                          <Lightbulb className="h-4 w-4" />
+                          <span>AI Insights</span>
+                        </TabsTrigger>
+                      </FrozenAccountGuard>
+                      <FrozenAccountGuard feature="tools">
+                        <TabsTrigger 
+                          value="tools"
+                          className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                        >
+                          <Settings className="h-4 w-4" />
+                          <span>Tools</span>
+                        </TabsTrigger>
+                      </FrozenAccountGuard>
+                      <FrozenAccountGuard feature="actions">
+                        <TabsTrigger 
+                          value="actions"
+                          className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                        >
+                          <Zap className="h-4 w-4" />
+                          <span>Actions</span>
+                        </TabsTrigger>
+                      </FrozenAccountGuard>
                     </TabsList>
                   </div>
 
@@ -1443,10 +1483,12 @@ export default function UserDashboard() {
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold">Withdrawal Requests</h3>
-                        <Button variant="outline" size="sm" onClick={() => setWithdrawalDialogOpen(true)}>
-                          <Plus className="h-4 w-4 mr-2" />
-                          New Withdrawal
-                        </Button>
+                        <FrozenAccountGuard feature="withdrawal requests">
+                          <Button variant="outline" size="sm" onClick={() => setWithdrawalDialogOpen(true)}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            New Withdrawal
+                          </Button>
+                        </FrozenAccountGuard>
                       </div>
                       
                       <Card>
@@ -1470,15 +1512,17 @@ export default function UserDashboard() {
                                     <div className="flex flex-col items-center gap-2">
                                       <AlertCircle className="h-8 w-8 text-muted-foreground" />
                                       <p>No withdrawal requests found</p>
-                                      <Button 
-                                        variant="outline" 
-                                        size="sm" 
-                                        onClick={() => setWithdrawalDialogOpen(true)}
-                                        className="mt-2"
-                                      >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Create First Request
-                                      </Button>
+                                      <FrozenAccountGuard feature="withdrawal requests">
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          onClick={() => setWithdrawalDialogOpen(true)}
+                                          className="mt-2"
+                                        >
+                                          <Plus className="h-4 w-4 mr-2" />
+                                          Create First Request
+                                        </Button>
+                                      </FrozenAccountGuard>
                                     </div>
                                   </TableCell>
                                 </TableRow>

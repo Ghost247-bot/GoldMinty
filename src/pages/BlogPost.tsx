@@ -2,45 +2,47 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, Clock, User, Share2, BookOpen } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // Mock blog posts data - in a real app, this would come from an API or CMS
   const blogPosts = {
     "central-bank-gold-purchases-reach-record-highs-in-q4-2024": {
-      title: "Central Bank Gold Purchases Reach Record Highs in Q4 2024",
+      title: t('blog.centralBankTitle'),
       content: `
-        <p>Global central banks have accelerated their gold accumulation strategies throughout 2024, with Q4 showing unprecedented purchasing levels that signal a fundamental shift in monetary policy approaches worldwide.</p>
+        <p data-translate="blog.centralBankContent">${t('blog.centralBankContent')}</p>
         
-        <h2>Record-Breaking Quarter</h2>
-        <p>The fourth quarter of 2024 witnessed central banks purchasing over 400 tonnes of gold, marking the highest quarterly acquisition in over a decade. This surge represents a 35% increase compared to the same period in 2023, demonstrating sustained institutional confidence in precious metals as monetary assets.</p>
+        <h2 data-translate="blog.recordBreaking">${t('blog.recordBreaking')}</h2>
+        <p data-translate="blog.recordBreakingContent">${t('blog.recordBreakingContent')}</p>
         
-        <h2>Key Market Drivers</h2>
+        <h2 data-translate="blog.keyDrivers">${t('blog.keyDrivers')}</h2>
         <p>Several factors have contributed to this remarkable trend:</p>
         <ul>
-          <li><strong>Geopolitical Tensions:</strong> Rising global uncertainties have pushed central banks to diversify reserves away from traditional fiat currencies.</li>
-          <li><strong>Inflation Hedge:</strong> With persistent inflationary pressures, gold serves as a reliable store of value for national reserves.</li>
-          <li><strong>Dollar Diversification:</strong> Many emerging economies are reducing dollar dependency in their reserve portfolios.</li>
-          <li><strong>Financial Stability:</strong> Gold's negative correlation with traditional assets provides portfolio stability during market volatility.</li>
+          <li><strong data-translate="blog.geopoliticalTensions">${t('blog.geopoliticalTensions')}:</strong> <span data-translate="blog.geopoliticalTensionsDesc">${t('blog.geopoliticalTensionsDesc')}</span></li>
+          <li><strong data-translate="blog.inflationHedge">${t('blog.inflationHedge')}:</strong> <span data-translate="blog.inflationHedgeDesc">${t('blog.inflationHedgeDesc')}</span></li>
+          <li><strong data-translate="blog.dollarDiversification">${t('blog.dollarDiversification')}:</strong> <span data-translate="blog.dollarDiversificationDesc">${t('blog.dollarDiversificationDesc')}</span></li>
+          <li><strong data-translate="blog.financialStability">${t('blog.financialStability')}:</strong> <span data-translate="blog.financialStabilityDesc">${t('blog.financialStabilityDesc')}</span></li>
         </ul>
         
-        <h2>Leading Purchasers</h2>
-        <p>China continues to lead global central bank purchases, adding 45 tonnes to its reserves in Q4 alone. Turkey, India, and Poland have also emerged as significant buyers, with each country increasing their gold holdings by over 20 tonnes during the quarter.</p>
+        <h2 data-translate="blog.leadingPurchasers">${t('blog.leadingPurchasers')}</h2>
+        <p data-translate="blog.leadingPurchasersContent">${t('blog.leadingPurchasersContent')}</p>
         
-        <h2>Market Impact and Future Outlook</h2>
-        <p>This institutional buying pressure has provided strong support for gold prices, which reached new all-time highs during Q4 2024. The sustained demand from central banks, combined with growing retail investor interest, suggests continued strength in precious metals markets heading into 2025.</p>
+        <h2 data-translate="blog.marketImpact">${t('blog.marketImpact')}</h2>
+        <p data-translate="blog.marketImpactContent">${t('blog.marketImpactContent')}</p>
         
         <p>Analysts project that central bank purchases will remain elevated throughout 2025, with several countries publicly announcing intentions to increase their gold reserve ratios. This institutional backing provides a solid foundation for long-term precious metals investment strategies.</p>
         
-        <h2>Investment Implications</h2>
-        <p>For individual investors, the central bank buying trend validates gold's role as a portfolio diversifier and inflation hedge. The institutional confidence demonstrated by these purchases suggests that precious metals allocations remain a prudent component of balanced investment portfolios.</p>
+        <h2 data-translate="blog.investmentImplications">${t('blog.investmentImplications')}</h2>
+        <p data-translate="blog.investmentImplicationsContent">${t('blog.investmentImplicationsContent')}</p>
       `,
-      author: "Emma Thompson",
-      date: "December 15, 2024",
-      readTime: "6 min read",
-      category: "Industry News"
+      author: t('blog.author'),
+      date: t('blog.publishedDate'),
+      readTime: t('blog.readTime'),
+      category: t('blog.category')
     },
     "2025-precious-metals-outlook": {
       title: "2025 Precious Metals Outlook: Navigating Uncertainty with Strategic Investments",
@@ -136,7 +138,7 @@ const BlogPost = () => {
             </div>
             <Button variant="outline" size="sm" className="ml-auto">
               <Share2 className="w-4 h-4 mr-2" />
-              Share
+              {t('blog.share')}
             </Button>
           </div>
         </header>
@@ -151,11 +153,11 @@ const BlogPost = () => {
         <footer className="mt-12 pt-8 border-t border-border">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              Published on {post.date} by {post.author}
+              {t('blog.publishedOn')} {post.date} {t('blog.by')} {post.author}
             </div>
             <Button variant="outline" size="sm">
               <Share2 className="w-4 h-4 mr-2" />
-              Share Article
+              {t('blog.shareArticle')}
             </Button>
           </div>
         </footer>

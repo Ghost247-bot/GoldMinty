@@ -47,7 +47,7 @@ const About = () => {
   ];
 
   const milestones = [
-    { year: "1999", event: "Gold Avenue founded in Geneva, Switzerland" },
+    { year: "1999", event: "Gold Mint founded in Geneva, Switzerland" },
     { year: "2005", event: "Launched secure vault storage services" },
     { year: "2010", event: "Expanded to serve international clients" },
     { year: "2015", event: "Digital platform launch for online trading" },
@@ -97,7 +97,7 @@ const About = () => {
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  Founded in 1999 in the heart of Geneva, Switzerland, Gold Avenue was born from a 
+                  Founded in 1999 in the heart of Geneva, Switzerland, Gold Mint was born from a 
                   simple vision: to make precious metals investment accessible, secure, and transparent 
                   for investors around the world.
                 </p>
@@ -189,7 +189,7 @@ const About = () => {
             <CardContent className="p-6 md:p-12">
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Start Investing?</h2>
               <p className="text-lg md:text-xl mb-6 md:mb-8 opacity-90">
-                Join thousands of investors who trust Gold Avenue with their precious metals portfolio
+                Join thousands of investors who trust Gold Mint with their precious metals portfolio
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button variant="gold" size="lg" className="w-full sm:w-auto">

@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import logoSymbol from "@/assets/logo-symbol.png";
+import logoSymbol from "/logo-goldmint.svg";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -14,7 +14,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage, t, isTransitioning } = useLanguage();
   
   // Safe cart access with fallback
   let cartState = { totalItems: 0 };
@@ -83,7 +83,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-background border-b border-border">
+    <header className={`bg-background border-b border-border language-transition ${isTransitioning ? 'transitioning' : 'fade-in'}`}>
       <div className="container mx-auto px-4">
         {/* Top bar - Hidden on mobile */}
         <div className="hidden md:flex items-center justify-between py-3 text-sm text-muted-foreground">
@@ -105,20 +105,26 @@ const Header = () => {
           </div>
           <div className="flex items-center gap-4">
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer hover:text-gold transition-colors">
+              <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer hover:text-gold transition-all duration-200 hover:bg-muted/50 px-2 py-1 rounded-md">
                 <Globe className="w-4 h-4" />
-                <span>{languages.find(l => l.code === language)?.flag} {language.toUpperCase()}</span>
+                <span className="flex items-center gap-1">
+                  <span>{languages.find(l => l.code === language)?.flag}</span>
+                  <span className="font-medium">{language.toUpperCase()}</span>
+                </span>
                 <ChevronDown className="w-3 h-3" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-48">
                 {languages.map((lang) => (
                   <DropdownMenuItem 
                     key={lang.code}
                     onClick={() => handleLanguageChange(lang.code)}
-                    className="cursor-pointer"
+                    className="cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors"
                   >
-                    <span className="mr-2">{lang.flag}</span>
-                    {lang.name}
+                    <span className="text-lg">{lang.flag}</span>
+                    <span className="font-medium">{lang.name}</span>
+                    {lang.code === language && (
+                      <span className="ml-auto text-gold text-sm">✓</span>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -222,19 +228,26 @@ const Header = () => {
                   </div>
                   
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 w-full hover:text-gold transition-colors">
+                    <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 w-full hover:text-gold transition-all duration-200 hover:bg-muted/50 rounded-md">
                       <Globe className="w-4 h-4" />
-                      <span className="text-sm">{languages.find(l => l.code === language)?.flag} {language.toUpperCase()}</span>
+                      <span className="flex items-center gap-1 text-sm">
+                        <span>{languages.find(l => l.code === language)?.flag}</span>
+                        <span className="font-medium">{language.toUpperCase()}</span>
+                      </span>
                       <ChevronDown className="w-3 h-3 ml-auto" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
+                    <DropdownMenuContent align="start" className="w-48">
                       {languages.map((lang) => (
                         <DropdownMenuItem 
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang.code)}
+                          className="cursor-pointer flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors"
                         >
-                          <span className="mr-2">{lang.flag}</span>
-                          {lang.name}
+                          <span className="text-lg">{lang.flag}</span>
+                          <span className="font-medium">{lang.name}</span>
+                          {lang.code === language && (
+                            <span className="ml-auto text-gold text-sm">✓</span>
+                          )}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -264,10 +277,10 @@ const Header = () => {
             className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity flex-1 md:flex-initial"
             onClick={handleLogoClick}
           >
-            <img src={logoSymbol} alt="Gold Avenue" className="w-8 h-8 md:w-10 md:h-10" />
+            <img src={logoSymbol} alt="GOLDMINT" className="w-8 h-8 md:w-10 md:h-10" />
             <div className="font-bold text-base md:text-xl tracking-wide">
               <span className="text-gold">GOLD</span>
-              <span className="text-foreground"> AVENUE</span>
+              <span className="text-foreground">MINT</span>
             </div>
           </div>
 

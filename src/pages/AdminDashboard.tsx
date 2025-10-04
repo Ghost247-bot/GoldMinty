@@ -58,6 +58,7 @@ export default function AdminDashboard() {
   const [isEditProductDialogOpen, setIsEditProductDialogOpen] = useState(false);
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false);
   const [isEditWithdrawalDialogOpen, setIsEditWithdrawalDialogOpen] = useState(false);
+  const [isCustomFreezeDialogOpen, setIsCustomFreezeDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('users');
   
@@ -168,6 +169,15 @@ export default function AdminDashboard() {
     country: 'United States'
   });
 
+  const [customFreezeFormData, setCustomFreezeFormData] = useState({
+    userId: '',
+    customTitle: '',
+    customMessage: '',
+    customContactInfo: '',
+    showContact: true,
+    showReason: true
+  });
+
   const [withdrawalFormData, setWithdrawalFormData] = useState({
     userId: undefined as string | undefined,
     withdrawalType: 'physical',
@@ -247,10 +257,10 @@ export default function AdminDashboard() {
   }, [selectedUserId]);
 
   const fetchUsers = async () => {
-    // Fetch profiles
+    // Fetch profiles with freeze status and custom notification fields
     const { data: profilesData, error: profilesError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, custom_freeze_title, custom_freeze_message, custom_freeze_contact_info, custom_freeze_show_contact, custom_freeze_show_reason')
       .order('created_at', { ascending: false });
     
     if (profilesError) {
@@ -370,6 +380,81 @@ export default function AdminDashboard() {
     }
   };
 
+  const toggleUserFreeze = async (userId: string, isFrozen: boolean, reason?: string) => {
+    try {
+      // First try using the database function (if migration is applied)
+      const { error: rpcError } = await supabase.rpc('freeze_user_account', {
+        target_user_id: userId,
+        freeze: !isFrozen,
+        reason: reason || null
+      });
+
+      if (!rpcError) {
+        fetchUsers();
+        toast({
+          title: "Success",
+          description: `User account ${!isFrozen ? 'frozen' : 'unfrozen'} successfully`
+        });
+        return;
+      }
+
+      // If RPC function doesn't exist, try direct SQL update
+      console.log('RPC function not found, trying direct update...');
+      
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          account_frozen: !isFrozen,
+          frozen_at: !isFrozen ? new Date().toISOString() : null,
+          frozen_by: !isFrozen ? user?.id : null,
+          freeze_reason: !isFrozen ? reason : null
+        })
+        .eq('user_id', userId);
+
+      if (!updateError) {
+        fetchUsers();
+        toast({
+          title: "Success",
+          description: `User account ${!isFrozen ? 'frozen' : 'unfrozen'} successfully`
+        });
+      } else {
+        // Check if the error is due to missing column
+        if (updateError.message && updateError.message.includes('account_frozen')) {
+          toast({
+            title: "Database Migration Required",
+            description: "The account_frozen column doesn't exist. Please apply the migration in Supabase SQL Editor.",
+            variant: "destructive"
+          });
+          
+          // Show migration instructions
+          const migrationSQL = `
+-- Add account_frozen field to profiles table
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS account_frozen BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS frozen_at TIMESTAMP WITH TIME ZONE,
+ADD COLUMN IF NOT EXISTS frozen_by UUID REFERENCES auth.users(id),
+ADD COLUMN IF NOT EXISTS freeze_reason TEXT;
+
+-- Create index for efficient frozen account queries
+CREATE INDEX IF NOT EXISTS idx_profiles_account_frozen ON public.profiles(account_frozen);
+          `;
+          
+          console.log('Migration SQL to apply:', migrationSQL);
+          alert(`Please run this SQL in your Supabase SQL Editor:\n\n${migrationSQL}`);
+        } else {
+          throw updateError;
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling user freeze status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update account freeze status. Please check the console for migration instructions.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleEditUser = (user: any) => {
     setEditingUser(user);
     setUserFormData({
@@ -438,6 +523,78 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to update user profile",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleUpdateCustomFreezeNotification = async () => {
+    if (!customFreezeFormData.userId || !user?.id) return;
+
+    try {
+      const { error } = await supabase.rpc('update_custom_freeze_notification', {
+        target_user_id: customFreezeFormData.userId,
+        custom_title: customFreezeFormData.customTitle || null,
+        custom_message: customFreezeFormData.customMessage || null,
+        custom_contact_info: customFreezeFormData.customContactInfo || null,
+        show_contact: customFreezeFormData.showContact,
+        show_reason: customFreezeFormData.showReason
+      });
+
+      if (!error) {
+        setIsCustomFreezeDialogOpen(false);
+        setCustomFreezeFormData({
+          userId: '',
+          customTitle: '',
+          customMessage: '',
+          customContactInfo: '',
+          showContact: true,
+          showReason: true
+        });
+        fetchUsers();
+        toast({
+          title: "Success",
+          description: "Custom freeze notification updated successfully"
+        });
+      } else {
+        // If RPC function doesn't exist, try direct SQL update
+        console.log('RPC function not found, trying direct update...');
+        
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            custom_freeze_title: customFreezeFormData.customTitle || null,
+            custom_freeze_message: customFreezeFormData.customMessage || null,
+            custom_freeze_contact_info: customFreezeFormData.customContactInfo || null,
+            custom_freeze_show_contact: customFreezeFormData.showContact,
+            custom_freeze_show_reason: customFreezeFormData.showReason
+          })
+          .eq('user_id', customFreezeFormData.userId);
+
+        if (!updateError) {
+          setIsCustomFreezeDialogOpen(false);
+          setCustomFreezeFormData({
+            userId: '',
+            customTitle: '',
+            customMessage: '',
+            customContactInfo: '',
+            showContact: true,
+            showReason: true
+          });
+          fetchUsers();
+          toast({
+            title: "Success",
+            description: "Custom freeze notification updated successfully"
+          });
+        } else {
+          throw updateError;
+        }
+      }
+    } catch (error) {
+      console.error('Error updating custom freeze notification:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update custom freeze notification",
         variant: "destructive"
       });
     }
@@ -1799,6 +1956,7 @@ export default function AdminDashboard() {
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Joined</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -1814,6 +1972,16 @@ export default function AdminDashboard() {
                           <Badge variant={user.user_roles?.role === 'admin' ? 'destructive' : 'secondary'}>
                             {user.user_roles?.role || 'user'}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={user.account_frozen ? 'destructive' : 'default'}>
+                            {user.account_frozen ? 'Frozen' : 'Active'}
+                          </Badge>
+                          {user.account_frozen && user.freeze_reason && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              Reason: {user.freeze_reason}
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
                           {new Date(user.created_at).toLocaleDateString()}
@@ -1832,6 +2000,30 @@ export default function AdminDashboard() {
                             onClick={() => toggleUserRole(user.user_id, user.user_roles?.role || 'user')}
                           >
                             {user.user_roles?.role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                          </Button>
+                          <Button
+                            variant={user.account_frozen ? 'default' : 'destructive'}
+                            size="sm"
+                            onClick={() => toggleUserFreeze(user.user_id, user.account_frozen)}
+                          >
+                            {user.account_frozen ? 'Unfreeze' : 'Freeze'}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setCustomFreezeFormData({
+                                userId: user.user_id,
+                                customTitle: user.custom_freeze_title || '',
+                                customMessage: user.custom_freeze_message || '',
+                                customContactInfo: user.custom_freeze_contact_info || '',
+                                showContact: user.custom_freeze_show_contact !== false,
+                                showReason: user.custom_freeze_show_reason !== false
+                              });
+                              setIsCustomFreezeDialogOpen(true);
+                            }}
+                          >
+                            Customize Notification
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -4111,6 +4303,119 @@ export default function AdminDashboard() {
                 </Button>
                 <Button onClick={handleUpdateUser}>
                   Update Profile
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Custom Freeze Notification Dialog */}
+        <Dialog open={isCustomFreezeDialogOpen} onOpenChange={(open) => {
+          setIsCustomFreezeDialogOpen(open);
+          if (open) {
+            fetchAllUsers();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Customize Frozen Account Notification</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="custom-freeze-user-select">Select User</Label>
+                <Select 
+                  value={customFreezeFormData.userId} 
+                  onValueChange={(value) => setCustomFreezeFormData({...customFreezeFormData, userId: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={
+                      usersLoading ? "Loading users..." : 
+                      allUsers.length === 0 ? "No users found" : 
+                      "Select a user"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border border-border shadow-lg z-50 max-h-64">
+                    {usersLoading ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        Loading users...
+                      </div>
+                    ) : allUsers.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        No users found
+                      </div>
+                    ) : (
+                      allUsers.map((user) => (
+                        <SelectItem 
+                          key={user.user_id} 
+                          value={user.user_id}
+                          className="hover:bg-muted focus:bg-muted cursor-pointer"
+                        >
+                          {user.full_name || 'Unknown User'} ({user.email || user.user_id.slice(0, 8) + '...'})
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="custom-freeze-title">Custom Title (optional)</Label>
+                <Input
+                  id="custom-freeze-title"
+                  value={customFreezeFormData.customTitle}
+                  onChange={(e) => setCustomFreezeFormData({...customFreezeFormData, customTitle: e.target.value})}
+                  placeholder="Leave empty to use default 'Account Frozen'"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="custom-freeze-message">Custom Message (optional)</Label>
+                <Textarea
+                  id="custom-freeze-message"
+                  value={customFreezeFormData.customMessage}
+                  onChange={(e) => setCustomFreezeFormData({...customFreezeFormData, customMessage: e.target.value})}
+                  placeholder="Leave empty to use default message"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="custom-freeze-contact">Custom Contact Information (optional)</Label>
+                <Textarea
+                  id="custom-freeze-contact"
+                  value={customFreezeFormData.customContactInfo}
+                  onChange={(e) => setCustomFreezeFormData({...customFreezeFormData, customContactInfo: e.target.value})}
+                  placeholder="Leave empty to use default contact buttons"
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-contact"
+                    checked={customFreezeFormData.showContact}
+                    onCheckedChange={(checked) => setCustomFreezeFormData({...customFreezeFormData, showContact: checked})}
+                  />
+                  <Label htmlFor="show-contact">Show contact information</Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-reason"
+                    checked={customFreezeFormData.showReason}
+                    onCheckedChange={(checked) => setCustomFreezeFormData({...customFreezeFormData, showReason: checked})}
+                  />
+                  <Label htmlFor="show-reason">Show freeze reason</Label>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsCustomFreezeDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateCustomFreezeNotification}>
+                  Update Notification
                 </Button>
               </div>
             </div>

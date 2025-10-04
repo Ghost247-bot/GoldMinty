@@ -9,14 +9,14 @@ const Press = () => {
 
   const pressReleases = [
     {
-      title: "Gold Avenue Reaches $2.5 Billion in Assets Under Management",
+      title: "Gold Mint Reaches $2.5 Billion in Assets Under Management",
       date: "December 15, 2024",
       excerpt: "Swiss precious metals platform achieves new milestone as institutional adoption accelerates",
       category: "Company News",
       downloadUrl: "#"
     },
     {
-      title: "Gold Avenue Launches Advanced Portfolio Analytics for Institutional Clients",
+      title: "Gold Mint Launches Advanced Portfolio Analytics for Institutional Clients",
       date: "November 28, 2024", 
       excerpt: "New features provide enhanced risk management and performance tracking capabilities",
       category: "Product Launch",
@@ -30,7 +30,7 @@ const Press = () => {
       downloadUrl: "#"
     },
     {
-      title: "Gold Avenue Expands to Asian Markets with Singapore Office",
+      title: "Gold Mint Expands to Asian Markets with Singapore Office",
       date: "September 10, 2024",
       excerpt: "Strategic expansion strengthens presence in key precious metals trading hub",
       category: "Company News",
@@ -47,7 +47,7 @@ const Press = () => {
 
   const mediaKit = [
     {
-      name: "Gold Avenue Logo Package",
+      name: "Gold Mint Logo Package",
       description: "High-resolution logos in various formats (PNG, SVG, EPS)",
       size: "2.5 MB",
       type: "ZIP"
@@ -102,7 +102,7 @@ const Press = () => {
   const mediaContact = {
     name: "Emma Thompson",
     title: "Head of Communications",
-    email: "press@goldavenue.com",
+    email: "press@Gold Mint.com",
     phone: "+41 22 518 92 15",
     linkedin: "#"
   };
@@ -124,7 +124,7 @@ const Press = () => {
           <Newspaper className="w-16 h-16 text-primary mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-primary mb-4">Press Center</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Latest news, press releases, and media resources from Gold Avenue. 
+            Latest news, press releases, and media resources from Gold Mint. 
             Your source for precious metals market insights and company updates.
           </p>
         </div>

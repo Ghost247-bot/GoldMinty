@@ -71,9 +71,9 @@ const Blog = () => {
       image: "/api/placeholder/400/200"
     },
     {
-      title: "Gold Avenue Launches New Mobile App with Advanced Portfolio Tracking",
+      title: "Gold Mint Launches New Mobile App with Advanced Portfolio Tracking",
       excerpt: "Our latest mobile application brings professional-grade portfolio management tools to your fingertips, making precious metals investing more accessible than ever.",
-      author: "Gold Avenue Team",
+      author: "Gold Mint Team",
       date: "December 8, 2024",
       readTime: "3 min read",
       category: "Company Updates",
@@ -112,7 +112,7 @@ const Blog = () => {
         {/* Page Header */}
         <div className="text-center mb-8 md:mb-12">
           <BookOpen className="w-12 md:w-16 h-12 md:h-16 text-primary mx-auto mb-4" />
-          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Gold Avenue Blog</h1>
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Gold Mint Blog</h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Insights, analysis, and expert commentary on precious metals markets, investment strategies, 
             and industry trends from our team of specialists.

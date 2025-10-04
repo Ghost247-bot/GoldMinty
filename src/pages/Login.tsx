@@ -273,45 +273,33 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-navy-deep to-slate-800">
+    <div className="min-h-screen relative overflow-hidden bg-slate-900">
       
-      {/* Professional grid pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.02]">
+      {/* Clean professional grid pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.03]">
         <div className="absolute inset-0"
              style={{
-               backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-                                linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
+               backgroundImage: `linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)`,
                backgroundSize: '50px 50px'
              }}
         ></div>
       </div>
       
-      {/* Sophisticated animated background */}
+      {/* Subtle background accent */}
       <div className="absolute inset-0">
-        {/* Primary ambient lighting */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-radial from-gold/8 via-gold/4 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-radial from-gold-light/6 via-gold/3 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-        
-        {/* Secondary accent lighting */}
-        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-gradient-radial from-gold/5 to-transparent rounded-full blur-2xl animate-pulse delay-500"></div>
-        <div className="absolute bottom-1/3 left-1/4 w-[500px] h-[500px] bg-gradient-radial from-gold-light/4 to-transparent rounded-full blur-3xl animate-pulse delay-700"></div>
-        
-        {/* Floating elements for depth */}
-        <div className="absolute top-20 right-1/4 w-2 h-2 bg-gold/60 rounded-full animate-float delay-300"></div>
-        <div className="absolute bottom-32 left-1/3 w-1.5 h-1.5 bg-gold-light/40 rounded-full animate-float delay-1000"></div>
-        <div className="absolute top-1/3 right-20 w-1 h-1 bg-gold/80 rounded-full animate-float delay-500"></div>
-        <div className="absolute top-1/4 left-20 w-2.5 h-2.5 bg-gold-light/30 rounded-full animate-float delay-800"></div>
-        <div className="absolute bottom-1/3 right-1/3 w-1.5 h-1.5 bg-gold/50 rounded-full animate-float delay-1200"></div>
+        <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-slate-800/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 left-1/3 w-64 h-64 bg-slate-700/15 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Professional side branding panels */}
+      {/* Clean professional side panels */}
       <div className="absolute inset-y-0 left-0 w-1/4 hidden xl:block">
         <div className="h-full flex flex-col justify-center items-start space-y-12 px-12">
           {/* Company credentials */}
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold-light rounded-xl flex items-center justify-center shadow-xl">
-                <Award className="w-6 h-6 text-navy-deep" />
+              <div className="w-12 h-12 bg-slate-700/50 rounded-xl flex items-center justify-center shadow-lg border border-slate-600/30">
+                <Award className="w-6 h-6 text-slate-300" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white">SEC Registered</h3>
@@ -320,8 +308,8 @@ export default function Login() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold-light rounded-xl flex items-center justify-center shadow-xl">
-                <Shield className="w-6 h-6 text-navy-deep" />
+              <div className="w-12 h-12 bg-slate-700/50 rounded-xl flex items-center justify-center shadow-lg border border-slate-600/30">
+                <Shield className="w-6 h-6 text-slate-300" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white">Bank-Grade Security</h3>
@@ -330,8 +318,8 @@ export default function Login() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gold-dark to-gold-light rounded-xl flex items-center justify-center shadow-xl">
-                <CheckCircle className="w-6 h-6 text-navy-deep" />
+              <div className="w-12 h-12 bg-slate-700/50 rounded-xl flex items-center justify-center shadow-lg border border-slate-600/30">
+                <CheckCircle className="w-6 h-6 text-slate-300" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white">Insured Holdings</h3>
@@ -345,15 +333,15 @@ export default function Login() {
             <h4 className="text-sm font-medium text-white/80 uppercase tracking-wider">Recognition</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4 text-gold fill-gold" />
+                <Star className="w-4 h-4 text-slate-400 fill-slate-400" />
                 <span className="text-white/70 text-sm">Best Precious Metals Platform 2024</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4 text-gold fill-gold" />
+                <Star className="w-4 h-4 text-slate-400 fill-slate-400" />
                 <span className="text-white/70 text-sm">FinTech Innovation Award</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4 text-gold fill-gold" />
+                <Star className="w-4 h-4 text-slate-400 fill-slate-400" />
                 <span className="text-white/70 text-sm">A+ Better Business Bureau</span>
               </div>
             </div>
@@ -361,33 +349,33 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Enhanced statistics panel */}
+      {/* Clean statistics panel */}
       <div className="absolute inset-y-0 right-0 w-1/4 hidden xl:block">
         <div className="h-full flex flex-col justify-center items-end space-y-12 px-12">
           {/* Key metrics */}
           <div className="text-right space-y-8">
             <div className="space-y-2">
-              <div className="text-4xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+              <div className="text-4xl font-bold text-white">
                 $2.5B+
               </div>
               <p className="text-white/60 text-sm font-medium">Assets Under Management</p>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-gold-light ml-auto"></div>
+              <div className="w-16 h-0.5 bg-slate-400 ml-auto"></div>
             </div>
             
             <div className="space-y-2">
-              <div className="text-4xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+              <div className="text-4xl font-bold text-white">
                 50,000+
               </div>
               <p className="text-white/60 text-sm font-medium">Global Investors</p>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-gold-light ml-auto"></div>
+              <div className="w-16 h-0.5 bg-slate-400 ml-auto"></div>
             </div>
             
             <div className="space-y-2">
-              <div className="text-4xl font-bold bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent">
+              <div className="text-4xl font-bold text-white">
                 99.9%
               </div>
               <p className="text-white/60 text-sm font-medium">Platform Uptime</p>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-gold-light ml-auto"></div>
+              <div className="w-16 h-0.5 bg-slate-400 ml-auto"></div>
             </div>
           </div>
           
@@ -397,15 +385,15 @@ export default function Login() {
             <div className="space-y-3 text-right">
               <div className="flex items-center justify-end space-x-2">
                 <span className="text-white/70 text-sm">Available in 50+ countries</span>
-                <Globe className="w-4 h-4 text-gold" />
+                <Globe className="w-4 h-4 text-slate-400" />
               </div>
               <div className="flex items-center justify-end space-x-2">
                 <span className="text-white/70 text-sm">24/7 customer support</span>
-                <Users className="w-4 h-4 text-gold" />
+                <Users className="w-4 h-4 text-slate-400" />
               </div>
               <div className="flex items-center justify-end space-x-2">
                 <span className="text-white/70 text-sm">Instant settlements</span>
-                <Zap className="w-4 h-4 text-gold" />
+                <Zap className="w-4 h-4 text-slate-400" />
               </div>
             </div>
           </div>
@@ -413,96 +401,97 @@ export default function Login() {
       </div>
 
       {/* Main content container */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-xl">
-          {/* Professional back button */}
+          {/* Enhanced professional back button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate("/")}
-            className="mb-10 text-white/90 hover:text-white hover:bg-white/5 transition-all duration-300 group backdrop-blur-sm border border-white/10 rounded-full px-6 h-10"
+            className="mb-12 text-white/90 hover:text-white hover:bg-white/10 transition-all duration-300 group backdrop-blur-md border border-white/20 rounded-full px-8 h-12 shadow-lg hover:shadow-xl"
           >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-            <span className="font-medium">Return to Homepage</span>
+            <ArrowLeft className="w-4 h-4 mr-3 group-hover:-translate-x-1 transition-transform duration-300" />
+            <span className="font-semibold">Return to Homepage</span>
           </Button>
 
-          {/* Premium main card */}
-          <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-2xl relative overflow-hidden">
-            {/* Subtle card accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gold-dark via-gold to-gold-light"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.02] via-transparent to-gold-light/[0.02]"></div>
+          {/* Modern professional main card */}
+          <Card className="shadow-2xl border border-slate-700/30 bg-white/95 backdrop-blur-3xl relative overflow-hidden rounded-3xl">
+            {/* Clean card accent */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-slate-400"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/40 to-white/20"></div>
             
-            <CardHeader className="text-center pb-10 pt-12 relative">
-              {/* Premium logo design */}
-              <div className="flex justify-center mb-8">
+            <CardHeader className="text-center pb-12 pt-16 relative">
+              {/* Modern professional logo design */}
+              <div className="flex justify-center mb-10">
                 <div className="relative group">
                   {/* Main logo container */}
-                  <div className="w-24 h-24 bg-gradient-to-br from-gold-dark via-gold to-gold-light rounded-[20px] flex items-center justify-center shadow-2xl relative overflow-hidden border border-gold/20">
-                    {/* Animated background */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    <Gem className="w-12 h-12 text-navy-deep relative z-10" />
+                  <div className="w-28 h-28 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center shadow-xl relative overflow-hidden border border-slate-300">
+                    <Gem className="w-14 h-14 text-slate-800 relative z-10" />
                   </div>
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-gold-dark to-gold-light rounded-[20px] blur-xl opacity-30 scale-110 -z-10"></div>
-                  {/* Pulse ring */}
-                  <div className="absolute inset-0 rounded-[20px] border-2 border-gold/30 scale-110 animate-pulse"></div>
+                  {/* Enhanced shadow */}
+                  <div className="absolute inset-0 bg-slate-300/30 rounded-2xl blur-2xl opacity-40 scale-110 -z-10"></div>
                 </div>
               </div>
               
-              {/* Enhanced branding */}
-              <div className="space-y-4">
-                <CardTitle className="text-5xl font-bold bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent tracking-tight">
+              {/* Clean branding */}
+              <div className="space-y-6">
+                <CardTitle className="text-6xl font-bold text-slate-800 tracking-tight">
                   GoldMint
                 </CardTitle>
-                <div className="w-32 h-1 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto rounded-full"></div>
-                <CardDescription className="text-slate-600 text-lg font-medium leading-relaxed max-w-sm mx-auto">
+                <div className="w-40 h-1 bg-slate-300 mx-auto rounded-full"></div>
+                <CardDescription className="text-slate-600 text-xl font-medium leading-relaxed max-w-lg mx-auto">
                   Premium precious metals investment platform trusted by institutions worldwide
                 </CardDescription>
               </div>
               
-              {/* Trust badges */}
-              <div className="flex justify-center items-center space-x-6 mt-8">
-                <div className="flex items-center space-x-2 text-slate-500">
-                  <Lock className="w-4 h-4" />
-                  <span className="text-xs font-medium">SEC Registered</span>
+              {/* Clean trust badges */}
+              <div className="flex justify-center items-center space-x-8 mt-10">
+                <div className="flex items-center space-x-2 text-slate-500 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+                  <Lock className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm font-semibold">SEC Registered</span>
                 </div>
-                <div className="w-1 h-4 bg-slate-300"></div>
-                <div className="flex items-center space-x-2 text-slate-500">
-                  <Shield className="w-4 h-4" />
-                  <span className="text-xs font-medium">FDIC Insured</span>
+                <div className="w-1 h-6 bg-slate-300 rounded-full"></div>
+                <div className="flex items-center space-x-2 text-slate-500 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+                  <Shield className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm font-semibold">FDIC Insured</span>
+                </div>
+                <div className="w-1 h-6 bg-slate-300 rounded-full"></div>
+                <div className="flex items-center space-x-2 text-slate-500 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+                  <Award className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm font-semibold">A+ BBB Rating</span>
                 </div>
               </div>
             </CardHeader>
           
-          <CardContent className="pb-12 px-12">
+          <CardContent className="pb-8 px-8">
             <Tabs defaultValue="signin" className="w-full">
-              {/* Professional tab navigation */}
-              <TabsList className="grid w-full grid-cols-2 mb-12 h-16 bg-slate-50 backdrop-blur-sm rounded-2xl p-1.5 border border-slate-200">
+              {/* Modern tab navigation */}
+              <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-slate-100/90 backdrop-blur-sm rounded-xl p-1 border border-slate-200 shadow-lg">
                 <TabsTrigger 
                   value="signin" 
-                  className="text-sm font-semibold rounded-xl h-12 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-lg transition-all duration-300 data-[state=active]:shadow-slate-200/50"
+                  className="text-sm font-semibold rounded-lg h-10 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-lg transition-all duration-300 data-[state=active]:shadow-slate-200/50"
                 >
                   <div className="flex items-center space-x-2">
                     <Lock className="w-4 h-4" />
-                    <span>Member Access</span>
+                    <span>Sign In</span>
                   </div>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="signup" 
-                  className="text-sm font-semibold rounded-xl h-12 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-lg transition-all duration-300 data-[state=active]:shadow-slate-200/50"
+                  className="text-sm font-semibold rounded-lg h-10 data-[state=active]:bg-white data-[state=active]:text-slate-800 data-[state=active]:shadow-lg transition-all duration-300 data-[state=active]:shadow-slate-200/50"
                 >
                   <div className="flex items-center space-x-2">
                     <Users className="w-4 h-4" />
-                    <span>Join Platform</span>
+                    <span>Create Account</span>
                   </div>
                 </TabsTrigger>
               </TabsList>
               
-              {/* Professional Sign In Form */}
+              {/* Modern Sign In Form */}
               <TabsContent value="signin" className="animate-fade-in">
-                <form onSubmit={handleSignIn} className="space-y-8">
-                  <div className="space-y-4">
-                    <Label htmlFor="signin-email" className="text-sm font-semibold text-slate-700 flex items-center">
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-email" className="text-sm font-medium text-slate-700 flex items-center">
                       Email Address
                     </Label>
                     <div className="relative group">
@@ -511,16 +500,15 @@ export default function Login() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-16 bg-white border-2 border-slate-200 focus:border-gold focus:ring-4 focus:ring-gold/10 rounded-xl px-6 text-base transition-all duration-300 group-hover:border-slate-300 shadow-sm"
+                        className="h-11 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-lg px-4 text-sm transition-all duration-300 group-hover:border-slate-300 shadow-sm"
                         placeholder="Enter your email address"
                         required
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <Label htmlFor="signin-password" className="text-sm font-semibold text-slate-700 flex items-center">
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password" className="text-sm font-medium text-slate-700 flex items-center">
                       Password
                     </Label>
                     <div className="relative group">
@@ -529,48 +517,46 @@ export default function Login() {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="h-16 bg-white border-2 border-slate-200 focus:border-gold focus:ring-4 focus:ring-gold/10 rounded-xl px-6 pr-16 text-base transition-all duration-300 group-hover:border-slate-300 shadow-sm"
+                        className="h-11 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-lg px-4 pr-12 text-sm transition-all duration-300 group-hover:border-slate-300 shadow-sm"
                         placeholder="Enter your password"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-gold transition-all duration-300 p-2 rounded-lg hover:bg-gold/5"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-all duration-300 p-1 rounded hover:bg-slate-100"
                       >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-gold/0 via-gold/5 to-gold/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </div>
                   
-                  {/* Professional Submit Button */}
+                  {/* Modern Submit Button */}
                   <Button 
                     type="submit" 
-                    className="w-full h-16 bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold-light hover:via-gold hover:to-gold-dark text-white font-bold shadow-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] rounded-xl relative overflow-hidden group text-base mt-8" 
+                    className="w-full h-11 bg-slate-800 hover:bg-slate-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.01] rounded-lg relative overflow-hidden group text-sm mt-4" 
                     disabled={loading}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <div className="relative z-10 flex items-center justify-center">
                       {loading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-3"></div>
-                          <span>Authenticating...</span>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                          <span>Signing In...</span>
                         </>
                       ) : (
                         <>
-                          <Lock className="w-5 h-5 mr-3" />
-                          <span>Access My Account</span>
+                          <Lock className="w-4 h-4 mr-2" />
+                          <span>Sign In</span>
                         </>
                       )}
                     </div>
                   </Button>
                   
-                  {/* Professional forgot password link */}
-                  <div className="text-center pt-4">
+                  {/* Modern forgot password link */}
+                  <div className="text-center pt-2">
                     <button
                       type="button"
-                      className="text-sm text-slate-500 hover:text-gold transition-colors duration-300 font-medium underline-offset-4 hover:underline"
+                      className="text-xs text-slate-500 hover:text-slate-700 transition-colors duration-300 font-medium underline-offset-4 hover:underline"
                     >
                       Forgot your password?
                     </button>
@@ -579,17 +565,17 @@ export default function Login() {
               </TabsContent>
               
               <TabsContent value="signup" className="animate-fade-in">
-                <form onSubmit={handleSignUp} className="space-y-5">
+                <form onSubmit={handleSignUp} className="space-y-4">
                   {/* Personal Information Section */}
-                  <div className="bg-gradient-to-r from-muted/20 to-muted/10 rounded-xl p-4 border border-border/30">
-                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center">
-                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
+                  <div className="bg-slate-50/80 rounded-lg p-4 border border-slate-200">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center">
+                      <div className="w-1.5 h-1.5 bg-slate-500 rounded-full mr-2"></div>
                       Personal Information
                     </h3>
                     
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-firstname" className="text-xs font-medium text-muted-foreground">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="signup-firstname" className="text-xs font-medium text-slate-700">
                           First Name
                         </Label>
                         <div className="relative group">
@@ -598,15 +584,15 @@ export default function Login() {
                             type="text"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             placeholder="First name"
                             required
                           />
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-lastname" className="text-xs font-medium text-muted-foreground">
+                      <div className="space-y-1">
+                        <Label htmlFor="signup-lastname" className="text-xs font-medium text-slate-700">
                           Last Name
                         </Label>
                         <div className="relative group">
@@ -615,7 +601,7 @@ export default function Login() {
                             type="text"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
-                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             placeholder="Last name"
                             required
                           />
@@ -623,9 +609,9 @@ export default function Login() {
                       </div>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-email" className="text-xs font-medium text-muted-foreground">
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="signup-email" className="text-xs font-medium text-slate-700">
                           Email Address
                         </Label>
                         <div className="relative group">
@@ -634,16 +620,16 @@ export default function Login() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             placeholder="Enter your email address"
                             required
                           />
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-phone" className="text-xs font-medium text-muted-foreground">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-phone" className="text-xs font-medium text-slate-700">
                             Phone Number
                           </Label>
                           <div className="relative group">
@@ -652,14 +638,14 @@ export default function Login() {
                               type="tel"
                               value={phone}
                               onChange={(e) => setPhone(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                               placeholder="(555) 123-4567"
                             />
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-dob" className="text-xs font-medium text-muted-foreground">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-dob" className="text-xs font-medium text-slate-700">
                             Date of Birth
                           </Label>
                           <div className="relative group">
@@ -668,14 +654,14 @@ export default function Login() {
                               type="date"
                               value={dateOfBirth}
                               onChange={(e) => setDateOfBirth(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             />
                           </div>
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-password" className="text-xs font-medium text-muted-foreground">
+                      <div className="space-y-1">
+                        <Label htmlFor="signup-password" className="text-xs font-medium text-slate-700">
                           Password
                         </Label>
                         <div className="relative group">
@@ -684,16 +670,16 @@ export default function Login() {
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg pr-12 transition-all duration-300 group-hover:border-gold/50"
+                            className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md pr-10 transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             placeholder="Create a secure password"
                             required
                           />
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-gold transition-all duration-300 p-1 rounded-lg hover:bg-gold/10"
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-all duration-300 p-1 rounded hover:bg-slate-100"
                           >
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
                         </div>
                       </div>
@@ -701,15 +687,15 @@ export default function Login() {
                   </div>
 
                   {/* Address Information Section */}
-                  <div className="bg-gradient-to-r from-muted/20 to-muted/10 rounded-xl p-4 border border-border/30">
-                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center">
-                      <div className="w-2 h-2 bg-gold rounded-full mr-2"></div>
+                  <div className="bg-slate-50/80 rounded-lg p-4 border border-slate-200">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center">
+                      <div className="w-1.5 h-1.5 bg-slate-500 rounded-full mr-2"></div>
                       Address Information (Optional)
                     </h3>
                     
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-address1" className="text-xs font-medium text-muted-foreground">
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="signup-address1" className="text-xs font-medium text-slate-700">
                           Address Line 1
                         </Label>
                         <div className="relative group">
@@ -718,14 +704,14 @@ export default function Login() {
                             type="text"
                             value={addressLine1}
                             onChange={(e) => setAddressLine1(e.target.value)}
-                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             placeholder="Street address"
                           />
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-address2" className="text-xs font-medium text-muted-foreground">
+                      <div className="space-y-1">
+                        <Label htmlFor="signup-address2" className="text-xs font-medium text-slate-700">
                           Address Line 2 (Optional)
                         </Label>
                         <div className="relative group">
@@ -734,15 +720,15 @@ export default function Login() {
                             type="text"
                             value={addressLine2}
                             onChange={(e) => setAddressLine2(e.target.value)}
-                            className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                            className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                             placeholder="Apartment, suite, etc."
                           />
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-city" className="text-xs font-medium text-muted-foreground">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-city" className="text-xs font-medium text-slate-700">
                             City
                           </Label>
                           <div className="relative group">
@@ -751,14 +737,14 @@ export default function Login() {
                               type="text"
                               value={city}
                               onChange={(e) => setCity(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                               placeholder="City"
                             />
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-state" className="text-xs font-medium text-muted-foreground">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-state" className="text-xs font-medium text-slate-700">
                             State
                           </Label>
                           <div className="relative group">
@@ -767,16 +753,16 @@ export default function Login() {
                               type="text"
                               value={state}
                               onChange={(e) => setState(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                               placeholder="State"
                             />
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-zip" className="text-xs font-medium text-muted-foreground">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-zip" className="text-xs font-medium text-slate-700">
                             ZIP Code
                           </Label>
                           <div className="relative group">
@@ -785,22 +771,22 @@ export default function Login() {
                               type="text"
                               value={zipCode}
                               onChange={(e) => setZipCode(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                               placeholder="ZIP"
                             />
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="signup-country" className="text-xs font-medium text-muted-foreground">
+                        <div className="space-y-1">
+                          <Label htmlFor="signup-country" className="text-xs font-medium text-slate-700">
                             Country
                           </Label>
                           <div className="relative group">
                             <Select value={country} onValueChange={setCountry}>
-                              <SelectTrigger className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50">
+                              <SelectTrigger className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm">
                                 <SelectValue placeholder="Select country" />
                               </SelectTrigger>
-                              <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50">
+                              <SelectContent className="bg-white border border-slate-200 shadow-lg">
                                 <SelectItem value="United States">United States</SelectItem>
                                 <SelectItem value="Canada">Canada</SelectItem>
                                 <SelectItem value="United Kingdom">United Kingdom</SelectItem>
@@ -814,23 +800,23 @@ export default function Login() {
                   </div>
 
                   {/* Security Questions Section */}
-                  <div className="bg-gradient-to-r from-gold/5 to-gold-light/5 rounded-xl p-4 border border-gold/20">
-                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center">
-                      <Shield className="w-4 h-4 mr-2 text-gold" />
+                  <div className="bg-slate-50/80 rounded-lg p-4 border border-slate-200">
+                    <h3 className="text-sm font-semibold text-slate-800 mb-3 flex items-center">
+                      <Shield className="w-4 h-4 mr-2 text-slate-600" />
                       Security Questions
                     </h3>
                     
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs font-medium text-muted-foreground">
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-slate-700">
                           Security Question 1
                         </Label>
                         <div className="relative group">
                           <Select value={selectedQuestion1} onValueChange={setSelectedQuestion1}>
-                            <SelectTrigger className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50">
+                            <SelectTrigger className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm">
                               <SelectValue placeholder="Choose your first security question" />
                             </SelectTrigger>
-                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 max-h-48">
+                            <SelectContent className="bg-white border border-slate-200 shadow-lg max-h-48">
                               {securityQuestions.map((question) => (
                                 <SelectItem key={question.id} value={question.id}>
                                   {question.question}
@@ -846,7 +832,7 @@ export default function Login() {
                               type="text"
                               value={answer1}
                               onChange={(e) => setAnswer1(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                               placeholder="Your answer"
                               required
                             />
@@ -854,16 +840,16 @@ export default function Login() {
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="text-xs font-medium text-muted-foreground">
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-slate-700">
                           Security Question 2
                         </Label>
                         <div className="relative group">
                           <Select value={selectedQuestion2} onValueChange={setSelectedQuestion2}>
-                            <SelectTrigger className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50">
+                            <SelectTrigger className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm">
                               <SelectValue placeholder="Choose your second security question" />
                             </SelectTrigger>
-                            <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 max-h-48">
+                            <SelectContent className="bg-white border border-slate-200 shadow-lg max-h-48">
                               {securityQuestions.filter(q => q.id !== selectedQuestion1).map((question) => (
                                 <SelectItem key={question.id} value={question.id}>
                                   {question.question}
@@ -879,7 +865,7 @@ export default function Login() {
                               type="text"
                               value={answer2}
                               onChange={(e) => setAnswer2(e.target.value)}
-                              className="h-12 bg-background/60 backdrop-blur-sm border-border/50 focus:border-gold focus:ring-gold/20 rounded-lg transition-all duration-300 group-hover:border-gold/50"
+                              className="h-9 bg-white border-2 border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 rounded-md transition-all duration-300 group-hover:border-slate-300 shadow-sm text-sm"
                               placeholder="Your answer"
                               required
                             />
@@ -889,23 +875,22 @@ export default function Login() {
                     </div>
                   </div>
                   
-                  {/* Enhanced Submit Button */}
+                  {/* Modern Submit Button */}
                   <Button 
                     type="submit" 
-                    className="w-full h-14 bg-gradient-to-r from-gold-dark via-gold to-gold-light hover:from-gold-light hover:via-gold hover:to-gold-dark text-navy-deep font-bold shadow-2xl transition-all duration-500 hover-scale rounded-xl relative overflow-hidden group text-base mt-6" 
+                    className="w-full h-11 bg-slate-800 hover:bg-slate-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.01] rounded-lg relative overflow-hidden group text-sm mt-4" 
                     disabled={loading}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                     <div className="relative z-10 flex items-center justify-center">
                       {loading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-navy-deep/30 border-t-navy-deep rounded-full animate-spin mr-2"></div>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
                           Creating Account...
                         </>
                       ) : (
                         <>
-                          <TrendingUp className="w-5 h-5 mr-2" />
-                          Create My Account
+                          <TrendingUp className="w-4 h-4 mr-2" />
+                          Create Account
                         </>
                       )}
                     </div>
@@ -972,52 +957,52 @@ export default function Login() {
               </div>
             )}
 
-            {/* Trust indicators */}
-            <div className="mt-8 pt-6 border-t border-border/20">
-              <div className="flex items-center justify-center space-x-6 text-xs text-muted-foreground">
-                <div className="flex items-center space-x-1">
-                  <Shield className="w-4 h-4 text-success" />
-                  <span>Secure</span>
+            {/* Clean Trust indicators */}
+            <div className="mt-12 pt-8 border-t-2 border-slate-200/30">
+              <div className="flex items-center justify-center space-x-8 text-sm text-slate-600">
+                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+                  <Shield className="w-5 h-5 text-green-600" />
+                  <span className="font-semibold">Secure</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <TrendingUp className="w-4 h-4 text-gold" />
-                  <span>Trusted</span>
+                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+                  <TrendingUp className="w-5 h-5 text-slate-600" />
+                  <span className="font-semibold">Trusted</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <Gem className="w-4 h-4 text-gold" />
-                  <span>Premium</span>
+                <div className="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-full border border-slate-200">
+                  <Gem className="w-5 h-5 text-slate-600" />
+                  <span className="font-semibold">Premium</span>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        {/* Enhanced Footer Section */}
-        <div className="mt-8 space-y-6">
-          {/* Features row */}
-          <div className="grid grid-cols-3 gap-4 text-center">
+        {/* Clean Footer Section */}
+        <div className="mt-12 space-y-8">
+          {/* Clean Features row */}
+          <div className="grid grid-cols-3 gap-6 text-center">
             <div className="group">
-              <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold-light/10 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                <Shield className="w-5 h-5 text-gold" />
+              <div className="w-14 h-14 bg-slate-700/30 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform shadow-lg border border-slate-600/30">
+                <Shield className="w-7 h-7 text-slate-300" />
               </div>
-              <p className="text-xs text-white/70">Bank-Level Security</p>
+              <p className="text-sm text-white/80 font-medium">Bank-Level Security</p>
             </div>
             <div className="group">
-              <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold-light/10 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-5 h-5 text-gold" />
+              <div className="w-14 h-14 bg-slate-700/30 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform shadow-lg border border-slate-600/30">
+                <TrendingUp className="w-7 h-7 text-slate-300" />
               </div>
-              <p className="text-xs text-white/70">Real-Time Pricing</p>
+              <p className="text-sm text-white/80 font-medium">Real-Time Pricing</p>
             </div>
             <div className="group">
-              <div className="w-10 h-10 bg-gradient-to-br from-gold/20 to-gold-light/10 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                <Gem className="w-5 h-5 text-gold" />
+              <div className="w-14 h-14 bg-slate-700/30 rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform shadow-lg border border-slate-600/30">
+                <Gem className="w-7 h-7 text-slate-300" />
               </div>
-              <p className="text-xs text-white/70">Premium Assets</p>
+              <p className="text-sm text-white/80 font-medium">Premium Assets</p>
             </div>
           </div>
           
-          {/* Footer text */}
-          <p className="text-center text-sm text-muted-foreground/80">
+          {/* Clean Footer text */}
+          <p className="text-center text-base text-white/70 font-medium">
             By continuing, you agree to our terms of service and privacy policy
           </p>
         </div>
@@ -1029,20 +1014,20 @@ export default function Login() {
         </div>
       </div>
       
-      {/* Mobile-responsive decorative elements */}
+      {/* Clean Mobile-responsive decorative elements */}
       <div className="lg:hidden absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div className="flex space-x-8 text-center">
-          <div>
-            <div className="text-xl font-bold text-gold">$2.5B+</div>
-            <p className="text-white/60 text-xs">Assets</p>
+        <div className="flex space-x-12 text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
+            <div className="text-2xl font-bold text-white">$2.5B+</div>
+            <p className="text-white/70 text-sm font-medium">Assets</p>
           </div>
-          <div>
-            <div className="text-xl font-bold text-gold">50K+</div>
-            <p className="text-white/60 text-xs">Investors</p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
+            <div className="text-2xl font-bold text-white">50K+</div>
+            <p className="text-white/70 text-sm font-medium">Investors</p>
           </div>
-          <div>
-            <div className="text-xl font-bold text-gold">15+</div>
-            <p className="text-white/60 text-xs">Years</p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
+            <div className="text-2xl font-bold text-white">15+</div>
+            <p className="text-white/70 text-sm font-medium">Years</p>
           </div>
         </div>
       </div>
