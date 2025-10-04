@@ -278,14 +278,23 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_frozen: boolean | null
           address_line1: string | null
           address_line2: string | null
           city: string | null
           country: string | null
           created_at: string
+          custom_freeze_contact_info: string | null
+          custom_freeze_message: string | null
+          custom_freeze_show_contact: boolean | null
+          custom_freeze_show_reason: boolean | null
+          custom_freeze_title: string | null
           date_of_birth: string | null
           email: string | null
           first_name: string | null
+          freeze_reason: string | null
+          frozen_at: string | null
+          frozen_by: string | null
           full_name: string | null
           id: string
           last_name: string | null
@@ -296,14 +305,23 @@ export type Database = {
           zip_code: string | null
         }
         Insert: {
+          account_frozen?: boolean | null
           address_line1?: string | null
           address_line2?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
+          custom_freeze_contact_info?: string | null
+          custom_freeze_message?: string | null
+          custom_freeze_show_contact?: boolean | null
+          custom_freeze_show_reason?: boolean | null
+          custom_freeze_title?: string | null
           date_of_birth?: string | null
           email?: string | null
           first_name?: string | null
+          freeze_reason?: string | null
+          frozen_at?: string | null
+          frozen_by?: string | null
           full_name?: string | null
           id?: string
           last_name?: string | null
@@ -314,14 +332,23 @@ export type Database = {
           zip_code?: string | null
         }
         Update: {
+          account_frozen?: boolean | null
           address_line1?: string | null
           address_line2?: string | null
           city?: string | null
           country?: string | null
           created_at?: string
+          custom_freeze_contact_info?: string | null
+          custom_freeze_message?: string | null
+          custom_freeze_show_contact?: boolean | null
+          custom_freeze_show_reason?: boolean | null
+          custom_freeze_title?: string | null
           date_of_birth?: string | null
           email?: string | null
           first_name?: string | null
+          freeze_reason?: string | null
+          frozen_at?: string | null
+          frozen_by?: string | null
           full_name?: string | null
           id?: string
           last_name?: string | null
@@ -864,14 +891,51 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      freeze_user_account: {
+        Args: {
+          freeze: boolean
+          reason?: string | null
+          target_user_id: string
+        }
+        Returns: boolean
+      }
       generate_account_number: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_custom_freeze_notification: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          custom_contact_info: string | null
+          custom_message: string | null
+          custom_title: string | null
+          show_contact: boolean | null
+          show_reason: boolean | null
+        }[]
       }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+        }
+        Returns: boolean
+      }
+      is_account_frozen: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
+      update_custom_freeze_notification: {
+        Args: {
+          custom_contact_info?: string | null
+          custom_message?: string | null
+          custom_title?: string | null
+          show_contact?: boolean
+          show_reason?: boolean
+          target_user_id: string
         }
         Returns: boolean
       }
