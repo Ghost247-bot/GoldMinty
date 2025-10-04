@@ -16,9 +16,11 @@ import {
   HeadphonesIcon
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Contact = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -39,8 +41,8 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll get back to you within 24 hours.",
+      title: t('contact.form.success'),
+      description: t('contact.form.successDesc'),
     });
     // Reset form
     setFormData({
@@ -57,25 +59,25 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: Phone,
-      title: "Phone",
+      title: t('contact.info.phone'),
       details: ["+41 22 518 92 11", "+1 (555) 123-4567"],
       description: "Monday - Friday, 8:00 AM - 6:00 PM CET"
     },
     {
       icon: Mail,
-      title: "Email",
+      title: t('contact.info.email'),
       details: ["support@goldavenue.com", "sales@goldavenue.com"],
-      description: "We respond within 24 hours"
+      description: t('contact.info.responseTime')
     },
     {
       icon: MapPin,
-      title: "Address",
+      title: t('contact.info.address'),
       details: ["Gold Avenue SA", "Rue du Rhône 100", "1204 Geneva, Switzerland"],
-      description: "Visit us by appointment only"
+      description: t('contact.info.appointment')
     },
     {
       icon: Clock,
-      title: "Business Hours",
+      title: t('contact.info.hours'),
       details: ["Monday - Friday: 8:00 AM - 6:00 PM CET", "Saturday: 9:00 AM - 2:00 PM CET"],
       description: "Closed on Swiss public holidays"
     }
@@ -117,9 +119,9 @@ const Contact = () => {
     <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">Contact Us</h1>
+          <h1 className="text-2xl md:text-4xl font-bold text-primary mb-4">{t('contact.title')}</h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-            Get in touch with our precious metals experts. We're here to help you make informed investment decisions.
+            {t('contact.subtitle')}
           </p>
         </div>
 
@@ -130,17 +132,17 @@ const Contact = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="w-5 h-5" />
-                Send us a Message
+                {t('contact.form.title')}
               </CardTitle>
               <CardDescription>
-                Fill out the form below and we'll get back to you as soon as possible
+                {t('contact.form.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">{t('contact.form.firstName')}</Label>
                     <Input
                       id="firstName"
                       value={formData.firstName}
@@ -149,7 +151,7 @@ const Contact = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">{t('contact.form.lastName')}</Label>
                     <Input
                       id="lastName"
                       value={formData.lastName}
@@ -160,7 +162,7 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email">{t('contact.form.email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -171,7 +173,7 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number (Optional)</Label>
+                  <Label htmlFor="phone">{t('contact.form.phone')}</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -181,10 +183,10 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="inquiryType">Inquiry Type</Label>
+                  <Label htmlFor="inquiryType">{t('contact.form.inquiryType')}</Label>
                   <Select value={formData.inquiryType} onValueChange={(value) => handleInputChange("inquiryType", value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an inquiry type" />
+                      <SelectValue placeholder={t('contact.form.selectInquiry')} />
                     </SelectTrigger>
                     <SelectContent>
                       {inquiryTypes.map((type) => (
@@ -197,7 +199,7 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
+                  <Label htmlFor="subject">{t('contact.form.subject')}</Label>
                   <Input
                     id="subject"
                     value={formData.subject}
@@ -207,7 +209,7 @@ const Contact = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message">{t('contact.form.message')}</Label>
                   <Textarea
                     id="message"
                     rows={5}
@@ -219,7 +221,7 @@ const Contact = () => {
 
                 <Button type="submit" variant="gold" className="w-full">
                   <Send className="w-4 h-4 mr-2" />
-                  Send Message
+                  {t('contact.form.submit')}
                 </Button>
               </form>
             </CardContent>
