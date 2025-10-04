@@ -1,0 +1,139 @@
+IDD-NAJ <Najeebiddrisu79@gmail.com> - Clean up test files
+IDD-NAJ <Najeebiddrisu79@gmail.com> - Add comprehensive deployment guides for Netlify
+IDD-NAJ <Najeebiddrisu79@gmail.com> - Add Netlify configuration for deployment
+IDD-NAJ <Najeebiddrisu79@gmail.com> - Add custom frozen account notification system
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Ensure LanguageProvider wraps components
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add translations for all pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Resume previous work
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix footer translations
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add translations to all pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix footer links
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add multi-language support to footer
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add internationalization to pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Improve banner design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Change banner design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Change dashboard design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Change user dashboard navigation to hamburger menu
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix tab navigation rendering
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Change to hamburger menu
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor tabs component
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Set gold price for withdrawal calculation
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add withdrawal section to admin dashboard
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: ProductDetail hook error
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Adjust hero design for mobile
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Improve Hero Section Design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Use live prices
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor Hero Section Design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Reduce mobile view container size
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Make header responsive
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Integrate live metal prices
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Update tool use approval
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix withdrawal dialog not opening
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix withdrawal request functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add withdrawal request functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add withdrawal request tab
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add withdrawal request functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add functionality to tools section
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add pagination to transactions
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor transaction data display
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Fetch recent transactions
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add admin CRUD for Portfolio Allocations
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Fetch Portfolio Allocation data
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Display Portfolio Allocation data by account ID
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix portfolio allocation display
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Fetch portfolio allocation data
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Revert user edit feature
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: User cannot edit portfolio allocation
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add admin functionality for portfolio allocation
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Product not showing on wishlist
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Resolve Header not defined error
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add wishlist button to header
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix pages with double header and footer
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add admin data management features
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix data display issues
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add admin editing for portfolio section
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Format price display
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add user-specific data persistence
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor product upload and display
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Fetch products from Supabase
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add silver products to database
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Remove all products from Stripe
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Prevent cart clearing on refresh
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add bank payment to Stripe
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix blocked network requests
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add CSV upload functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add product management to admin dashboard
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add bulk product upload
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add products to database
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add product data to Supabase
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add gold products to Stripe
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add Stripe product and price
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix routing
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Build checkout page
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refine login page design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor login page design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add design to auth pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor security verification logic
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor security verification logic
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor security question hashing
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Use security answers for 2FA
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix security question saving
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix login 2FA functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add 2FA security question
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add banner toggle functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Remove banner priority
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Change banner design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add bulk transaction upload
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add CRUD for portfolio management
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add CRUD for user investment data
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add user investment account management
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add features to Investment Accounts
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add quick actions functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix TooltipProvider and QueryClientProvider errors
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix TooltipProvider useRef error
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add investment account features
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Investment accounts not showing
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add admin management for banners and investments
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix Select.Item value error
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix Select.Item value prop error
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Fetch users from profiles table
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add user fetching to admin dashboard
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Fetch users for investment accounts
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add user banner functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix security questions RLS policy
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add user dashboard
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix security questions RLS
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add security questions
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add "Back to Home" links
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Remove duplicate header and footer
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add header and footer
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add design to auth pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Implement role-based authentication and dashboards
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Create user and admin dashboards
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Connect to Supabase project
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Build project
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Create missing pages and add functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Reduce product container sizes
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add pagination to products page
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Make pages responsive on mobile
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Make website responsive
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Ensure CartProvider wraps useCart
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add products to cart functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix product view on products page
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Prices not showing on gold products page
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Upload products from CSV
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add header functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add animations to homepage
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refactor: Make homepage classic
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Refine homepage design
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add search functionality to header
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add functionality to hero section
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Fix: Resolve React Query useEffect error
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Update footer with all pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add 404 error page
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - feat: Add header and footer to all pages
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add button and link functionality
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - List all buttons
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Add footer component
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - Clone goldavenue.com repository
+gpt-engineer-app[bot] <159125892+gpt-engineer-app[bot]@users.noreply.github.com> - [skip lovable] Use tech stack vite_react_shadcn_ts_20250728_minor
