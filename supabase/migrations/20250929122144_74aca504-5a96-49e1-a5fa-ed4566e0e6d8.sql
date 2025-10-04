@@ -11,8 +11,6 @@ CREATE TABLE public.products (
   brand TEXT,
   purity TEXT,
   category TEXT DEFAULT 'bar',
-  stripe_product_id TEXT,
-  stripe_price_id TEXT,
   is_active BOOLEAN DEFAULT true,
   metadata JSONB,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -38,7 +36,6 @@ WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
 CREATE INDEX idx_products_metal_type ON public.products(metal_type);
 CREATE INDEX idx_products_category ON public.products(category);
 CREATE INDEX idx_products_active ON public.products(is_active);
-CREATE INDEX idx_products_stripe_product_id ON public.products(stripe_product_id);
 
 -- Create trigger for automatic timestamp updates
 CREATE TRIGGER update_products_updated_at

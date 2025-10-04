@@ -254,7 +254,7 @@ const CookiePolicy = () => {
               <div>
                 <h4 className="font-medium mb-3">Service Providers</h4>
                 <ul className="text-sm text-muted-foreground space-y-2">
-                  <li>• Stripe - Payment processing</li>
+                  <li>• Square - Payment processing</li>
                   <li>• Zendesk - Customer support</li>
                   <li>• SendGrid - Email delivery</li>
                 </ul>

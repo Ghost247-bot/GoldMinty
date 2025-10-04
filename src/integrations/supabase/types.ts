@@ -121,8 +121,6 @@ export type Database = {
           price_usd: number
           product_url: string | null
           purity: string | null
-          stripe_price_id: string | null
-          stripe_product_id: string | null
           updated_at: string
           weight: string | null
         }
@@ -140,8 +138,6 @@ export type Database = {
           price_usd: number
           product_url?: string | null
           purity?: string | null
-          stripe_price_id?: string | null
-          stripe_product_id?: string | null
           updated_at?: string
           weight?: string | null
         }
@@ -159,8 +155,6 @@ export type Database = {
           price_usd?: number
           product_url?: string | null
           purity?: string | null
-          stripe_price_id?: string | null
-          stripe_product_id?: string | null
           updated_at?: string
           weight?: string | null
         }
