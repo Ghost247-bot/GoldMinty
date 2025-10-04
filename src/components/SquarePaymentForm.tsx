@@ -25,6 +25,17 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
   customerInfo
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Check if Square credentials are properly configured
+  const squareAppId = import.meta.env.VITE_SQUARE_APPLICATION_ID;
+  const squareLocationId = import.meta.env.VITE_SQUARE_LOCATION_ID;
+  
+  const isSquareConfigured = squareAppId && 
+    squareLocationId && 
+    squareAppId !== 'your_square_application_id' && 
+    squareAppId !== 'sandbox-sq0idb-YourAppId' &&
+    squareLocationId !== 'your_square_location_id' &&
+    squareLocationId !== 'YourLocationId';
 
   const handlePaymentSuccess = async (token: any, verifiedBuyer: any) => {
     setIsLoading(true);
@@ -52,6 +63,39 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     onPaymentError('Payment failed. Please check your card information and try again.');
   };
 
+  // Show configuration error if Square is not properly set up
+  if (!isSquareConfigured) {
+    return (
+      <Card className="backdrop-blur-sm bg-card/95 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+              3
+            </div>
+            <CreditCardIcon className="h-5 w-5" />
+            Payment Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-center p-6 bg-muted/50 rounded-lg border border-dashed border-muted-foreground/30">
+            <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Payment System Configuration Required</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Square payment integration is not configured. Please contact the administrator to set up payment processing.
+            </p>
+            <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded border">
+              <p className="font-medium mb-1">Configuration needed:</p>
+              <ul className="text-left space-y-1">
+                <li>• VITE_SQUARE_APPLICATION_ID</li>
+                <li>• VITE_SQUARE_LOCATION_ID</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="backdrop-blur-sm bg-card/95 border-border/50">
       <CardHeader>
@@ -76,10 +120,10 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
         </div>
 
         <PaymentForm
-          applicationId={import.meta.env.VITE_SQUARE_APPLICATION_ID || 'sandbox-sq0idb-YourAppId'}
+          applicationId={squareAppId}
           cardTokenizeResponseReceived={handlePaymentSuccess}
           onError={handlePaymentError}
-          locationId={import.meta.env.VITE_SQUARE_LOCATION_ID || 'YourLocationId'}
+          locationId={squareLocationId}
           createPaymentRequest={() => ({
             countryCode: 'US',
             currencyCode: 'USD',

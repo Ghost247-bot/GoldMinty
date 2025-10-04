@@ -76,6 +76,32 @@ const Checkout = () => {
 
   const sameAsShipping = form.watch('sameAsShipping');
 
+  const handleSubmit = async (data: CheckoutFormData) => {
+    setIsProcessing(true);
+    
+    try {
+      // Here you would typically process the form data
+      // For now, we'll just show a success message
+      toast({
+        title: "Order Submitted",
+        description: "Your order has been submitted successfully!",
+      });
+      
+      // Clear the cart and redirect
+      clearCart();
+      navigate('/order-confirmation');
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Error",
+        description: "There was an error processing your order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // Show loading while checking authentication
   if (authLoading) {
     return (
