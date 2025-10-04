@@ -846,24 +846,42 @@ export default function UserDashboard() {
 
       {/* Frozen Account Warning Banner */}
       {isFrozen && (
-        <div className="bg-destructive/10 border-l-4 border-destructive p-4 mx-4 mt-4 rounded-r-lg">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <h3 className="text-sm font-semibold text-destructive mb-1">
-                Account Frozen
-              </h3>
-              <p className="text-sm text-destructive/80 mb-2">
-                Your account has been temporarily frozen. You cannot access withdrawal, actions, tools, or AI insights.
-                {freezeReason && (
-                  <span className="block mt-1">
-                    <strong>Reason:</strong> {freezeReason}
-                  </span>
-                )}
-              </p>
-              <p className="text-sm text-destructive/80">
-                Please contact support to resolve this issue.
-              </p>
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg mx-4 mt-4 shadow-sm">
+          <div className="p-4">
+            <div className="flex items-center gap-3">
+              {/* Icon */}
+              <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="h-4 w-4 text-white" />
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-sm font-semibold text-amber-900">
+                    Account Restricted
+                  </h3>
+                  <div className="px-2 py-0.5 bg-amber-200 text-amber-800 text-xs font-medium rounded-full">
+                    ACTIVE
+                  </div>
+                </div>
+                <p className="text-xs text-amber-800 leading-relaxed">
+                  Some features are temporarily unavailable. 
+                  {freezeReason && (
+                    <span className="block mt-1">
+                      <span className="font-medium">Reason:</span> {freezeReason}
+                    </span>
+                  )}
+                </p>
+              </div>
+              
+              {/* Action Button */}
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white/80 hover:bg-white border-amber-300 text-amber-800 hover:text-amber-900 text-xs px-3 py-1 h-7"
+              >
+                Contact Support
+              </Button>
             </div>
           </div>
         </div>
