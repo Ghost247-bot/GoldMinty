@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Award, TrendingUp, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowRight, Shield, Award, TrendingUp, CheckCircle2, Star, Users, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import heroGoldBars from "@/assets/hero-gold-bars.jpg";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -7,145 +8,214 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const HeroSection = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      id: 1,
+      title: "Buy & Sell",
+      subtitle: "Precious Metals",
+      description: "with Confidence",
+      content: "Secure your wealth with physical gold, silver, and platinum. Professional storage, insurance, and 24/7 market access.",
+      cta: "Start Investing",
+      ctaSecondary: "View Live Prices",
+      badge: "Trusted by 50,000+ investors worldwide",
+      image: heroGoldBars,
+      stats: [
+        { value: "$2.5B+", label: "Assets Under Management" },
+        { value: "50K+", label: "Happy Customers" },
+        { value: "4.9/5", label: "Customer Rating" },
+        { value: "24/7", label: "Market Access" }
+      ],
+      features: [
+        { icon: Shield, text: "Fully Insured Storage" },
+        { icon: Award, text: "LBMA Certified" },
+        { icon: TrendingUp, text: "Live Market Prices" },
+        { icon: CheckCircle2, text: "Instant Liquidity" }
+      ]
+    },
+    {
+      id: 2,
+      title: "Secure",
+      subtitle: "Storage Solutions",
+      description: "for Your Wealth",
+      content: "Professional vault storage with full insurance coverage. Your precious metals are protected in state-of-the-art facilities.",
+      cta: "Learn More",
+      ctaSecondary: "View Storage",
+      badge: "Fully Insured & LBMA Certified",
+      image: heroGoldBars,
+      stats: [
+        { value: "$1M", label: "Insurance Coverage" },
+        { value: "99.9%", label: "Purity Guarantee" },
+        { value: "24/7", label: "Security Monitoring" },
+        { value: "Global", label: "Storage Network" }
+      ],
+      features: [
+        { icon: Shield, text: "Bank-Grade Security" },
+        { icon: Award, text: "LBMA Approved" },
+        { icon: TrendingUp, text: "Real-Time Tracking" },
+        { icon: CheckCircle2, text: "Instant Access" }
+      ]
+    },
+    {
+      id: 3,
+      title: "Live",
+      subtitle: "Market Prices",
+      description: "Updated 24/7",
+      content: "Get real-time precious metals prices and market insights. Make informed investment decisions with our professional tools.",
+      cta: "View Prices",
+      ctaSecondary: "Market Analysis",
+      badge: "Real-Time Market Data",
+      image: heroGoldBars,
+      stats: [
+        { value: "+2.4%", label: "Gold Today" },
+        { value: "+1.8%", label: "Silver Today" },
+        { value: "+3.2%", label: "Platinum Today" },
+        { value: "Live", label: "Price Updates" }
+      ],
+      features: [
+        { icon: TrendingUp, text: "Live Price Feeds" },
+        { icon: Award, text: "Market Analysis" },
+        { icon: TrendingUp, text: "Price Alerts" },
+        { icon: CheckCircle2, text: "Historical Data" }
+      ]
+    }
+  ];
+
+  // Auto-advance slides
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  const currentSlideData = slides[currentSlide];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 py-12 md:py-20 lg:py-24">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--gold)/0.05),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--primary)/0.03),transparent_50%)]" />
+    <section className="relative bg-white overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white"></div>
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f3f4f6' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat'
+        }}></div>
+      </div>
       
-      <div className="container relative mx-auto px-4">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 md:gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+      <div className="relative container mx-auto px-4 py-16 md:py-24 lg:py-32">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Content */}
-            <div className="space-y-6 md:space-y-8 animate-fade-in text-center lg:text-left">
+            <div className="text-center lg:text-left">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1.5 text-xs md:text-sm font-medium text-gold border border-gold/20 animate-fade-in [animation-delay:100ms]">
-                <Sparkles className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                <span className="hidden sm:inline">{t('hero.badge')}</span>
-                <span className="sm:hidden">{t('hero.badgeShort')}</span>
+              <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-2 text-sm font-medium text-amber-800 mb-6">
+                <Star className="h-4 w-4 text-amber-600" />
+                {currentSlideData.badge}
               </div>
 
               {/* Headline */}
-              <div className="space-y-3 md:space-y-4 animate-fade-in [animation-delay:200ms]">
-                <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
-                  {t('hero.title1')}
-                  <span className="block bg-gradient-to-r from-gold via-gold/80 to-gold/60 bg-clip-text text-transparent">
-                    {t('hero.title2')}
-                  </span>
-                  <span className="block">{t('hero.title3')}</span>
-                </h1>
-                
-                <p className="text-base text-muted-foreground md:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0">
-                  {t('hero.subtitle')}
-                </p>
-              </div>
-
-              {/* Features */}
-              <div className="grid grid-cols-2 gap-2 sm:gap-3 animate-fade-in [animation-delay:300ms] max-w-2xl mx-auto lg:mx-0">
-                {[
-                  { icon: Shield, text: t('hero.feature1') },
-                  { icon: Award, text: t('hero.feature2') },
-                  { icon: TrendingUp, text: t('hero.feature3') },
-                  { icon: CheckCircle2, text: t('hero.feature4') },
-                ].map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 md:gap-3 rounded-lg md:rounded-xl bg-card/50 backdrop-blur-sm px-3 py-2.5 md:px-4 md:py-3 border border-border/50 hover:border-gold/30 hover:bg-card transition-all duration-300 hover-scale"
-                  >
-                    <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-lg bg-gold/10 shrink-0">
-                      <feature.icon className="h-4 w-4 md:h-5 md:w-5 text-gold" />
-                    </div>
-                    <span className="font-medium text-xs md:text-sm leading-tight">{feature.text}</span>
-                  </div>
-                ))}
-              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                {currentSlideData.title}
+                <span className="block text-amber-600">{currentSlideData.subtitle}</span>
+                <span className="block text-gray-700">{currentSlideData.description}</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto lg:mx-0">
+                {currentSlideData.content}
+              </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 animate-fade-in [animation-delay:400ms] max-w-md mx-auto lg:mx-0">
+              <div className="flex flex-col sm:flex-row gap-4 mb-12">
                 <Button 
                   size="lg" 
-                  className="bg-gold hover:bg-gold/90 text-white shadow-lg shadow-gold/20 hover:shadow-xl hover:shadow-gold/30 transition-all duration-300 group w-full sm:w-auto"
+                  className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group"
                   onClick={() => navigate("/products")}
                 >
-                  {t('hero.cta1')}
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  {currentSlideData.cta}
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-2 hover:bg-accent w-full sm:w-auto"
+                  className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 px-8 py-4 text-lg font-semibold rounded-lg transition-all duration-300"
                   onClick={() => navigate("/prices")}
                 >
-                  {t('hero.cta2')}
+                  {currentSlideData.ctaSecondary}
                 </Button>
               </div>
 
-              {/* Trust Stats */}
-              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 pt-4 md:pt-6 border-t border-border/50 animate-fade-in [animation-delay:500ms]">
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className="h-4 w-4 md:h-5 md:w-5 text-gold fill-gold"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                    ))}
+              {/* Trust Indicators */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                {currentSlideData.stats.map((stat, index) => (
+                  <div key={index} className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-amber-600 mb-1">{stat.value}</div>
+                    <div className="text-sm text-gray-600">{stat.label}</div>
                   </div>
-                  <span className="text-xs md:text-sm">
-                    <strong className="font-bold">4.9/5</strong>
-                    <span className="text-muted-foreground hidden sm:inline"> {t('hero.rating')}</span>
-                    <span className="text-muted-foreground sm:hidden"> {t('hero.ratingShort')}</span>
-                  </span>
-                </div>
-                <div className="hidden sm:block h-4 w-px bg-border" />
-                <div className="text-xs md:text-sm">
-                  <strong className="font-bold">$550M+</strong>
-                  <span className="text-muted-foreground"> {t('hero.sold')}</span>
-                </div>
+                ))}
+              </div>
+
+              {/* Features */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {currentSlideData.features.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                      <feature.icon className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <span className="font-medium text-gray-700">{feature.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Hero Image */}
-            <div className="relative animate-fade-in [animation-delay:300ms] lg:order-last max-w-lg mx-auto lg:max-w-none">
-              <div className="relative aspect-square rounded-2xl md:rounded-3xl overflow-hidden border border-border/50 shadow-2xl">
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/20 via-transparent to-primary/10 mix-blend-overlay" />
-                
+            <div className="relative">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <img 
-                  src={heroGoldBars}
+                  src={currentSlideData.image}
                   alt="Premium gold bars and precious metals investment"
-                  className="h-full w-full object-cover"
+                  className="w-full h-[500px] object-cover"
                 />
                 
-                {/* Floating card - Top */}
-                <div className="absolute top-3 right-3 md:top-6 md:right-6 animate-scale-in [animation-delay:600ms]">
-                  <div className="rounded-xl md:rounded-2xl bg-background/95 backdrop-blur-md p-3 md:p-4 shadow-xl border border-border/50 hover-scale">
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg md:rounded-xl bg-gradient-to-br from-gold to-gold/70">
-                        <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                
+                {/* Floating Cards */}
+                <div className="absolute top-6 right-6">
+                  <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <TrendingUp className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-xl md:text-2xl font-bold text-gold">+12.5%</p>
-                        <p className="text-[10px] md:text-xs text-muted-foreground">{t('hero.growthCard')}</p>
+                        <div className="text-lg font-bold text-gray-900">{currentSlideData.stats[0].value}</div>
+                        <div className="text-xs text-gray-600">{currentSlideData.stats[0].label}</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Floating card - Bottom */}
-                <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 animate-scale-in [animation-delay:700ms]">
-                  <div className="rounded-xl md:rounded-2xl bg-background/95 backdrop-blur-md p-3 md:p-4 shadow-xl border border-border/50 hover-scale">
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg md:rounded-xl bg-gradient-to-br from-primary to-primary/70">
-                        <Shield className="h-5 w-5 md:h-6 md:w-6 text-primary-foreground" />
+                <div className="absolute bottom-6 left-6">
+                  <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Shield className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-xl md:text-2xl font-bold">20+</p>
-                        <p className="text-[10px] md:text-xs text-muted-foreground">{t('hero.trustCard')}</p>
+                        <div className="text-lg font-bold text-gray-900">{currentSlideData.stats[1].value}</div>
+                        <div className="text-xs text-gray-600">{currentSlideData.stats[1].label}</div>
                       </div>
                     </div>
                   </div>
@@ -154,6 +224,44 @@ const HeroSection = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Slider Controls */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
+        {/* Previous Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={prevSlide}
+          className="w-10 h-10 rounded-full bg-white/80 hover:bg-white border-gray-300 shadow-lg"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        {/* Dots */}
+        <div className="flex gap-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide 
+                  ? 'bg-amber-600 w-8' 
+                  : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Next Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={nextSlide}
+          className="w-10 h-10 rounded-full bg-white/80 hover:bg-white border-gray-300 shadow-lg"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
     </section>
   );
