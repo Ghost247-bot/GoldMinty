@@ -35,6 +35,8 @@ import LegalNotice from "./pages/LegalNotice";
 import NotFound from "./pages/NotFound";
 import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import OrderFailed from "./pages/OrderFailed";
 import BulkProductUpload from "./components/BulkProductUpload";
 import Wishlist from "./pages/Wishlist";
 
@@ -56,6 +58,8 @@ const App = () => (
           <Route path="/wishlist" element={<Layout><Wishlist /></Layout>} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        <Route path="/order-failed" element={<OrderFailed />} />
         <Route path="/bulk-upload" element={<BulkProductUpload />} />
           <Route path="/charts" element={<Layout><Charts /></Layout>} />
           <Route path="/prices" element={<Layout><Prices /></Layout>} />

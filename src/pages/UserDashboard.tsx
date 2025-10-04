@@ -48,6 +48,7 @@ import {
   Shield,
   Zap,
   Eye,
+  Package,
   RefreshCw,
   TrendingDown,
   Award,
@@ -56,6 +57,7 @@ import {
   Lightbulb,
   AlertTriangle,
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   Menu
 } from 'lucide-react';
@@ -162,6 +164,9 @@ export default function UserDashboard() {
   });
   const [wishlistItems, setWishlistItems] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (user) {
@@ -174,6 +179,7 @@ export default function UserDashboard() {
       fetchWishlist();
       fetchProducts();
       fetchWithdrawalRequests();
+      fetchOrders();
     }
   }, [user]);
 
@@ -381,6 +387,42 @@ export default function UserDashboard() {
     }
     
     setWithdrawalRequests(data || []);
+  };
+
+  const fetchOrders = async () => {
+    if (!user) return;
+    
+    setOrdersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching orders:', error);
+        return;
+      }
+      
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  const toggleOrderExpansion = (orderId: string) => {
+    setExpandedOrders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(orderId)) {
+        newSet.delete(orderId);
+      } else {
+        newSet.add(orderId);
+      }
+      return newSet;
+    });
   };
 
   const handleWithdrawalRequest = async () => {
@@ -1084,6 +1126,17 @@ export default function UserDashboard() {
                               <span>Actions</span>
                             </Button>
                           </FrozenAccountGuard>
+                          <Button
+                            variant={activeTab === 'orders' ? 'default' : 'ghost'}
+                            className="w-full justify-start gap-3 h-12"
+                            onClick={() => {
+                              setActiveTab('orders');
+                              setIsMenuOpen(false);
+                            }}
+                          >
+                            <Package className="h-5 w-5" />
+                            <span>Orders</span>
+                          </Button>
                         </nav>
                       </SheetContent>
                     </Sheet>
@@ -1154,6 +1207,13 @@ export default function UserDashboard() {
                           <span>Actions</span>
                         </TabsTrigger>
                       </FrozenAccountGuard>
+                      <TabsTrigger 
+                        value="orders"
+                        className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+                      >
+                        <Package className="h-4 w-4" />
+                        <span>Orders</span>
+                      </TabsTrigger>
                     </TabsList>
                   </div>
 
@@ -3111,6 +3171,313 @@ export default function UserDashboard() {
                       </Card>
                     </div>
                   </TabsContent>
+
+                  {/* Orders TabsContent */}
+                  <TabsContent value="orders" className="mt-6">
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center gap-2">
+                            <Package className="h-5 w-5" />
+                            Order History
+                          </CardTitle>
+                          <div className="flex gap-2">
+                            <Button onClick={fetchOrders} disabled={ordersLoading}>
+                              <RefreshCw className={`h-4 w-4 mr-2 ${ordersLoading ? 'animate-spin' : ''}`} />
+                              Refresh
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-muted-foreground">
+                              View your order history and track order status.
+                            </p>
+                            <Badge variant="outline">
+                              {orders.length} Orders
+                            </Badge>
+                          </div>
+                          
+                          {ordersLoading ? (
+                            <div className="text-center py-8">
+                              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                              <p className="text-muted-foreground">Loading orders...</p>
+                            </div>
+                          ) : orders.length === 0 ? (
+                            <div className="text-center py-8">
+                              <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                              <h3 className="text-lg font-semibold mb-2">No Orders Found</h3>
+                              <p className="text-muted-foreground mb-4">
+                                You haven't placed any orders yet. Start shopping to see your orders here.
+                              </p>
+                              <Button onClick={() => window.location.href = '/products'}>
+                                Browse Products
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {orders.map((order) => {
+                                const isExpanded = expandedOrders.has(order.id);
+                                return (
+                                  <Card key={order.id} className="border-l-4 border-l-primary">
+                                    <CardContent className="p-6">
+                                      <div className="flex items-start justify-between mb-4">
+                                        <div className="flex-1">
+                                          <div className="flex items-center gap-2 mb-2">
+                                            <h3 className="text-lg font-semibold">Order #{order.order_number}</h3>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => toggleOrderExpansion(order.id)}
+                                              className="h-6 w-6 p-0 hover:bg-muted"
+                                            >
+                                              {isExpanded ? (
+                                                <ChevronDown className="h-4 w-4" />
+                                              ) : (
+                                                <ChevronRight className="h-4 w-4" />
+                                              )}
+                                            </Button>
+                                          </div>
+                                          <p className="text-sm text-muted-foreground">
+                                            Placed on {new Date(order.created_at).toLocaleDateString()}
+                                          </p>
+                                        </div>
+                                        <div className="text-right">
+                                          <div className="text-xl font-bold">${order.total_amount.toLocaleString()}</div>
+                                          <Badge 
+                                            variant={
+                                              order.status === 'delivered' ? 'default' :
+                                              order.status === 'shipped' ? 'secondary' :
+                                              order.status === 'processing' ? 'outline' :
+                                              order.status === 'cancelled' ? 'destructive' :
+                                              'secondary'
+                                            }
+                                            className="mt-1"
+                                          >
+                                            {order.status}
+                                          </Badge>
+                                        </div>
+                                      </div>
+
+                                      {/* Collapsed Summary */}
+                                      {!isExpanded && (
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                          <div>
+                                            <span className="text-muted-foreground">Customer:</span>
+                                            <span className="ml-2">{order.customer_first_name} {order.customer_last_name}</span>
+                                          </div>
+                                          <div>
+                                            <span className="text-muted-foreground">Payment:</span>
+                                            <span className="ml-2">{order.payment_status}</span>
+                                          </div>
+                                          <div>
+                                            <span className="text-muted-foreground">Items:</span>
+                                            <span className="ml-2">{Array.isArray(order.order_items) ? order.order_items.length : 0}</span>
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Expanded Details */}
+                                      {isExpanded && (
+                                        <div className="space-y-4 animate-fade-in">
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                      <div>
+                                        <h4 className="font-medium text-sm text-muted-foreground mb-1">Customer</h4>
+                                        <p className="text-sm">
+                                          {order.customer_first_name} {order.customer_last_name}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                          {order.customer_email}
+                                        </p>
+                                        {order.customer_phone && (
+                                          <p className="text-sm text-muted-foreground">
+                                            {order.customer_phone}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <h4 className="font-medium text-sm text-muted-foreground mb-1">Payment</h4>
+                                        <Badge 
+                                          variant={
+                                            order.payment_status === 'completed' ? 'default' :
+                                            order.payment_status === 'pending' ? 'outline' :
+                                            'destructive'
+                                          }
+                                        >
+                                          {order.payment_status}
+                                        </Badge>
+                                        {order.payment_method && (
+                                          <p className="text-sm text-muted-foreground mt-1">
+                                            {order.payment_method}
+                                          </p>
+                                        )}
+                                        {order.payment_id && (
+                                          <p className="text-xs text-muted-foreground mt-1">
+                                            ID: {order.payment_id}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <h4 className="font-medium text-sm text-muted-foreground mb-1">Items</h4>
+                                        <p className="text-sm">
+                                          {Array.isArray(order.order_items) ? order.order_items.length : 0} items
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                          Total Weight: {Array.isArray(order.order_items) ? 
+                                            order.order_items.reduce((total, item) => total + (parseFloat(item.weight) || 0), 0).toFixed(2) + ' oz' : 
+                                            'N/A'
+                                          }
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    {/* Order Items Details */}
+                                    {Array.isArray(order.order_items) && order.order_items.length > 0 && (
+                                      <div className="border-t pt-4 mb-4">
+                                        <h4 className="font-medium text-sm text-muted-foreground mb-3">Order Items</h4>
+                                        <div className="space-y-2">
+                                          {order.order_items.map((item, index) => (
+                                            <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                                              <div className="flex items-center gap-3">
+                                                {item.image && (
+                                                  <img 
+                                                    src={item.image} 
+                                                    alt={item.name}
+                                                    className="w-12 h-12 object-cover rounded"
+                                                  />
+                                                )}
+                                                <div>
+                                                  <p className="font-medium text-sm">{item.name}</p>
+                                                  <p className="text-xs text-muted-foreground">
+                                                    {item.metal} • {item.weight} • {item.purity}
+                                                  </p>
+                                                </div>
+                                              </div>
+                                              <div className="text-right">
+                                                <p className="font-medium">${item.price.toLocaleString()}</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                  Qty: {item.quantity}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Order Timeline */}
+                                    <div className="border-t pt-4 mb-4">
+                                      <h4 className="font-medium text-sm text-muted-foreground mb-3">Order Timeline</h4>
+                                      <div className="space-y-2">
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                          <div>
+                                            <p className="text-sm font-medium">Order Placed</p>
+                                            <p className="text-xs text-muted-foreground">
+                                              {new Date(order.created_at).toLocaleString()}
+                                            </p>
+                                          </div>
+                                        </div>
+                                        {order.processed_at && (
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            <div>
+                                              <p className="text-sm font-medium">Order Processed</p>
+                                              <p className="text-xs text-muted-foreground">
+                                                {new Date(order.processed_at).toLocaleString()}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        )}
+                                        {order.shipped_at && (
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                            <div>
+                                              <p className="text-sm font-medium">Order Shipped</p>
+                                              <p className="text-xs text-muted-foreground">
+                                                {new Date(order.shipped_at).toLocaleString()}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        )}
+                                        {order.delivered_at && (
+                                          <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <div>
+                                              <p className="text-sm font-medium">Order Delivered</p>
+                                              <p className="text-xs text-muted-foreground">
+                                                {new Date(order.delivered_at).toLocaleString()}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Shipping Address */}
+                                    {order.shipping_address && (
+                                      <div className="border-t pt-4 mb-4">
+                                        <h4 className="font-medium text-sm text-muted-foreground mb-2">Shipping Address</h4>
+                                        <div className="text-sm">
+                                          <p>{order.shipping_address}</p>
+                                          <p>{order.shipping_city}, {order.shipping_state} {order.shipping_zip_code}</p>
+                                          <p>{order.shipping_country}</p>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Billing Address */}
+                                    <div className="border-t pt-4 mb-4">
+                                      <h4 className="font-medium text-sm text-muted-foreground mb-2">Billing Address</h4>
+                                      <div className="text-sm">
+                                        <p>{order.billing_address}</p>
+                                        <p>{order.billing_city}, {order.billing_state} {order.billing_zip_code}</p>
+                                        <p>{order.billing_country}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="border-t pt-4">
+                                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                        <div>
+                                          <span className="text-muted-foreground">Subtotal:</span>
+                                          <span className="ml-2 font-medium">${order.subtotal.toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-muted-foreground">Shipping:</span>
+                                          <span className="ml-2 font-medium">${order.shipping_cost.toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-muted-foreground">Insurance:</span>
+                                          <span className="ml-2 font-medium">${order.insurance_cost.toLocaleString()}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-muted-foreground">Tax:</span>
+                                          <span className="ml-2 font-medium">${order.tax_amount.toLocaleString()}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                          {order.notes && (
+                                            <div className="border-t pt-4 mt-4">
+                                              <h4 className="font-medium text-sm text-muted-foreground mb-1">Notes</h4>
+                                              <p className="text-sm">{order.notes}</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
                 </Tabs>
               )}
             </CardContent>
@@ -3393,6 +3760,7 @@ export default function UserDashboard() {
             </div>
           </DialogContent>
         </Dialog>
+
       </main>
     </div>
   );

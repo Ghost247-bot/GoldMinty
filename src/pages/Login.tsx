@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -44,6 +44,7 @@ export default function Login() {
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Load security questions on component mount
   useEffect(() => {
@@ -99,7 +100,15 @@ export default function Login() {
           title: 'Success',
           description: 'Logged in successfully',
         });
-        navigate('/dashboard');
+        
+        // Check for redirect URL from location state
+        const redirectTo = location.state?.redirectTo;
+        
+        if (redirectTo) {
+          navigate(redirectTo);
+        } else {
+          navigate('/dashboard');
+        }
       }
     } catch (error) {
       console.error('Unexpected sign in error:', error);
@@ -442,6 +451,15 @@ export default function Login() {
                 <CardDescription className="text-slate-600 text-xl font-medium leading-relaxed max-w-lg mx-auto">
                   Premium precious metals investment platform trusted by institutions worldwide
                 </CardDescription>
+                
+                {/* Show redirect message if user was redirected to login */}
+                {location.state?.message && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-lg mx-auto">
+                    <p className="text-blue-800 text-sm font-medium">
+                      {location.state.message}
+                    </p>
+                  </div>
+                )}
               </div>
               
               {/* Clean trust badges */}

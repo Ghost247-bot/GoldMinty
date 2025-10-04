@@ -1,8 +1,8 @@
-# 🚀 Deployment Guide - GoldAvenue to Netlify
+# 🚀 Deployment Guide - goldmint to Netlify
 
 ## ✅ GitHub Setup Complete
 Your code has been successfully pushed to GitHub:
-- **Repository**: https://github.com/Ghost247-bot/goldavenue-mirror
+- **Repository**: https://github.com/Ghost247-bot/goldmint-mirror
 - **Latest Commit**: Custom frozen account notification system + Netlify config
 
 ## 🌐 Netlify Deployment Steps
@@ -14,7 +14,7 @@ Your code has been successfully pushed to GitHub:
 4. Authorize Netlify to access your GitHub account
 
 ### Step 2: Select Your Repository
-1. Find and select **"goldavenue-mirror"** from your repositories
+1. Find and select **"goldmint-mirror"** from your repositories
 2. Click **"Deploy site"**
 
 ### Step 3: Configure Build Settings
@@ -144,4 +144,4 @@ Once connected, Netlify will automatically deploy your site whenever you push ch
 - **Supabase Dashboard**: Database and auth monitoring
 - **GitHub**: Code version control and collaboration
 
-Your GoldAvenue application is now ready for production deployment! 🎉
+Your goldmint application is now ready for production deployment! 🎉

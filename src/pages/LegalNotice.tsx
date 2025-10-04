@@ -56,7 +56,7 @@ const LegalNotice = () => {
                   <p>1204 Geneva</p>
                   <p>Switzerland</p>
                   <p><span className="font-medium">Phone:</span> +41 22 518 92 11</p>
-                  <p><span className="font-medium">Email:</span> info@Gold Mint.com</p>
+                  <p><span className="font-medium">Email:</span> info@goldmint.com</p>
                 </div>
               </div>
             </div>
@@ -254,9 +254,9 @@ const LegalNotice = () => {
               For legal matters, regulatory inquiries, or formal notices, please contact:
             </p>
             <div className="space-y-2">
-              <p><span className="font-medium">Legal Department:</span> legal@Gold Mint.com</p>
-              <p><span className="font-medium">Compliance Officer:</span> compliance@Gold Mint.com</p>
-              <p><span className="font-medium">Data Protection Officer:</span> privacy@Gold Mint.com</p>
+              <p><span className="font-medium">Legal Department:</span> legal@goldmint.com</p>
+              <p><span className="font-medium">Compliance Officer:</span> compliance@goldmint.com</p>
+              <p><span className="font-medium">Data Protection Officer:</span> privacy@goldmint.com</p>
               <p><span className="font-medium">Postal Address:</span> Gold Mint SA, Legal Department, Rue du Rhône 100, 1204 Geneva, Switzerland</p>
             </div>
           </CardContent>

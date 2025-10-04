@@ -66,7 +66,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: t('contact.info.email'),
-      details: ["support@Gold Mint.com", "sales@Gold Mint.com"],
+      details: ["support@goldmint.com", "sales@goldmint.com"],
       description: t('contact.info.responseTime')
     },
     {
@@ -98,19 +98,19 @@ const Contact = () => {
     {
       name: "Europe",
       phone: "+41 22 518 92 11",
-      email: "europe@Gold Mint.com",
+      email: "europe@goldmint.com",
       hours: "8:00 AM - 6:00 PM CET"
     },
     {
       name: "North America", 
       phone: "+1 (555) 123-4567",
-      email: "americas@Gold Mint.com",
+      email: "americas@goldmint.com",
       hours: "9:00 AM - 5:00 PM EST"
     },
     {
       name: "Asia Pacific",
       phone: "+65 6789 0123",
-      email: "asia@Gold Mint.com", 
+      email: "asia@goldmint.com", 
       hours: "9:00 AM - 5:00 PM SGT"
     }
   ];

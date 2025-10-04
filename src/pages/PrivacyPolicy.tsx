@@ -205,7 +205,7 @@ const PrivacyPolicy = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-medium mb-2">Data Protection Officer</h4>
-                <p className="text-sm text-muted-foreground mb-1">privacy@Gold Mint.com</p>
+                <p className="text-sm text-muted-foreground mb-1">privacy@goldmint.com</p>
                 <p className="text-sm text-muted-foreground">+41 22 518 92 11</p>
               </div>
               <div>

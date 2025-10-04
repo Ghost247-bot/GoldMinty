@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload, ArrowDownLeft, Menu } from 'lucide-react';
+import { Users, Shield, Database, Activity, Wallet, Plus, MessageSquare, X, Calendar, TrendingUp, Settings, Download, BookOpen, Upload, ArrowDownLeft, Menu, Package, RefreshCw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { TransactionDialog, AIInsightDialog } from '@/components/PortfolioDialogs';
@@ -30,6 +30,35 @@ export default function AdminDashboard() {
   const [investmentAccounts, setInvestmentAccounts] = useState<any[]>([]);
   const [userBanners, setUserBanners] = useState<any[]>([]);
   const [withdrawalRequests, setWithdrawalRequests] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
+  const [editOrderDialogOpen, setEditOrderDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [orderForm, setOrderForm] = useState({
+    customer_email: '',
+    customer_first_name: '',
+    customer_last_name: '',
+    customer_phone: '',
+    billing_address: '',
+    billing_city: '',
+    billing_state: '',
+    billing_zip_code: '',
+    billing_country: 'United States',
+    shipping_address: '',
+    shipping_city: '',
+    shipping_state: '',
+    shipping_zip_code: '',
+    shipping_country: 'United States',
+    subtotal: 0,
+    shipping_cost: 0,
+    insurance_cost: 0,
+    tax_amount: 0,
+    total_amount: 0,
+    status: 'pending',
+    payment_status: 'pending',
+    payment_method: 'square',
+    notes: ''
+  });
   
   // Portfolio management states
   const [selectedUserId, setSelectedUserId] = useState<string>('');
@@ -61,6 +90,7 @@ export default function AdminDashboard() {
   const [isCustomFreezeDialogOpen, setIsCustomFreezeDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('users');
+  const [ordersLoading, setOrdersLoading] = useState(false);
   
   // Products management states
   const [products, setProducts] = useState<any[]>([]);
@@ -235,6 +265,7 @@ export default function AdminDashboard() {
     fetchUserBanners();
     fetchProducts();
     fetchWithdrawalRequests();
+    fetchOrders();
   }, []);
   
   useEffect(() => {
@@ -706,6 +737,171 @@ CREATE INDEX IF NOT EXISTS idx_profiles_account_frozen ON public.profiles(accoun
     }) || [];
     
     setWithdrawalRequests(withdrawalsWithProfiles);
+  };
+
+  const fetchOrders = async () => {
+    setOrdersLoading(true);
+    try {
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (ordersError) {
+        console.error('Error fetching orders:', ordersError);
+        return;
+      }
+
+      setOrders(ordersData || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  const createOrder = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([{
+          ...orderForm,
+          order_items: [], // Empty for now, can be populated later
+          user_id: null // Can be linked to a user if needed
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order created successfully",
+      });
+
+      setCreateOrderDialogOpen(false);
+      setOrderForm({
+        customer_email: '',
+        customer_first_name: '',
+        customer_last_name: '',
+        customer_phone: '',
+        billing_address: '',
+        billing_city: '',
+        billing_state: '',
+        billing_zip_code: '',
+        billing_country: 'United States',
+        shipping_address: '',
+        shipping_city: '',
+        shipping_state: '',
+        shipping_zip_code: '',
+        shipping_country: 'United States',
+        subtotal: 0,
+        shipping_cost: 0,
+        insurance_cost: 0,
+        tax_amount: 0,
+        total_amount: 0,
+        status: 'pending',
+        payment_status: 'pending',
+        payment_method: 'square',
+        notes: ''
+      });
+      fetchOrders();
+    } catch (error) {
+      console.error('Error creating order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create order",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateOrder = async () => {
+    if (!selectedOrder) return;
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update(orderForm)
+        .eq('id', selectedOrder.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order updated successfully",
+      });
+
+      setEditOrderDialogOpen(false);
+      setSelectedOrder(null);
+      fetchOrders();
+    } catch (error) {
+      console.error('Error updating order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update order",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteOrder = async (orderId: string) => {
+    if (!confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order deleted successfully",
+      });
+
+      fetchOrders();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete order",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openEditOrder = (order: any) => {
+    setSelectedOrder(order);
+    setOrderForm({
+      customer_email: order.customer_email || '',
+      customer_first_name: order.customer_first_name || '',
+      customer_last_name: order.customer_last_name || '',
+      customer_phone: order.customer_phone || '',
+      billing_address: order.billing_address || '',
+      billing_city: order.billing_city || '',
+      billing_state: order.billing_state || '',
+      billing_zip_code: order.billing_zip_code || '',
+      billing_country: order.billing_country || 'United States',
+      shipping_address: order.shipping_address || '',
+      shipping_city: order.shipping_city || '',
+      shipping_state: order.shipping_state || '',
+      shipping_zip_code: order.shipping_zip_code || '',
+      shipping_country: order.shipping_country || 'United States',
+      subtotal: order.subtotal || 0,
+      shipping_cost: order.shipping_cost || 0,
+      insurance_cost: order.insurance_cost || 0,
+      tax_amount: order.tax_amount || 0,
+      total_amount: order.total_amount || 0,
+      status: order.status || 'pending',
+      payment_status: order.payment_status || 'pending',
+      payment_method: order.payment_method || 'square',
+      notes: order.notes || ''
+    });
+    setEditOrderDialogOpen(true);
   };
   
   // Fetch user-specific portfolio data
@@ -1906,6 +2102,13 @@ CREATE INDEX IF NOT EXISTS idx_profiles_account_frozen ON public.profiles(accoun
               >
                 <Database className="h-4 w-4" />
                 <span>Product Management</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="orders" 
+                className="flex-1 flex items-center gap-2 justify-center px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all hover:bg-muted/50"
+              >
+                <Package className="h-4 w-4" />
+                <span>Orders</span>
               </TabsTrigger>
             </TabsList>
           </div>
@@ -3979,6 +4182,149 @@ CREATE INDEX IF NOT EXISTS idx_profiles_account_frozen ON public.profiles(accoun
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="orders">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Order Management
+                  </CardTitle>
+                  <div className="flex gap-2">
+                    <Button onClick={() => setCreateOrderDialogOpen(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Order
+                    </Button>
+                    <Button onClick={fetchOrders} disabled={ordersLoading}>
+                      <RefreshCw className={`h-4 w-4 mr-2 ${ordersLoading ? 'animate-spin' : ''}`} />
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Manage all customer orders. View order details, update status, and track fulfillment.
+                    </p>
+                    <Badge variant="outline">
+                      {orders.length} Orders
+                    </Badge>
+                  </div>
+                  
+                  {ordersLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                      <p className="text-muted-foreground">Loading orders...</p>
+                    </div>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No Orders Found</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Orders will appear here once customers start placing them.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Order #</TableHead>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>Items</TableHead>
+                            <TableHead>Total</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Payment</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {orders.map((order) => (
+                            <TableRow key={order.id}>
+                              <TableCell>
+                                <div className="font-medium">{order.order_number}</div>
+                              </TableCell>
+                              <TableCell>
+                                <div>
+                                  <div className="font-medium">
+                                    {order.customer_first_name} {order.customer_last_name}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {order.customer_email}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  {Array.isArray(order.order_items) ? order.order_items.length : 0} items
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="font-medium">
+                                  ${order.total_amount.toLocaleString()}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={
+                                    order.status === 'completed' ? 'default' :
+                                    order.status === 'shipped' ? 'secondary' :
+                                    order.status === 'processing' ? 'outline' :
+                                    'secondary'
+                                  }
+                                >
+                                  {order.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={
+                                    order.payment_status === 'completed' ? 'default' :
+                                    order.payment_status === 'pending' ? 'outline' :
+                                    'destructive'
+                                  }
+                                >
+                                  {order.payment_status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm text-muted-foreground">
+                                  {new Date(order.created_at).toLocaleDateString()}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openEditOrder(order)}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => deleteOrder(order.id)}
+                                    className="text-red-600 hover:text-red-700"
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* Edit Investment Account Dialog */}
@@ -4999,6 +5345,418 @@ CREATE INDEX IF NOT EXISTS idx_profiles_account_frozen ON public.profiles(accoun
                 </Button>
                 <Button onClick={handleSaveAllocation} className="flex-1">
                   Save Changes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create Order Dialog */}
+        <Dialog open={createOrderDialogOpen} onOpenChange={setCreateOrderDialogOpen}>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create New Order</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="create-customer-email">Customer Email</Label>
+                  <Input
+                    id="create-customer-email"
+                    type="email"
+                    value={orderForm.customer_email}
+                    onChange={(e) => setOrderForm({...orderForm, customer_email: e.target.value})}
+                    placeholder="customer@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="create-customer-phone">Phone</Label>
+                  <Input
+                    id="create-customer-phone"
+                    value={orderForm.customer_phone}
+                    onChange={(e) => setOrderForm({...orderForm, customer_phone: e.target.value})}
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="create-first-name">First Name</Label>
+                  <Input
+                    id="create-first-name"
+                    value={orderForm.customer_first_name}
+                    onChange={(e) => setOrderForm({...orderForm, customer_first_name: e.target.value})}
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="create-last-name">Last Name</Label>
+                  <Input
+                    id="create-last-name"
+                    value={orderForm.customer_last_name}
+                    onChange={(e) => setOrderForm({...orderForm, customer_last_name: e.target.value})}
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-3">Billing Address</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="create-billing-address">Address</Label>
+                    <Input
+                      id="create-billing-address"
+                      value={orderForm.billing_address}
+                      onChange={(e) => setOrderForm({...orderForm, billing_address: e.target.value})}
+                      placeholder="123 Main St"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="create-billing-city">City</Label>
+                      <Input
+                        id="create-billing-city"
+                        value={orderForm.billing_city}
+                        onChange={(e) => setOrderForm({...orderForm, billing_city: e.target.value})}
+                        placeholder="New York"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="create-billing-state">State</Label>
+                      <Input
+                        id="create-billing-state"
+                        value={orderForm.billing_state}
+                        onChange={(e) => setOrderForm({...orderForm, billing_state: e.target.value})}
+                        placeholder="NY"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="create-billing-zip">ZIP Code</Label>
+                      <Input
+                        id="create-billing-zip"
+                        value={orderForm.billing_zip_code}
+                        onChange={(e) => setOrderForm({...orderForm, billing_zip_code: e.target.value})}
+                        placeholder="10001"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-3">Order Details</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="create-subtotal">Subtotal ($)</Label>
+                    <Input
+                      id="create-subtotal"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.subtotal}
+                      onChange={(e) => setOrderForm({...orderForm, subtotal: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="create-shipping">Shipping Cost ($)</Label>
+                    <Input
+                      id="create-shipping"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.shipping_cost}
+                      onChange={(e) => setOrderForm({...orderForm, shipping_cost: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="create-insurance">Insurance Cost ($)</Label>
+                    <Input
+                      id="create-insurance"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.insurance_cost}
+                      onChange={(e) => setOrderForm({...orderForm, insurance_cost: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="create-tax">Tax Amount ($)</Label>
+                    <Input
+                      id="create-tax"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.tax_amount}
+                      onChange={(e) => setOrderForm({...orderForm, tax_amount: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="create-total">Total Amount ($)</Label>
+                  <Input
+                    id="create-total"
+                    type="number"
+                    step="0.01"
+                    value={orderForm.total_amount}
+                    onChange={(e) => setOrderForm({...orderForm, total_amount: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="create-status">Status</Label>
+                  <Select value={orderForm.status} onValueChange={(value) => setOrderForm({...orderForm, status: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="shipped">Shipped</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="create-payment-status">Payment Status</Label>
+                  <Select value={orderForm.payment_status} onValueChange={(value) => setOrderForm({...orderForm, payment_status: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="refunded">Refunded</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="create-notes">Notes (Optional)</Label>
+                <Textarea
+                  id="create-notes"
+                  value={orderForm.notes}
+                  onChange={(e) => setOrderForm({...orderForm, notes: e.target.value})}
+                  placeholder="Any additional notes about this order..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setCreateOrderDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={createOrder}>
+                  Create Order
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Order Dialog */}
+        <Dialog open={editOrderDialogOpen} onOpenChange={setEditOrderDialogOpen}>
+          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Order</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-customer-email">Customer Email</Label>
+                  <Input
+                    id="edit-customer-email"
+                    type="email"
+                    value={orderForm.customer_email}
+                    onChange={(e) => setOrderForm({...orderForm, customer_email: e.target.value})}
+                    placeholder="customer@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-customer-phone">Phone</Label>
+                  <Input
+                    id="edit-customer-phone"
+                    value={orderForm.customer_phone}
+                    onChange={(e) => setOrderForm({...orderForm, customer_phone: e.target.value})}
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-first-name">First Name</Label>
+                  <Input
+                    id="edit-first-name"
+                    value={orderForm.customer_first_name}
+                    onChange={(e) => setOrderForm({...orderForm, customer_first_name: e.target.value})}
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-last-name">Last Name</Label>
+                  <Input
+                    id="edit-last-name"
+                    value={orderForm.customer_last_name}
+                    onChange={(e) => setOrderForm({...orderForm, customer_last_name: e.target.value})}
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-3">Billing Address</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="edit-billing-address">Address</Label>
+                    <Input
+                      id="edit-billing-address"
+                      value={orderForm.billing_address}
+                      onChange={(e) => setOrderForm({...orderForm, billing_address: e.target.value})}
+                      placeholder="123 Main St"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="edit-billing-city">City</Label>
+                      <Input
+                        id="edit-billing-city"
+                        value={orderForm.billing_city}
+                        onChange={(e) => setOrderForm({...orderForm, billing_city: e.target.value})}
+                        placeholder="New York"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-billing-state">State</Label>
+                      <Input
+                        id="edit-billing-state"
+                        value={orderForm.billing_state}
+                        onChange={(e) => setOrderForm({...orderForm, billing_state: e.target.value})}
+                        placeholder="NY"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-billing-zip">ZIP Code</Label>
+                      <Input
+                        id="edit-billing-zip"
+                        value={orderForm.billing_zip_code}
+                        onChange={(e) => setOrderForm({...orderForm, billing_zip_code: e.target.value})}
+                        placeholder="10001"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-semibold mb-3">Order Details</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-subtotal">Subtotal ($)</Label>
+                    <Input
+                      id="edit-subtotal"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.subtotal}
+                      onChange={(e) => setOrderForm({...orderForm, subtotal: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-shipping">Shipping Cost ($)</Label>
+                    <Input
+                      id="edit-shipping"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.shipping_cost}
+                      onChange={(e) => setOrderForm({...orderForm, shipping_cost: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-insurance">Insurance Cost ($)</Label>
+                    <Input
+                      id="edit-insurance"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.insurance_cost}
+                      onChange={(e) => setOrderForm({...orderForm, insurance_cost: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-tax">Tax Amount ($)</Label>
+                    <Input
+                      id="edit-tax"
+                      type="number"
+                      step="0.01"
+                      value={orderForm.tax_amount}
+                      onChange={(e) => setOrderForm({...orderForm, tax_amount: parseFloat(e.target.value) || 0})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="edit-total">Total Amount ($)</Label>
+                  <Input
+                    id="edit-total"
+                    type="number"
+                    step="0.01"
+                    value={orderForm.total_amount}
+                    onChange={(e) => setOrderForm({...orderForm, total_amount: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-status">Status</Label>
+                  <Select value={orderForm.status} onValueChange={(value) => setOrderForm({...orderForm, status: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
+                      <SelectItem value="shipped">Shipped</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-payment-status">Payment Status</Label>
+                  <Select value={orderForm.payment_status} onValueChange={(value) => setOrderForm({...orderForm, payment_status: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="refunded">Refunded</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-notes">Notes (Optional)</Label>
+                <Textarea
+                  id="edit-notes"
+                  value={orderForm.notes}
+                  onChange={(e) => setOrderForm({...orderForm, notes: e.target.value})}
+                  placeholder="Any additional notes about this order..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setEditOrderDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={updateOrder}>
+                  Update Order
                 </Button>
               </div>
             </div>

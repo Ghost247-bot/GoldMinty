@@ -170,7 +170,7 @@ const HelpCenter = () => {
                     } else if (option.title === "Phone Support") {
                       window.open("tel:+41225189211", "_self");
                     } else if (option.title === "Email Support") {
-                      window.open("mailto:support@Gold Mint.com", "_self");
+                      window.open("mailto:support@goldmint.com", "_self");
                     } else {
                       navigate("/contact");
                     }

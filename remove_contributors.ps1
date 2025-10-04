@@ -4,7 +4,7 @@ Write-Host "Starting to remove all contributors from git history..."
 
 # Create a backup first
 Write-Host "Creating backup..."
-Copy-Item -Path "." -Destination "..\goldavenue-backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')" -Recurse
+Copy-Item -Path "." -Destination "..\goldmint-backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')" -Recurse
 
 # Initialize a new git repository
 Write-Host "Initializing new git repository..."

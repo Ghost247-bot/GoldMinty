@@ -1,7 +1,7 @@
 # 🚀 Quick Netlify Deployment
 
 ## Your GitHub Repository
-**URL**: https://github.com/Ghost247-bot/goldavenue-mirror
+**URL**: https://github.com/Ghost247-bot/goldmint-mirror
 
 ## Netlify Deployment Steps
 
@@ -11,7 +11,7 @@ Visit: https://netlify.com
 ### 2. Connect GitHub
 - Click "New site from Git"
 - Choose "GitHub"
-- Select "goldavenue-mirror" repository
+- Select "goldmint-mirror" repository
 
 ### 3. Build Settings (Auto-detected)
 - **Build command**: `npm run build`

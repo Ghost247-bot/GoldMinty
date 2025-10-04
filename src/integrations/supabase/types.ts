@@ -160,6 +160,122 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          billing_address: string
+          billing_city: string
+          billing_country: string
+          billing_state: string
+          billing_zip_code: string
+          created_at: string
+          customer_email: string
+          customer_first_name: string
+          customer_last_name: string
+          customer_phone: string | null
+          delivered_at: string | null
+          id: string
+          insurance_cost: number
+          notes: string | null
+          order_items: Json
+          order_number: string
+          payment_id: string | null
+          payment_method: string | null
+          payment_status: string
+          processed_at: string | null
+          shipping_address: string | null
+          shipping_city: string | null
+          shipping_country: string | null
+          shipping_cost: number
+          shipping_state: string | null
+          shipping_zip_code: string | null
+          shipped_at: string | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          billing_address: string
+          billing_city: string
+          billing_country?: string
+          billing_state: string
+          billing_zip_code: string
+          created_at?: string
+          customer_email: string
+          customer_first_name: string
+          customer_last_name: string
+          customer_phone?: string | null
+          delivered_at?: string | null
+          id?: string
+          insurance_cost: number
+          notes?: string | null
+          order_items: Json
+          order_number?: string
+          payment_id?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          processed_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_cost?: number
+          shipping_state?: string | null
+          shipping_zip_code?: string | null
+          shipped_at?: string | null
+          status?: string
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          billing_address?: string
+          billing_city?: string
+          billing_country?: string
+          billing_state?: string
+          billing_zip_code?: string
+          created_at?: string
+          customer_email?: string
+          customer_first_name?: string
+          customer_last_name?: string
+          customer_phone?: string | null
+          delivered_at?: string | null
+          id?: string
+          insurance_cost?: number
+          notes?: string | null
+          order_items?: Json
+          order_number?: string
+          payment_id?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          processed_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_cost?: number
+          shipping_state?: string | null
+          shipping_zip_code?: string | null
+          shipped_at?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address_line1: string | null

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,8 +49,21 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 const Checkout = () => {
   const navigate = useNavigate();
   const { state: cartState, clearCart } = useCart();
+  const { user, loading: authLoading } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState(1);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login', { 
+        state: { 
+          redirectTo: '/checkout',
+          message: 'Please log in to complete your order'
+        }
+      });
+    }
+  }, [user, authLoading, navigate]);
 
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -61,6 +75,49 @@ const Checkout = () => {
   });
 
   const sameAsShipping = form.watch('sameAsShipping');
+
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading checkout...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Show login required message if not authenticated
+  if (!user) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
+          <Card className="w-full max-w-md text-center">
+            <CardContent className="pt-6">
+              <h2 className="text-2xl font-bold mb-4">Login Required</h2>
+              <p className="text-muted-foreground mb-6">
+                Please log in to complete your order.
+              </p>
+              <div className="space-y-2">
+                <Button onClick={() => navigate('/login')} className="w-full">
+                  Login
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/login')} className="w-full">
+                  Create Account
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/')} className="w-full">
+                  Go Home
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
 
   if (cartState.items.length === 0) {
     return (
@@ -110,23 +167,60 @@ const Checkout = () => {
       if (error) throw error;
 
       if (paymentData?.success) {
+        // Create order in database
+        const orderData = {
+          user_id: user?.id, // Use authenticated user ID
+          customer_email: formData.email,
+          customer_first_name: formData.firstName,
+          customer_last_name: formData.lastName,
+          customer_phone: formData.phone,
+          billing_address: formData.address,
+          billing_city: formData.city,
+          billing_state: formData.state,
+          billing_zip_code: formData.zipCode,
+          billing_country: formData.country,
+          shipping_address: formData.sameAsShipping ? formData.address : formData.shippingAddress,
+          shipping_city: formData.sameAsShipping ? formData.city : formData.shippingCity,
+          shipping_state: formData.sameAsShipping ? formData.state : formData.shippingState,
+          shipping_zip_code: formData.sameAsShipping ? formData.zipCode : formData.shippingZipCode,
+          shipping_country: formData.sameAsShipping ? formData.country : formData.shippingCountry,
+          subtotal: subtotal,
+          shipping_cost: shipping,
+          insurance_cost: insurance,
+          tax_amount: tax,
+          total_amount: total,
+          payment_id: paymentData.paymentId,
+          payment_status: 'completed',
+          payment_method: 'square',
+          status: 'pending',
+          order_items: cartState.items
+        };
+
+        const { data: order, error: orderError } = await supabase
+          .from('orders')
+          .insert(orderData)
+          .select()
+          .single();
+
+        if (orderError) throw orderError;
+
         // Clear cart and redirect to success page
         clearCart();
-        navigate('/payment-success', { 
+        navigate('/order-confirmation', { 
           state: { 
-            paymentId: paymentData.paymentId,
-            amount: paymentData.amount,
-            status: paymentData.status
+            orderId: order.id,
+            orderNumber: order.order_number
           }
         });
       } else {
         throw new Error(paymentData?.error || 'Payment processing failed');
       }
     } catch (error: any) {
-      toast({
-        title: "Payment Failed",
-        description: error.message || "There was an error processing your payment. Please try again.",
-        variant: "destructive",
+      // Redirect to order failed page with error details
+      navigate('/order-failed', { 
+        state: { 
+          error: error.message || "There was an error processing your payment. Please try again."
+        }
       });
     } finally {
       setIsProcessing(false);

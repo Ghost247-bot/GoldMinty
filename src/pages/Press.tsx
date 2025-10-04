@@ -102,7 +102,7 @@ const Press = () => {
   const mediaContact = {
     name: "Emma Thompson",
     title: "Head of Communications",
-    email: "press@Gold Mint.com",
+    email: "press@goldmint.com",
     phone: "+41 22 518 92 15",
     linkedin: "#"
   };

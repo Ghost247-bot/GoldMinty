@@ -6,8 +6,8 @@ echo "Starting to remove all contributors from git history..."
 # Create a backup first
 echo "Creating backup..."
 cd ..
-cp -r goldavenue goldavenue-backup-$(date +%Y%m%d-%H%M%S)
-cd goldavenue
+cp -r goldmint goldmint-backup-$(date +%Y%m%d-%H%M%S)
+cd goldmint
 
 # Use git filter-branch to rewrite history
 echo "Rewriting git history..."
